@@ -1,0 +1,10 @@
+version: "3.9"
+services: 
+  app: 
+    build: ./deno_app
+    ports: 
+      - "5000:1993"
+  app: 
+    build: ./deno_app
+    ports: 
+      - "5000:1993"

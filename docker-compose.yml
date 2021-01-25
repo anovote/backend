@@ -1,7 +1,8 @@
 version: "3.9"
 services: 
   app: 
-    build: ./src
+    container_name: "anovote_backend"
+    build: ./
     ports: 
       - "5000:1993"
     volumes: 

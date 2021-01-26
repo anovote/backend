@@ -29,6 +29,4 @@ WORKDIR /app
 
 ENV PATH="/usr/local/bin:$PATH"
 
-# ENTRYPOINT ["/usr/local/bin/denon"]
-
 CMD ["denon", "run", "--allow-env", "--allow-net", "main.ts"]

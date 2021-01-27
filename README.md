@@ -5,14 +5,8 @@ All code regarding the backend server
 
 ### Starting docker
 
-To build the docker container, run the following command:
+To build the backend in docker run the following command:
 
 ~~~bash
-docker build -t app .
+docker-compose up --build
 ~~~
-
-To run the docker container, run the following command
-
-```bash
-docker run -it --init -p 1993:1993 app
-```

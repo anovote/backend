@@ -4,7 +4,7 @@ services:
     container_name: "anovote_backend"
     build: ./
     ports: 
-      - "5000:1993"
+      - "8000:8000"
     volumes: 
       - "./src:/app"
   

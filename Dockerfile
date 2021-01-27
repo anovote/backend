@@ -20,7 +20,7 @@ ENV DENO_DIR /deno-dir/
 ENV DENO_INSTALL_ROOT /usr/local
 
 
-EXPOSE 3000
+EXPOSE 8000
 
 RUN deno install --allow-read --allow-run --allow-write -f --unstable https://deno.land/x/denon/denon.ts
 

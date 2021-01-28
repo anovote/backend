@@ -4,5 +4,3 @@ console.log("http://fiwerewrsk:w/");
 for await (const req of s) {
   req.respond({ body: "Hello World\n" });
 }
-
-console.log("fiqweqwesj")

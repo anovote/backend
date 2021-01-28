@@ -1,3 +1,14 @@
 {
+    //EDITOR
+    "editor.formatOnSave": true,
+    "editor.autoIndent": "full",
+    "files.eol": "\n",
+    "[typescript]": {
+        "editor.defaultFormatter": "denoland.vscode-deno",
+    },
+    "[typescriptreact]": {
+        "editor.defaultFormatter": "denoland.vscode-deno",
+    },
+    //DENO
     "deno.enable": true,
-  }
+}

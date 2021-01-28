@@ -7,5 +7,3 @@ console.log("http://fiwersdoighsdoigesk:w/");
 for await (const req of s) {
   req.respond({ body: "Hello World\n" });
 }
-
-console.log("fiqweqwesj")

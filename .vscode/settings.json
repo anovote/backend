@@ -3,6 +3,9 @@
     "editor.formatOnSave": false,
     "editor.autoIndent": "full",
     "files.eol": "\n",
+    "deno.import_intellisense_origins": {
+        "https://deno.land": true,
+    },
     "[typescript]": {
         "editor.defaultFormatter": "denoland.vscode-deno",
     },

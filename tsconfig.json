@@ -1,0 +1,7 @@
+{
+    "files": [
+        "src/deps.ts",
+        "src/logger.ts",
+        "src/main.ts"
+    ]
+}

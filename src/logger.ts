@@ -3,6 +3,10 @@ import { Level, Logger, LogRecord, Stream, TimeUnit } from "https://deno.land/x/
 import { JsonFormatter } from "https://deno.land/x/optic/formatters/mod.ts";
 import { PropertyRedaction } from "https://deno.land/x/optic/transformers/propertyRedaction.ts";
 
+/**
+ * Used with the file logger, it creates a .txt file which
+ * which loggs on a .json format.
+ */
 const fileStream = new FileStream("logFile.txt")
   .withMinLogLevel(Level.Warn)
   .withFormat(
@@ -18,11 +22,17 @@ const fileStream = new FileStream("logFile.txt")
   .withLogHeader(true)
   .withLogFooter(true);
 
-// Configure the logger
+/**
+ * A logger which exports the logging to a .txt file,
+ * the content of the .txt file is written in json.
+ */
 export const fileLogger = new Logger()
   .withMinLogLevel(Level.Warn)
   .addFilter((stream: Stream, logRecord: LogRecord) => logRecord.msg === "spam")
   .addTransformer(new PropertyRedaction("password"))
   .addStream(fileStream);
 
-export const logger = new Logger();
+/**
+ * A logger which is used to log into the console.
+ */
+export const consoleLogger = new Logger();

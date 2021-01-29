@@ -1,152 +1,98 @@
 {
-  "dateTime": "2021.01.29 13:55:29:468",
+  "dateTime": "2021.01.29 14:05:36:510",
   "level": "Info",
   "msg": "Logging session initialized. Initial logger min log level: Warn (programmatically set)",
   "metadata": []
 }
 {
-  "dateTime": "2021.01.29 13:55:29:504",
-  "level": "Info",
-  "msg": "Logging session complete.  Duration: 38ms",
-  "metadata": [
-    {
-      "sessionStarted": "2021-01-29T13:55:29.466Z",
-      "sessionEnded": "2021-01-29T13:55:29.504Z",
-      "minLogLevel": "Warn",
-      "minLogLevelFrom": "programmatically set",
-      "loggerName": "default",
-      "filtersRegistered": 1,
-      "transformersRegistered": 1,
-      "monitorsRegistered": 0,
-      "streamName": "FileStream",
-      "logRecordsHandled": "",
-      "recordsFiltered": 0,
-      "recordsTransformed": 0
-    }
-  ]
-}
-{
-  "dateTime": "2021.01.29 13:57:26:686",
-  "level": "Info",
-  "msg": "Logging session initialized. Initial logger min log level: Warn (programmatically set)",
-  "metadata": []
-}
-{
-  "dateTime": "2021.01.29 13:57:26:688",
-  "level": "Info",
-  "msg": "Logging session complete.  Duration: 3ms",
-  "metadata": [
-    {
-      "sessionStarted": "2021-01-29T13:57:26.685Z",
-      "sessionEnded": "2021-01-29T13:57:26.688Z",
-      "minLogLevel": "Warn",
-      "minLogLevelFrom": "programmatically set",
-      "loggerName": "default",
-      "filtersRegistered": 1,
-      "transformersRegistered": 1,
-      "monitorsRegistered": 0,
-      "streamName": "FileStream",
-      "logRecordsHandled": "",
-      "recordsFiltered": 0,
-      "recordsTransformed": 0
-    }
-  ]
-}
-{
-  "dateTime": "2021.01.29 13:58:25:017",
-  "level": "Info",
-  "msg": "Logging session initialized. Initial logger min log level: Warn (programmatically set)",
-  "metadata": []
-}
-{
-  "dateTime": "2021.01.29 13:58:25:019",
-  "level": "Info",
-  "msg": "Logging session complete.  Duration: 3ms",
-  "metadata": [
-    {
-      "sessionStarted": "2021-01-29T13:58:25.015Z",
-      "sessionEnded": "2021-01-29T13:58:25.019Z",
-      "minLogLevel": "Warn",
-      "minLogLevelFrom": "programmatically set",
-      "loggerName": "default",
-      "filtersRegistered": 1,
-      "transformersRegistered": 1,
-      "monitorsRegistered": 0,
-      "streamName": "FileStream",
-      "logRecordsHandled": "",
-      "recordsFiltered": 0,
-      "recordsTransformed": 0
-    }
-  ]
-}
-{
-  "dateTime": "2021.01.29 13:59:40:698",
-  "level": "Info",
-  "msg": "Logging session initialized. Initial logger min log level: Warn (programmatically set)",
-  "metadata": []
-}
-{
-  "dateTime": "2021.01.29 13:59:40:700",
-  "level": "Info",
-  "msg": "Logging session complete.  Duration: 3ms",
-  "metadata": [
-    {
-      "sessionStarted": "2021-01-29T13:59:40.696Z",
-      "sessionEnded": "2021-01-29T13:59:40.700Z",
-      "minLogLevel": "Warn",
-      "minLogLevelFrom": "programmatically set",
-      "loggerName": "default",
-      "filtersRegistered": 1,
-      "transformersRegistered": 1,
-      "monitorsRegistered": 0,
-      "streamName": "FileStream",
-      "logRecordsHandled": "",
-      "recordsFiltered": 0,
-      "recordsTransformed": 0
-    }
-  ]
-}
-{
-  "dateTime": "2021.01.29 14:00:08:785",
-  "level": "Info",
-  "msg": "Logging session initialized. Initial logger min log level: Warn (programmatically set)",
-  "metadata": []
-}
-{
-  "dateTime": "2021.01.29 14:00:08:787",
-  "level": "Info",
-  "msg": "Logging session complete.  Duration: 3ms",
-  "metadata": [
-    {
-      "sessionStarted": "2021-01-29T14:00:08.783Z",
-      "sessionEnded": "2021-01-29T14:00:08.787Z",
-      "minLogLevel": "Warn",
-      "minLogLevelFrom": "programmatically set",
-      "loggerName": "default",
-      "filtersRegistered": 1,
-      "transformersRegistered": 1,
-      "monitorsRegistered": 0,
-      "streamName": "FileStream",
-      "logRecordsHandled": "",
-      "recordsFiltered": 0,
-      "recordsTransformed": 0
-    }
-  ]
-}
-{
-  "dateTime": "2021.01.29 14:00:26:691",
-  "level": "Info",
-  "msg": "Logging session initialized. Initial logger min log level: Warn (programmatically set)",
-  "metadata": []
-}
-{
-  "dateTime": "2021.01.29 14:00:26:693",
+  "dateTime": "2021.01.29 14:05:36:512",
   "level": "Info",
   "msg": "Logging session complete.  Duration: 4ms",
   "metadata": [
     {
-      "sessionStarted": "2021-01-29T14:00:26.689Z",
-      "sessionEnded": "2021-01-29T14:00:26.693Z",
+      "sessionStarted": "2021-01-29T14:05:36.508Z",
+      "sessionEnded": "2021-01-29T14:05:36.512Z",
+      "minLogLevel": "Warn",
+      "minLogLevelFrom": "programmatically set",
+      "loggerName": "default",
+      "filtersRegistered": 1,
+      "transformersRegistered": 1,
+      "monitorsRegistered": 0,
+      "streamName": "FileStream",
+      "logRecordsHandled": "",
+      "recordsFiltered": 0,
+      "recordsTransformed": 0
+    }
+  ]
+}
+{
+  "dateTime": "2021.01.29 14:07:47:349",
+  "level": "Info",
+  "msg": "Logging session initialized. Initial logger min log level: Warn (programmatically set)",
+  "metadata": []
+}
+{
+  "dateTime": "2021.01.29 14:07:47:351",
+  "level": "Info",
+  "msg": "Logging session complete.  Duration: 3ms",
+  "metadata": [
+    {
+      "sessionStarted": "2021-01-29T14:07:47.347Z",
+      "sessionEnded": "2021-01-29T14:07:47.351Z",
+      "minLogLevel": "Warn",
+      "minLogLevelFrom": "programmatically set",
+      "loggerName": "default",
+      "filtersRegistered": 1,
+      "transformersRegistered": 1,
+      "monitorsRegistered": 0,
+      "streamName": "FileStream",
+      "logRecordsHandled": "",
+      "recordsFiltered": 0,
+      "recordsTransformed": 0
+    }
+  ]
+}
+{
+  "dateTime": "2021.01.29 14:09:29:603",
+  "level": "Info",
+  "msg": "Logging session initialized. Initial logger min log level: Warn (programmatically set)",
+  "metadata": []
+}
+{
+  "dateTime": "2021.01.29 14:09:29:605",
+  "level": "Info",
+  "msg": "Logging session complete.  Duration: 3ms",
+  "metadata": [
+    {
+      "sessionStarted": "2021-01-29T14:09:29.601Z",
+      "sessionEnded": "2021-01-29T14:09:29.605Z",
+      "minLogLevel": "Warn",
+      "minLogLevelFrom": "programmatically set",
+      "loggerName": "default",
+      "filtersRegistered": 1,
+      "transformersRegistered": 1,
+      "monitorsRegistered": 0,
+      "streamName": "FileStream",
+      "logRecordsHandled": "",
+      "recordsFiltered": 0,
+      "recordsTransformed": 0
+    }
+  ]
+}
+{
+  "dateTime": "2021.01.29 14:13:02:697",
+  "level": "Info",
+  "msg": "Logging session initialized. Initial logger min log level: Warn (programmatically set)",
+  "metadata": []
+}
+{
+  "dateTime": "2021.01.29 14:13:02:700",
+  "level": "Info",
+  "msg": "Logging session complete.  Duration: 3ms",
+  "metadata": [
+    {
+      "sessionStarted": "2021-01-29T14:13:02.695Z",
+      "sessionEnded": "2021-01-29T14:13:02.699Z",
       "minLogLevel": "Warn",
       "minLogLevelFrom": "programmatically set",
       "loggerName": "default",

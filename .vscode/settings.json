@@ -1,6 +1,6 @@
 {
     //EDITOR
-    "editor.formatOnSave": true,
+    "editor.formatOnSave": false,
     "editor.autoIndent": "full",
     "files.eol": "\n",
     "[typescript]": {

@@ -1,14 +1,17 @@
 {
-    //EDITOR
-    "editor.formatOnSave": true,
-    "editor.autoIndent": "full",
-    "files.eol": "\n",
-    "[typescript]": {
-        "editor.defaultFormatter": "denoland.vscode-deno",
-    },
-    "[typescriptreact]": {
-        "editor.defaultFormatter": "denoland.vscode-deno",
-    },
-    //DENO
-    "deno.enable": true,
+  //EDITOR
+  "editor.formatOnSave": true,
+  "editor.autoIndent": "full",
+  "files.eol": "\n",
+  "[typescript]": {
+    "editor.defaultFormatter": "denoland.vscode-deno"
+  },
+  "[typescriptreact]": {
+    "editor.defaultFormatter": "denoland.vscode-deno"
+  },
+  //DENO
+"deno.enable": true,
+"deno.import_intellisense_origins": {
+    "https://deno.land": true
+}
 }

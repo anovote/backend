@@ -24,7 +24,6 @@ function getAllElections(
 function createElection(
   { request, response }: { request: any; response: any },
 ) {
-  console.log("Create election called");
   if (!request.hasBody) {
     response.status = 400;
     response.body = {

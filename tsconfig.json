@@ -1,7 +1,4 @@
 {
-    "files": [
-        "src/deps.ts",
-        "src/logger.ts",
-        "src/main.ts"
-    ]
+    "include": ["src/**/*", "tests/**/*"],
+    "exclude": ["node_modules", "**/*.spec.ts"]
 }

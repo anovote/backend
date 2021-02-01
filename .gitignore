@@ -105,5 +105,4 @@ dist
 
 .DS_Store
 
-logFile.txt
-logFile.json
+data/logs

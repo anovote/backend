@@ -13,11 +13,14 @@ import {
 import { JsonFormatter } from "https://deno.land/x/optic/formatters/mod.ts";
 import { PropertyRedaction } from "https://deno.land/x/optic/transformers/propertyRedaction.ts";
 
+let dateTime = new Date();
+const logFilePath: string = "data/logs/logFile-" + dateTime;
+
 /**
  * Used with the file logger, it creates a .txt file which
  * which loggs on a .json format, a json file is also created.
  */
-const fileStream = new FileStream("logFile.txt")
+const fileStream = new FileStream(logFilePath)
   .withMinLogLevel(Level.Warn)
   .withFormat(
     new JsonFormatter()
@@ -46,3 +49,13 @@ export const fileLogger = new Logger()
  * A logger which is used to log into the console.
  */
 export const consoleLogger = new Logger();
+
+
+class SimpleStream implements Stream {
+  handle(logRecord: LogRecord): boolean {
+    console.log(logRecord.msg);
+    return true;
+  }
+}
+
+export const bugLogger = new Logger().addStream(new SimpleStream);

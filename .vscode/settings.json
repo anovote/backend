@@ -1,6 +1,6 @@
 {
     //EDITOR
-    "editor.formatOnSave": false,
+    "editor.formatOnSave": true,
     "editor.autoIndent": "full",
     "files.eol": "\n",
     "deno.import_intellisense_origins": {

@@ -9,53 +9,37 @@ import {
   LogRecord,
   Stream,
   TimeUnit,
+  ConsoleStream,
 } from "https://deno.land/x/optic/mod.ts";
-import { JsonFormatter } from "https://deno.land/x/optic/formatters/mod.ts";
+import { 
+  JsonFormatter, 
+  TokenReplacer,
+} from "https://deno.land/x/optic/formatters/mod.ts";
 import { PropertyRedaction } from "https://deno.land/x/optic/transformers/propertyRedaction.ts";
 
 let dateTime = new Date();
-const logFilePath: string = "data/logs/logFile-" + dateTime;
+const logFilePath: string = "data/logs/logFile-" + dateTime + ".log";
 
-/**
- * Used with the file logger, it creates a .txt file which
- * which loggs on a .json format, a json file is also created.
- */
-const fileStream = new FileStream(logFilePath)
-  .withMinLogLevel(Level.Warn)
-  .withFormat(
-    new JsonFormatter()
+export const logger = new Logger()
+  .addStream(new ConsoleStream() 
+    .withMinLogLevel(Level.Debug)
+    .withFormat(
+      new TokenReplacer()
+        .withColor()
+        .withDateTimeFormat("YYYY.MM.DD hh:mm:ss:SSS")
+    )
+  )
+  .addStream(new FileStream(logFilePath)
+    .withMinLogLevel(Level.Error)
+    .withFormat(new JsonFormatter()
       .withPrettyPrintIndentation(2)
-      .withDateTimeFormat("YYYY.MM.DD hh:mm:ss:SSS"),
-  )
-  .withBufferSize(10000)
-  .withLogFileInitMode("append")
-  .withLogFileRotation(
-    every(200000).bytes().withLogFileRetentionPolicy(of(7).days()),
-  )
-  .withLogHeader(true)
-  .withLogFooter(true);
-
-/**
- * A logger which exports the logging to a .txt file,
- * the content of the .txt file is written in json.
- */
-export const fileLogger = new Logger()
-  .withMinLogLevel(Level.Warn)
-  .addFilter((stream: Stream, logRecord: LogRecord) => logRecord.msg === "spam")
-  .addTransformer(new PropertyRedaction("password"))
-  .addStream(fileStream);
-
-/**
- * A logger which is used to log into the console.
- */
-export const consoleLogger = new Logger();
-
-
-class SimpleStream implements Stream {
-  handle(logRecord: LogRecord): boolean {
-    console.log(logRecord.msg);
-    return true;
-  }
-}
-
-export const bugLogger = new Logger().addStream(new SimpleStream);
+      .withDateTimeFormat("YYYY.MM.DD hh:mm:ss:SSS")
+    )
+    .withBufferSize(30000)
+    .withLogFileInitMode("append")
+    .withLogFileRotation(
+      every(2000000).bytes().withLogFileRetentionPolicy(of(7).days()),
+    )
+    .withLogHeader(true)
+    .withLogFooter(true)
+  );

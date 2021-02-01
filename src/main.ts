@@ -1,6 +1,7 @@
 /**
  * Just some example code to se if the docker application is running
  */
-import { consoleLogger, fileLogger } from "./logger.ts";
+import {logger} from "./logger.ts";
 
-consoleLogger.info("Hello sander!");
+logger.info("Hello sander again");
+//logger.warn("Hello sander again");

@@ -5,7 +5,7 @@ import { PropertyRedaction } from "https://deno.land/x/optic/transformers/proper
 
 /**
  * Used with the file logger, it creates a .txt file which
- * which loggs on a .json format.
+ * which loggs on a .json format, a json file is also created.
  */
 const fileStream = new FileStream("logFile.txt")
   .withMinLogLevel(Level.Warn)

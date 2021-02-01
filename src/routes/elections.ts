@@ -2,6 +2,8 @@ import { Router } from "https://deno.land/x/oak@v6.5.0/mod.ts";
 
 import electionController from "../controllers/electionController.ts";
 
+/* Sets up the CRUD routes for elections */
+
 const router = new Router();
 
 const ELECTIONS_STRING = "/elections";

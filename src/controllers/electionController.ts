@@ -1,11 +1,7 @@
 export default {
   getAllElections: () => {},
-  createElection: () => {
-  },
-  getElectionById: () => {
-  },
-  updateElectionById: () => {
-  },
-  deleteElectionById: () => {
-  },
+  createElection: () => {},
+  getElectionById: () => {},
+  updateElectionById: () => {},
+  deleteElectionById: () => {},
 };

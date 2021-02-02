@@ -11,6 +11,7 @@ export {
   ManyToMany,
   ManyToOne,
   OneToMany,
+  PrimaryColumn,
   PrimaryGeneratedColumn,
   Repository,
   UpdateDateColumn,

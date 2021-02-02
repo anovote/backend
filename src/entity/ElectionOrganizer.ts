@@ -1,11 +1,12 @@
 import {
   Column,
+  CreateDateColumn,
   Entity,
-  JoinTable,
   OneToMany,
   PrimaryGeneratedColumn,
+  UpdateDateColumn,
 } from "../deps.ts";
-import { CreationUpdateDate, Name } from "./embeddedEntity.ts";
+import { Election } from "./Election.ts";
 
 /**
  * A model which represents the organizer of an election. An election organizer can organize many elections. 
@@ -16,8 +17,11 @@ export class ElectionOrganizer {
   @PrimaryGeneratedColumn()
   id!: number;
 
-  @Column((type) => Name)
-  name!: Name;
+  @Column({ type: "varchar" })
+  firstName!: string;
+
+  @Column({ type: "varchar" })
+  lastName!: string;
 
   @Column({ type: "varchar", length: 255 })
   email!: string;
@@ -25,9 +29,11 @@ export class ElectionOrganizer {
   @Column({ type: "varchar", length: 255 })
   password!: string;
 
-  @OneToMany(() => Election, (election) => election.organizerID)
-  elections!: Election[];
+  @CreateDateColumn()
+  createdAt!: Date;
+  @UpdateDateColumn()
+  updatedAt!: Date;
 
-  @Column((type) => CreationUpdateDate)
-  date!: CreationUpdateDate;
+  @OneToMany(() => Election, (election) => election.electionOrganizer)
+  elections!: Election[];
 }

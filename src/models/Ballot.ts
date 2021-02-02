@@ -1,19 +1,21 @@
-export enum BallotType {
+enum BallotType {
   SINGLE,
   MULTIPLE,
   RANKED,
 }
 
-export enum BallotResultDisplay {
+enum BallotResultDisplay {
   NONE,
   SINGLE,
   RUNNER_UP,
   ALL,
 }
 
-export enum BallotStatus {
+enum BallotStatus {
   IN_QUEUE,
   IN_PROGRESS,
   IN_RESULT,
   IN_ARCHIVE,
 }
+
+export { BallotResultDisplay, BallotStatus, BallotType };

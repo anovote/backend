@@ -1,6 +1,25 @@
-import { ManyToOne } from "https://denolib.com/denolib/typeorm@v0.2.23-rc10/src/decorator/relations/ManyToOne.ts";
-import { Column, Entity, PrimaryGeneratedColumn } from "../deps.ts";
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  JoinTable,
+  ManyToMany,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from "../deps.ts";
 import { ElectionOrganizer } from "./ElectionOrganizer.ts";
+
+import { EligibleVoter } from "./EligibleVoter.ts";
+
+/**
+ * Election status represent the state of the election
+ */
+export enum ElectionStatus {
+  NotStarted,
+  InProgress,
+  Finished,
+}
 
 /**
  * An entity for storing an election. 
@@ -15,12 +34,48 @@ export class Election {
   @PrimaryGeneratedColumn()
   id!: number;
 
-  @ManyToOne(() => ElectionOrganizer, (organizer) => organizer.id)
-  organizerID!: ElectionOrganizer;
+  @ManyToOne(
+    () => ElectionOrganizer,
+    (electionOrganizer) => electionOrganizer.elections,
+  )
+  electionOrganizer!: ElectionOrganizer;
 
   @Column({ type: String })
   title!: string;
 
   @Column({ type: "text" })
   description!: string;
+
+  @Column({ type: String, nullable: true })
+  image!: string;
+
+  @Column({ type: Date, nullable: true })
+  openDate!: Date;
+
+  @Column({ type: Date, nullable: true })
+  closeDate!: Date;
+
+  @Column({ type: String, nullable: true })
+  password!: string;
+
+  @Column(
+    { type: "enum", enum: ElectionStatus },
+  )
+  status!: ElectionStatus;
+
+  @Column({ type: "boolean", default: true })
+  isLocked!: boolean;
+
+  @Column({ type: "boolean", default: false })
+  isAutomatic!: boolean;
+
+  @CreateDateColumn()
+  createdAt!: Date;
+
+  @UpdateDateColumn()
+  updatedAt!: Date;
+
+  @ManyToMany(() => EligibleVoter)
+  @JoinTable()
+  eligibleVoters!: EligibleVoter[];
 }

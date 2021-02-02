@@ -32,4 +32,10 @@ function createElection(
     };
     return;
   }
+
+function validatePassword(password: string): boolean {
+  if (password.length < 6) {
+    throw new Error("password is to short");
+  }
+  return true;
 }

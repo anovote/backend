@@ -1,4 +1,5 @@
 import { Application, Router } from "https://deno.land/x/oak/mod.ts";
+import { ElectionOrganizer } from "./electionOrganizer.ts";
 
 const router = new Router();
 
@@ -11,11 +12,11 @@ router
   .get("/", (context) => {
     context.response.body = "Hello world!";
   })
-  .get("/register", (context) => {
-    context.response.body = "You were registered";
-  })
-  .get("/login", (context) => {
-    context.response.body = "You logged in";
+  .post("/register", async (context) => {
+    const electionOrganizer: ElectionOrganizer = JSON.parse(
+      await context.request.body().value,
+    );
+    electionOrganizer.created = new Date();
   });
 
 const app = new Application();

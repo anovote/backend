@@ -1,12 +1,16 @@
+import { ElectionOrganizer } from "../models/electionOrganizer.ts";
+
 export default {
   createElectionOrganizer: createElectionOrganizer,
   getElectionOrganizerById: () => {},
 };
 
-function createElectionOrganizer(
+async function createElectionOrganizer(
   { request, response }: { request: any; response: any },
 ) {
   if (request.hasBody) {
+    const registerElectionOrganizer: ElectionOrganizer = await request.body()
+      .value;
     response.status = 201;
     response.body = {
       success: true,
@@ -20,4 +24,7 @@ function createElectionOrganizer(
     };
     return;
   }
+}
+
+function validateElectionOrganizer(electionOrganizer: ElectionOrganizer) {
 }

@@ -29,4 +29,4 @@ WORKDIR /app
 
 ENV PATH="/usr/local/bin:$PATH"
 
-CMD ["denon", "run", "--allow-env", "--allow-net" "-allow-write", "--allow-read", "httpServer.ts"]
+CMD ["denon", "run", "--allow-env", "--allow-net", "--allow-read", "--allow-write", "httpServer.ts"]

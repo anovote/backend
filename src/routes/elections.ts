@@ -1,4 +1,4 @@
-import { Router } from "https://deno.land/x/oak@v6.5.0/mod.ts";
+import { Router } from "../deps.ts";
 
 import electionController from "../controllers/electionController.ts";
 

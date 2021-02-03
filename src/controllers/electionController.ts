@@ -4,7 +4,7 @@ import { Response } from "https://deno.land/x/oak@v6.5.0/response.ts";
 
 import { Election } from "../models/Election.ts";
 
-export class ElectionController {
+export default class ElectionController {
   entityManager: EntityManager = getManager();
 
   async getAllElections({ response }: { response: Response }) {

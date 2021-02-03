@@ -1,10 +1,37 @@
 version: "3.9"
-services: 
-  app: 
+services:
+  app:
     container_name: "anovote_backend"
+    env_file:
+      - ./.env
     build: ./
-    ports: 
+    ports:
       - "8000:8000"
-    volumes: 
-      - "./src:/app"
-  
+    volumes:
+      - "./src:/app/src"
+      - "./tsconfig.json:/app/tsconfig.json"
+    networks:
+      - anovote_backend
+    working_dir: "/app"
+    depends_on:
+      - "db"
+    command:
+      [
+        "denon",
+        "run --unstable --config tsconfig.json --allow-read --allow-write --allow-net --allow-env ./src/main.ts",
+      ]
+  db:
+    container_name: "anovote_rel_db"
+    image: postgres
+    ports:
+      - "2345:5432"
+    volumes:
+      - anovote-data:/var/lib/postgresql
+    networks:
+      - anovote_backend
+    env_file:
+      - ./.env
+volumes:
+  anovote-data:
+networks:
+  anovote_backend:

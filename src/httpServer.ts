@@ -1,5 +1,6 @@
 import { Application, Router } from "https://deno.land/x/oak/mod.ts";
 import { green, yellow } from "https://deno.land/std@0.85.0/fmt/colors.ts";
+import electionRouter from "./routes/elections.ts";
 
 import electionOrganizerRouter from "./routes/electionOrganizerRoutes.ts";
 
@@ -25,6 +26,8 @@ app.use(HTTP_ROUTER.routes());
 app.use(HTTP_ROUTER.allowedMethods());
 app.use(electionOrganizerRouter.routes());
 app.use(electionOrganizerRouter.allowedMethods());
+app.use(electionRouter.routes());
+app.use(electionRouter.allowedMethods());
 
 app.addEventListener("listen", ({ secure, hostname, port }) => {
   const protocol = secure ? "https://" : "http://";

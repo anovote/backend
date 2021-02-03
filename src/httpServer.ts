@@ -4,37 +4,43 @@ import electionRouter from "./routes/elections.ts";
 
 import electionOrganizerRouter from "./routes/electionOrganizerRoutes.ts";
 
-const PORT: number = 8000;
+export class HTTPServer {
+  constructor() {}
 
-const HTTP_ROUTER: Router = new Router();
+  async runHTTPServer() {
+    const PORT: number = 8000;
 
-/**
- * These are all example routes and not meant to be
- * part of a solution. For a final solution the routes
- * needs to be changed to the desired needs.
- */
-HTTP_ROUTER
-  .get("/", (context) => {
-    context.response.body = "Hello world!";
-  })
-  .post("/register", async (context) => {
-    context.response.body = "You were registered";
-  });
+    const HTTP_ROUTER: Router = new Router();
 
-const app = new Application();
-app.use(HTTP_ROUTER.routes());
-app.use(HTTP_ROUTER.allowedMethods());
-app.use(electionOrganizerRouter.routes());
-app.use(electionOrganizerRouter.allowedMethods());
-app.use(electionRouter.routes());
-app.use(electionRouter.allowedMethods());
+    /**
+     * These are all example routes and not meant to be
+     * part of a solution. For a final solution the routes
+     * needs to be changed to the desired needs.
+     */
+    HTTP_ROUTER
+      .get("/", (context) => {
+        context.response.body = "Hello world!";
+      })
+      .post("/register", async (context) => {
+        context.response.body = "You were registered";
+      });
 
-app.addEventListener("listen", ({ secure, hostname, port }) => {
-  const protocol = secure ? "https://" : "http://";
-  const url = `${protocol}${hostname ?? "localhost"}:${port}`;
-  console.log(
-    `${yellow("Listening on:")} ${green(url)}`,
-  );
-});
+    const app = new Application();
+    app.use(HTTP_ROUTER.routes());
+    app.use(HTTP_ROUTER.allowedMethods());
+    app.use(electionOrganizerRouter.routes());
+    app.use(electionOrganizerRouter.allowedMethods());
+    app.use(electionRouter.routes());
+    app.use(electionRouter.allowedMethods());
 
-await app.listen({ port: PORT });
+    app.addEventListener("listen", ({ secure, hostname, port }) => {
+      const protocol = secure ? "https://" : "http://";
+      const url = `${protocol}${hostname ?? "localhost"}:${port}`;
+      console.log(
+        `${yellow("Listening on:")} ${green(url)}`,
+      );
+    });
+
+    await app.listen({ port: PORT });
+  }
+}

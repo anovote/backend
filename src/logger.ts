@@ -17,7 +17,7 @@ import {
 } from "https://deno.land/x/optic/formatters/mod.ts";
 import { PropertyRedaction } from "https://deno.land/x/optic/transformers/propertyRedaction.ts";
 
-let dateTime = new Date();
+let dateTime: Date = new Date();
 const logFilePath: string = "data/logs/logFile-" + dateTime + ".log";
 
 /**

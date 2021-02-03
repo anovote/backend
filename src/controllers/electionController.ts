@@ -1,5 +1,3 @@
-import elections from "../studs/elections.ts";
-
 export default {
   /**
    * TODO: add comment
@@ -17,7 +15,7 @@ function getAllElections(
   response.status = 200;
   response.body = {
     success: true,
-    data: elections,
+    data: "It was succeoighswaåo",
   };
 }
 
@@ -33,9 +31,10 @@ function createElection(
     return;
   }
 
-function validatePassword(password: string): boolean {
-  if (password.length < 6) {
-    throw new Error("password is to short");
+  function validatePassword(password: string): boolean {
+    if (password.length < 6) {
+      throw new Error("password is to short");
+    }
+    return true;
   }
-  return true;
 }

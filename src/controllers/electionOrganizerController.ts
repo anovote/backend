@@ -1,4 +1,3 @@
-import { ElectionOrganizer } from "../models/electionOrganizer.ts";
 import { bcrypt } from "../deps.ts";
 
 export default {
@@ -10,15 +9,6 @@ async function createElectionOrganizer(
   { request, response }: { request: any; response: any },
 ) {
   if (request.hasBody) {
-    const registerElectionOrganizer: ElectionOrganizer = await request.body()
-      .value;
-    const hashedPassword = hashPassword(registerElectionOrganizer.password);
-    console.log(
-      compareHashWithPassword(
-        registerElectionOrganizer.password,
-        hashedPassword,
-      ),
-    );
     response.status = 201;
     response.body = {
       success: true,

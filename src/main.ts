@@ -8,6 +8,8 @@ import { EligibleVoter } from "./entity/EligibleVoter.ts";
 import { config } from "./deps.ts";
 import { logger } from "./logger.ts";
 
+import { HTTPServer } from "./httpServer.ts";
+
 const dbConfig: ConnectionOptions = {
   type: "postgres",
   host: config.get("DB_HOST"),
@@ -50,5 +52,5 @@ try {
   console.log(e);
 }
 
-logger.info("Hello sander again");
-//logger.warn("Hello sander again");
+const httpServer = new HTTPServer();
+httpServer.runHTTPServer();

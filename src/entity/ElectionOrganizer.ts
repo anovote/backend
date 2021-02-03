@@ -1,3 +1,5 @@
+import {} from "https://github.com/Tnifey/class-validator/raw/master/mod.ts";
+
 import {
   Column,
   CreateDateColumn,

@@ -6,6 +6,7 @@ import { Election } from "./entity/Election.ts";
 import { ElectionOrganizer } from "./entity/ElectionOrganizer.ts";
 import { EligibleVoter } from "./entity/EligibleVoter.ts";
 import { config } from "./deps.ts";
+import { logger } from "./logger.ts";
 
 const dbConfig: ConnectionOptions = {
   type: "postgres",
@@ -48,3 +49,6 @@ try {
 } catch (e) {
   console.log(e);
 }
+
+logger.info("Hello sander again");
+//logger.warn("Hello sander again");

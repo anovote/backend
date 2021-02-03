@@ -1,4 +1,6 @@
 import { bcrypt } from "../deps.ts";
+import { ElectionOrganizer } from "../entity/ElectionOrganizer.ts";
+import { DatabaseConnection } from "../DatabaseConnection.ts";
 
 export default {
   createElectionOrganizer: createElectionOrganizer,
@@ -9,6 +11,8 @@ async function createElectionOrganizer(
   { request, response }: { request: any; response: any },
 ) {
   if (request.hasBody) {
+    const electionOrganizer: ElectionOrganizer = await request.body().value;
+
     response.status = 201;
     response.body = {
       success: true,

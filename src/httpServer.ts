@@ -1,7 +1,7 @@
 import { Application, Router } from "https://deno.land/x/oak/mod.ts";
 import { green, yellow } from "https://deno.land/std@0.85.0/fmt/colors.ts";
-import electionRouter from "./routes/elections.ts";
 
+import electionRouter from "./routes/elections.ts";
 import electionOrganizerRouter from "./routes/electionOrganizerRoutes.ts";
 
 export class HTTPServer {

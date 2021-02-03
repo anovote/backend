@@ -15,10 +15,9 @@ import {
   JsonFormatter,
   TokenReplacer,
 } from "https://deno.land/x/optic/formatters/mod.ts";
-import { PropertyRedaction } from "https://deno.land/x/optic/transformers/propertyRedaction.ts";
 
-let dateTime = new Date();
-const logFilePath: string = "data/logs/logFile-" + dateTime + ".log";
+const dateTime: Date = new Date();
+const logFilePath: string = "src/data/logs/logFile-" + dateTime + ".log";
 
 /**
  * A logger which contains two logging streams:

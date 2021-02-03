@@ -1,6 +1,9 @@
 import { bcrypt } from "../deps.ts";
 import { DatabaseConnection } from "../DatabaseConnection.ts";
-import { ElectionOrganizer } from "../entity/ElectionOrganizer.ts";
+import {
+  ElectionOrganizer,
+  electionOrganizerValidator,
+} from "../models/ElectionOrganizer.ts";
 
 export default {
   createElectionOrganizer: createElectionOrganizer,
@@ -11,10 +14,17 @@ async function createElectionOrganizer(
   { request, response }: { request: any; response: any },
 ) {
   const electionOrganizer: ElectionOrganizer = await request.body().value;
-  console.log(electionOrganizer.firstName);
-  // validate electionOrganizer
 
-  if (request.hasBody) {
+  const [err, organizer] = electionOrganizerValidator({
+    firstName: electionOrganizer.firstName,
+    lastName: electionOrganizer.firstName,
+    email: electionOrganizer.email,
+    password: electionOrganizer.password,
+  });
+
+  if (err) {
+    response.body = "Error in validatoisdonåigji";
+  } else if (request.hasBody) {
     response.status = 201;
     response.body = {
       success: true,

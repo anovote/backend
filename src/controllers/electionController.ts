@@ -1,5 +1,7 @@
-import { Election, ElectionSchema } from "../models/Election.ts";
-import elections from "../studs/elections.ts";
+import { Election } from "../models/Election.ts";
+import {} from "../deps.ts";
+import { Response } from "https://deno.land/x/oak@v6.5.0/response.ts";
+import { Request } from "https://deno.land/x/oak@v6.5.0/request.ts";
 
 export default {
   /**
@@ -12,14 +14,10 @@ export default {
   deleteElectionById: () => {},
 };
 
-const validator = ElectionSchema.destruct();
-console.log(ElectionSchema);
-
-console.log(validator);
-
 function getAllElections(
-  { response }: { response: any },
+  { response }: { response: Response },
 ) {
+  await Election.get;
   response.status = 200;
   response.body = {
     success: true,
@@ -28,7 +26,10 @@ function getAllElections(
 }
 
 async function createElection(
-  { request, response }: { request: any; response: any },
+  { request, response }: {
+    request: Request;
+    response: Response;
+  },
 ) {
   console.log("Create user");
 
@@ -54,35 +55,3 @@ async function createElection(
 
 function getElectionById({ response }: { response: any }) {
 }
-
-// /**
-//  * Validates election data
-//  * @param data the data to be validated
-//  * @returns true if election data is valid, else false
-//  */
-// function validateElectionData(data: Election): boolean {
-//   const { title, description, password, openDate, closeDate } = data;
-//   if (!title || !description) {
-//     throw new Error("Title or description missing");
-//   }
-//   if (password) {
-//     validatePassword(password);
-//   }
-
-//   validateOpenCloseDate(openDate, closeDate);
-
-//   return true;
-// }
-
-// function validatePassword(password: string): void {
-//   if (password.length < 6) {
-//     throw new Error("password is to short");
-//   }
-// }
-
-// function validateOpenCloseDate(open: Date, close: Date) {
-//   if (open > close) {
-//     throw new Error("Open date is after close date");
-//   }
-//   return true;
-// }

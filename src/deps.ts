@@ -20,3 +20,9 @@ export {
 export type {
   ConnectionOptions,
 } from "https://denolib.com/denolib/typeorm@v0.2.23-rc10/mod.ts";
+
+import "https://deno.land/x/dotenv/load.ts";
+
+const config = Deno.env;
+
+export { config };

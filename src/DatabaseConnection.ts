@@ -1,6 +1,8 @@
 import { ConnectionOptions, createConnection } from "./deps.ts";
 import { config } from "./deps.ts";
-
+/**
+ * Just some example code to se if the orm database application is running
+ */
 export class DatabaseConnection {
   dbConfig: ConnectionOptions = {
     type: "postgres",

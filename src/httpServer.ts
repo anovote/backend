@@ -1,39 +1,46 @@
 import { Application, Router } from "https://deno.land/x/oak/mod.ts";
 import { green, yellow } from "https://deno.land/std@0.85.0/fmt/colors.ts";
-import electionRouter from "./routes/electionsRoutes.ts";
 
-const PORT = 8000;
+import electionRouter from "./routes/elections.ts";
+import electionOrganizerRouter from "./routes/electionOrganizerRoutes.ts";
 
-const router = new Router();
+export class HTTPServer {
+  constructor() {}
 
-/**
- * These are all example routes and not meant to be
- * part of a solution. For a final solution the routes
- * needs to be changed to the desired needs.
- */
-router
-  .get("/", (context) => {
-    context.response.body = "Hello world!";
-  })
-  .get("/register", (context) => {
-    context.response.body = "You were registered";
-  })
-  .get("/login", (context) => {
-    context.response.body = "You logged in";
-  });
+  async runHTTPServer() {
+    const PORT: number = 8000;
 
-const app = new Application();
-app.use(router.routes());
-app.use(router.allowedMethods());
-app.use(electionRouter.routes());
-app.use(electionRouter.allowedMethods());
+    const HTTP_ROUTER: Router = new Router();
 
-app.addEventListener("listen", ({ secure, hostname, port }) => {
-  const protocol = secure ? "https://" : "http://";
-  const url = `${protocol}${hostname ?? "localhost"}:${port}`;
-  console.log(
-    `${yellow("Listening on:")} ${green(url)}`,
-  );
-});
+    /**
+     * These are all example routes and not meant to be
+     * part of a solution. For a final solution the routes
+     * needs to be changed to the desired needs.
+     */
+    HTTP_ROUTER
+      .get("/", (context) => {
+        context.response.body = "Hello world!";
+      })
+      .post("/register", async (context) => {
+        context.response.body = "You were registered";
+      });
 
-await app.listen({ port: PORT });
+    const app = new Application();
+    app.use(HTTP_ROUTER.routes());
+    app.use(HTTP_ROUTER.allowedMethods());
+    app.use(electionOrganizerRouter.routes());
+    app.use(electionOrganizerRouter.allowedMethods());
+    app.use(electionRouter.routes());
+    app.use(electionRouter.allowedMethods());
+
+    app.addEventListener("listen", ({ secure, hostname, port }) => {
+      const protocol = secure ? "https://" : "http://";
+      const url = `${protocol}${hostname ?? "localhost"}:${port}`;
+      console.log(
+        `${yellow("Listening on:")} ${green(url)}`,
+      );
+    });
+
+    await app.listen({ port: PORT });
+  }
+}

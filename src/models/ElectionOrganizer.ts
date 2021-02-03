@@ -34,6 +34,6 @@ export class ElectionOrganizer {
   @UpdateDateColumn()
   updatedAt!: Date;
 
-  @OneToMany(() => Election, (election) => election.electionOrganizer)
+  @OneToMany(() => Election, (election: Election) => election.electionOrganizer)
   elections!: Election[];
 }

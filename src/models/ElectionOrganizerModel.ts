@@ -13,5 +13,5 @@ const ElectionOrganizerSchema = Schema({
   password: string.min(6),
 });
 
-export type ElectionOrganizer = Type<typeof ElectionOrganizerSchema>;
+export type ElectionOrganizerModel = Type<typeof ElectionOrganizerSchema>;
 export const electionOrganizerValidator = ElectionOrganizerSchema.destruct();

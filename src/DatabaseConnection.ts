@@ -2,7 +2,7 @@ import { ConnectionOptions, createConnection } from "./deps.ts";
 import { config } from "./deps.ts";
 
 export class DatabaseConnection {
-  dbConfig: ConnectionOptions = {
+  private dbConfig: ConnectionOptions = {
     type: "postgres",
     host: config.get("DB_HOST"),
     port: Number.parseInt(config.get("DB_PORT")!),
@@ -15,14 +15,18 @@ export class DatabaseConnection {
     synchronize: true,
   };
 
+  databaseConnection = createConnection(this.dbConfig);
+
   constructor() {
   }
 
-  async startDatabaseConnection() {
+  async getDatabaseManager() {
     try {
-      const connection = await createConnection(this.dbConfig);
-
-      console.log("Check your database: ", connection.isConnected);
+      console.log(
+        "Check your database: ",
+        (await this.databaseConnection).isConnected,
+      );
+      return (await this.databaseConnection).manager;
     } catch (e) {
       console.log(e);
     }

@@ -1,19 +1,23 @@
 import { bcrypt } from "../deps.ts";
 import { DatabaseConnection } from "../DatabaseConnection.ts";
 import {
-  ElectionOrganizer,
+  ElectionOrganizerModel,
   electionOrganizerValidator,
-} from "../models/ElectionOrganizer.ts";
+} from "../models/ElectionOrganizerModel.ts";
+import { ElectionOrganizer } from "../entity/ElectionOrganizer.ts";
 
 export default {
   createElectionOrganizer: createElectionOrganizer,
   getElectionOrganizerById: () => {},
 };
 
+const dbConnection = new DatabaseConnection();
+const dbManager = await dbConnection.getDatabaseManager();
+
 async function createElectionOrganizer(
   { request, response }: { request: any; response: any },
 ) {
-  const electionOrganizer: ElectionOrganizer = await request.body().value;
+  const electionOrganizer: ElectionOrganizerModel = await request.body().value;
 
   if (!request.hasBody) {
     response.status = 400;
@@ -28,6 +32,21 @@ async function createElectionOrganizer(
       msg: "Election organizer registrations contains non-valid values",
     };
   } else {
+    electionOrganizer.password =
+      (await hashPassword(electionOrganizer.password)).toString();
+
+    try {
+      const eOrgEntity = new ElectionOrganizer();
+      eOrgEntity.firstName = electionOrganizer.firstName;
+      eOrgEntity.lastName = electionOrganizer.lastName;
+      eOrgEntity.email = electionOrganizer.email;
+      eOrgEntity.password = electionOrganizer.password;
+
+      //await dbManager?.save(eOrgEntity);
+    } catch (e) {
+      console.log(e);
+    }
+
     response.status = 201;
     response.body = {
       success: true,
@@ -49,7 +68,7 @@ async function compareHashWithPassword(
 }
 
 function validateElectionOrganizerRegistration(
-  electionOrganizer: ElectionOrganizer,
+  electionOrganizer: ElectionOrganizerModel,
 ): boolean {
   const [err] = electionOrganizerValidator({
     firstName: electionOrganizer.firstName,

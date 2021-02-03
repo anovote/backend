@@ -12,7 +12,7 @@ export class DatabaseConnection {
     password: config.get("POSTGRES_PASSWORD"),
     database: config.get("POSTGRES_DB"),
     entities: [
-      Deno.cwd() + "/src/entity/**/*.ts",
+      Deno.cwd() + "/src/models/**/*.ts",
     ],
     synchronize: true,
   };

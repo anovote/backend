@@ -1,3 +1,4 @@
+// import { IsNotEmpty } from "https://github.com/Tnifey/class-validator/raw/master/mod.ts";
 import {
   Column,
   CreateDateColumn,
@@ -41,6 +42,7 @@ export class Election {
   electionOrganizer!: ElectionOrganizer;
 
   @Column({ type: String })
+  // @IsNotEmpty()
   title!: string;
 
   @Column({ type: "text" })

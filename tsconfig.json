@@ -3,7 +3,7 @@
       "strict": true,
       "experimentalDecorators": true,
       "emitDecoratorMetadata": true,
-   }
+   },
     "include": ["src/**/*", "tests/**/*"],
     "exclude": ["**/*.spec.ts"]
 }

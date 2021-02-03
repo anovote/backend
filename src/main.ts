@@ -1,9 +1,50 @@
 /**
- * Just some example code to se if the docker application is running
+ * Just some example code to se if the orm database application is running
  */
-import { serve } from "https://deno.land/std@0.84.0/http/server.ts";
-const s = serve({ port: 8000 });
-console.log("http://fiwersdoighsdoigesk:w/");
-for await (const req of s) {
-  req.respond({ body: "Hello World\n" });
+import { ConnectionOptions, createConnection } from "./deps.ts";
+import { Election } from "./entity/Election.ts";
+import { ElectionOrganizer } from "./entity/ElectionOrganizer.ts";
+import { EligibleVoter } from "./entity/EligibleVoter.ts";
+import { config } from "./deps.ts";
+
+const dbConfig: ConnectionOptions = {
+  type: "postgres",
+  host: config.get("DB_HOST"),
+  port: Number.parseInt(config.get("DB_PORT")!),
+  username: config.get("POSTGRES_USER"),
+  password: config.get("POSTGRES_PASSWORD"),
+  database: config.get("POSTGRES_DB"),
+  entities: [
+    Deno.cwd() + "/src/entity/**/*.ts",
+  ],
+  synchronize: true,
+};
+
+try {
+  const connection = await createConnection(dbConfig);
+
+  /** ADD SOME TEST DATA */
+  const eOrg = new ElectionOrganizer();
+  eOrg.firstName = "Hjalmar";
+  eOrg.lastName = "Andersen";
+  eOrg.email = "hjallis@gmail.com";
+  eOrg.password = "test123";
+
+  const election = new Election();
+  election.title = "My first election";
+  election.description = "THIS IS MY FIRST ELECTION";
+  election.status = 0;
+  election.electionOrganizer = eOrg;
+
+  const voter = new EligibleVoter();
+  voter.identification = "test@gmail.com";
+  election.eligibleVoters = [voter];
+
+  await connection.manager.save(voter);
+  await connection.manager.save(election);
+  await connection.manager.save(eOrg);
+
+  console.log("Check your database: ", connection.isConnected);
+} catch (e) {
+  console.log(e);
 }

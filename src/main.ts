@@ -2,9 +2,9 @@
  * Just some example code to se if the orm database application is running
  */
 import { ConnectionOptions, createConnection } from "./deps.ts";
-import { Election } from "./entity/Election.ts";
-import { ElectionOrganizer } from "./entity/ElectionOrganizer.ts";
-import { EligibleVoter } from "./entity/EligibleVoter.ts";
+import { Election } from "./models/Election.ts";
+import { ElectionOrganizer } from "./models/ElectionOrganizer.ts";
+import { EligibleVoter } from "./models/EligibleVoter.ts";
 import { config } from "./deps.ts";
 import { logger } from "./logger.ts";
 
@@ -16,7 +16,7 @@ const dbConfig: ConnectionOptions = {
   password: config.get("POSTGRES_PASSWORD"),
   database: config.get("POSTGRES_DB"),
   entities: [
-    Deno.cwd() + "/src/entity/**/*.ts",
+    Deno.cwd() + "/src/models/**/*.ts",
   ],
   synchronize: true,
 };

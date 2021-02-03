@@ -1,6 +1,8 @@
 import { bcrypt } from "../deps.ts";
-import { ElectionOrganizer } from "../entity/ElectionOrganizer.ts";
+import { ElectionOrganizer } from "../models/ElectionOrganizer.ts";
 import { DatabaseConnection } from "../DatabaseConnection.ts";
+import { Request } from "https://deno.land/x/oak@v6.5.0/request.ts";
+import { Response } from "https://deno.land/x/oak@v6.5.0/response.ts";
 
 export default {
   createElectionOrganizer: createElectionOrganizer,
@@ -8,7 +10,7 @@ export default {
 };
 
 async function createElectionOrganizer(
-  { request, response }: { request: any; response: any },
+  { request, response }: { request: Request; response: Response },
 ) {
   if (request.hasBody) {
     const electionOrganizer: ElectionOrganizer = await request.body().value;

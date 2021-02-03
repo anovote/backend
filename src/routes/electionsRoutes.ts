@@ -1,10 +1,11 @@
 import { Router } from "../deps.ts";
 
-import electionController from "../controllers/electionController.ts";
+import ElectionController from "../controllers/electionController.ts";
 
 /* Sets up the CRUD routes for elections */
 
 const router = new Router();
+const electionController = new ElectionController();
 
 const ELECTIONS_STRING = "/elections";
 const ELECTIONS_ID_STRING = `"${ELECTIONS_STRING}/:id"`;

@@ -20,10 +20,10 @@ export class HTTPServer {
     HTTP_ROUTER
       .get("/", (context) => {
         context.response.body = "Hello world!";
-      })
-      .post("/register", async (context) => {
-        context.response.body = "You were registered";
       });
+    // .post("/register", async (context) => {
+    //   context.response.body = "You were registered";
+    // });
 
     const app = new Application();
     app.use(HTTP_ROUTER.routes());

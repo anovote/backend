@@ -42,3 +42,4 @@ dist
 .DS_Store
 
 data/logs
+src/data/logs/**/*

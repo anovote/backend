@@ -1,4 +1,8 @@
 import { Application, Router } from "https://deno.land/x/oak/mod.ts";
+import { green, yellow } from "https://deno.land/std@0.85.0/fmt/colors.ts";
+import electionRouter from "./routes/elections.ts";
+
+const PORT = 8000;
 
 const router = new Router();
 
@@ -21,5 +25,15 @@ router
 const app = new Application();
 app.use(router.routes());
 app.use(router.allowedMethods());
+app.use(electionRouter.routes());
+app.use(electionRouter.allowedMethods());
 
-await app.listen({ port: 8000 });
+app.addEventListener("listen", ({ secure, hostname, port }) => {
+  const protocol = secure ? "https://" : "http://";
+  const url = `${protocol}${hostname ?? "localhost"}:${port}`;
+  console.log(
+    `${yellow("Listening on:")} ${green(url)}`,
+  );
+});
+
+await app.listen({ port: PORT });

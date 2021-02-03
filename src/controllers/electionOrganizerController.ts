@@ -15,28 +15,24 @@ async function createElectionOrganizer(
 ) {
   const electionOrganizer: ElectionOrganizer = await request.body().value;
 
-  const [err, organizer] = electionOrganizerValidator({
-    firstName: electionOrganizer.firstName,
-    lastName: electionOrganizer.firstName,
-    email: electionOrganizer.email,
-    password: electionOrganizer.password,
-  });
-
-  if (err) {
-    response.body = "Error in validatoisdonåigji";
-  } else if (request.hasBody) {
-    response.status = 201;
-    response.body = {
-      success: true,
-      msg: "Election organizer created!",
-    };
-  } else if (!request.hasBody) {
+  if (!request.hasBody) {
     response.status = 400;
     response.body = {
       success: false,
       msg: "No data",
     };
-    return;
+  } else if (!validateElectionOrganizerRegistration(electionOrganizer)) {
+    response.status = 400;
+    response.body = {
+      success: false,
+      msg: "Election organizer registrations contains non-valid values",
+    };
+  } else {
+    response.status = 201;
+    response.body = {
+      success: true,
+      msg: "Election organizer created!",
+    };
   }
 }
 
@@ -50,4 +46,21 @@ async function compareHashWithPassword(
 ): Promise<boolean> {
   const stringHash = (await hash).toString();
   return await bcrypt.compare(password, stringHash);
+}
+
+function validateElectionOrganizerRegistration(
+  electionOrganizer: ElectionOrganizer,
+): boolean {
+  const [err] = electionOrganizerValidator({
+    firstName: electionOrganizer.firstName,
+    lastName: electionOrganizer.firstName,
+    email: electionOrganizer.email,
+    password: electionOrganizer.password,
+  });
+
+  if (err) {
+    return false;
+  } else {
+    return true;
+  }
 }

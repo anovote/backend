@@ -12,7 +12,13 @@ async function createElectionOrganizer(
   if (request.hasBody) {
     const registerElectionOrganizer: ElectionOrganizer = await request.body()
       .value;
-    hashPassword(registerElectionOrganizer.password);
+    const hashedPassword = hashPassword(registerElectionOrganizer.password);
+    console.log(
+      compareHashWithPassword(
+        registerElectionOrganizer.password,
+        hashedPassword,
+      ),
+    );
     response.status = 201;
     response.body = {
       success: true,
@@ -28,7 +34,14 @@ async function createElectionOrganizer(
   }
 }
 
-async function hashPassword(passwordToHash: string) {
-  const hashedPassword = await bcrypt.hash(passwordToHash);
-  console.log(hashedPassword);
+async function hashPassword(passwordToHash: string): Promise<string> {
+  return await bcrypt.hash(passwordToHash);
+}
+
+async function compareHashWithPassword(
+  password: string,
+  hash: Promise<string>,
+): Promise<boolean> {
+  const stringHash = (await hash).toString();
+  return await bcrypt.compare(password, stringHash);
 }

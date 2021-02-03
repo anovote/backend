@@ -2,6 +2,7 @@
   //EDITOR
   "editor.formatOnSave": true,
   "editor.autoIndent": "full",
+  "files.defaultLanguage": "typescript",
   "files.eol": "\n",
   "[typescript]": {
     "editor.defaultFormatter": "denoland.vscode-deno"
@@ -10,8 +11,8 @@
     "editor.defaultFormatter": "denoland.vscode-deno"
   },
   //DENO
-"deno.enable": true,
-"deno.import_intellisense_origins": {
+  "deno.enable": true,
+  "deno.import_intellisense_origins": {
     "https://deno.land": true
   },
   "debug.javascript.unmapMissingSources": true

@@ -5,11 +5,11 @@ import electionRouter from "./routes/elections.ts";
 import electionOrganizerRouter from "./routes/electionOrganizerRoutes.ts";
 
 export class HTTPServer {
+  readonly PORT: number = 8000;
+
   constructor() {}
 
   async runHTTPServer() {
-    const PORT: number = 8000;
-
     const HTTP_ROUTER: Router = new Router();
 
     /**
@@ -41,6 +41,6 @@ export class HTTPServer {
       );
     });
 
-    await app.listen({ port: PORT });
+    await app.listen({ port: this.PORT });
   }
 }

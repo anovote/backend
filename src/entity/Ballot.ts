@@ -10,20 +10,20 @@ import {
 import { Election } from "./Election.ts";
 import { Candidate } from "./Candidate.ts";
 
-enum BallotType {
+export enum BallotType {
   SINGLE,
   MULTIPLE,
   RANKED,
 }
 
-enum BallotResultDisplay {
+export enum BallotResultDisplay {
   NONE,
   SINGLE,
   RUNNER_UP,
   ALL,
 }
 
-enum BallotStatus {
+export enum BallotStatus {
   IN_QUEUE,
   IN_PROGRESS,
   IN_RESULT,

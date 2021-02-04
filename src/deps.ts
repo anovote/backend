@@ -45,3 +45,4 @@ export { Schema };
 export { Router } from "https://deno.land/x/oak@v6.5.0/mod.ts";
 
 export * as bcrypt from "https://deno.land/x/bcrypt@v0.2.4/mod.ts";
+export { assertEquals } from "https://deno.land/std@0.84.0/testing/asserts.ts";

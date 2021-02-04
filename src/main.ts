@@ -4,7 +4,6 @@
 import { ConnectionOptions, createConnection } from "./deps.ts";
 import { Election } from "./entity/Election.ts";
 import { ElectionOrganizer } from "./entity/ElectionOrganizer.ts";
-import { EligibleVoter } from "./entity/EligibleVoter.ts";
 import { config } from "./deps.ts";
 import { HTTPServer } from "./httpServer.ts";
 

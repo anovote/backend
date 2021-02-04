@@ -1,9 +1,4 @@
-import {
-  bcrypt,
-  config,
-  ConnectionOptions,
-  createConnection,
-} from "../deps.ts";
+import { bcrypt } from "../deps.ts";
 import {
   ElectionOrganizerModel,
   electionOrganizerValidator,

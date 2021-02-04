@@ -13,11 +13,6 @@ import { optional } from "https://denoporter.sirjosh.workers.dev/v1/deno.land/x/
 import { RouteParams } from "https://deno.land/x/oak@v6.5.0/router.ts";
 
 export default class ElectionController {
-  // entityManager: EntityManager;
-
-  constructor() {
-  }
-
   async getAllElections({ response }: { response: Response }) {
     try {
       const elections: Election[] | undefined = await getRepository(Election)

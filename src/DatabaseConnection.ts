@@ -21,6 +21,8 @@ export class DatabaseConnection {
   }
 
   async startDatabaseConnection() {
+    console.log(this.dbConfig);
+
     try {
       const connection = await createConnection(this.dbConfig);
 

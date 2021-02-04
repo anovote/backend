@@ -17,5 +17,10 @@
   "deno.import_intellisense_origins": {
     "https://deno.land": true
   },
-  "debug.javascript.unmapMissingSources": true
+  "debug.javascript.unmapMissingSources": true,
+  "cSpell.words": [
+    "anovote",
+    "mysqld",
+    "postgresql"
+  ]
 }

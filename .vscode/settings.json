@@ -15,7 +15,7 @@
     //     "https://deno.land": true,
     // },
     "[typescript]": {
-        "editor.defaultFormatter": "dbaeumer.vscode-eslint",
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
     },
     //DENO
     // "deno.enable": true,

@@ -47,7 +47,7 @@ export default class ElectionController {
 
       response.status = 201;
       response.body = {
-        succsess: true,
+        success: true,
         data: election,
       };
     } catch (error) {

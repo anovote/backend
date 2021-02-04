@@ -1,5 +1,3 @@
-import elections from "../studs/elections.ts";
-
 export default {
   /**
    * TODO: add comment
@@ -17,9 +15,11 @@ function getAllElections(
   response.status = 200;
   response.body = {
     success: true,
-    data: elections,
+    data: {},
   };
 }
+
+
 
 function createElection(
   { request, response }: { request: any; response: any },
@@ -32,6 +32,7 @@ function createElection(
     };
     return;
   }
+}
 
 function validatePassword(password: string): boolean {
   if (password.length < 6) {

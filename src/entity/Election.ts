@@ -8,9 +8,9 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from "../deps.ts";
-import { ElectionOrganizer } from "./ElectionOrganizer.ts";
+import { ElectionOrganizer } from "./barrel.ts";
 
-import { EligibleVoter } from "./EligibleVoter.ts";
+import { EligibleVoter } from "./barrel.ts";
 
 /**
  * Election status represent the state of the election

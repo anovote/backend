@@ -7,8 +7,8 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from "../deps.ts";
-import { Election } from "./Election.ts";
-import { Candidate } from "./Candidate.ts";
+import { Election } from "./barrel.ts";
+import { Candidate } from "./barrel.ts";
 
 export enum BallotType {
   SINGLE,

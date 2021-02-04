@@ -6,7 +6,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from "../deps.ts";
-import { Election } from "./Election.ts";
+import { Election } from "./barrel.ts";
 
 /**
  * A model which represents the organizer of an election. An election organizer can organize many elections. 

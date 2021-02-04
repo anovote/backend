@@ -1,5 +1,5 @@
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "../deps.ts";
-import { Ballot } from "./Ballot.ts";
+import { Ballot } from "./barrel.ts";
 
 /**
  * Represents a candidate for a ballot.

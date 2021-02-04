@@ -5,7 +5,7 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn,
 } from "../deps.ts";
-import { Candidate } from "./Candidate.ts";
+import { Candidate } from "./barrel.ts";
 
 /**
  * Represents the vote on a candidate for a given ballot. 

@@ -31,7 +31,23 @@ services:
       - anovote_backend
     env_file:
       - ./.env.docker
+
+  db_mysql:
+    container_name: "mysql"
+    command: mysqld --default-authentication-plugin=mysql_native_password --max-allowed-packet=67108864
+    image: mysql
+    restart: always
+    ports:
+      - "3306:3306"
+    env_file:
+      - ./.env.mysql
+    volumes:
+      - data-mysql:/var/lib/mysql
+    networks:
+      - anovote_backend
+
 volumes:
+  data-mysql:
   anovote-data:
 networks:
   anovote_backend:

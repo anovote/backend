@@ -29,7 +29,5 @@ export default async () => {
   }
 
   const connection = await createConnection(typeormConfig)
-  throw new Error('DAAAARN')
-
   return connection
 }

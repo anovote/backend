@@ -8,7 +8,7 @@ import {
  * Schema for an election organizer, here will all of our
  * constraints for a election organizer be set.
  */
-const ElectionOrganizerSchema = Schema({
+export const ElectionOrganizerSchema = Schema({
   firstName: string.between(3, 60),
   lastName: string,
   email: string,

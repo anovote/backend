@@ -10,6 +10,7 @@
   "scripts": {
     "dev": "ts-node-dev -r tsconfig-paths/register --respawn ./src/index.ts",
     "build": "tsc --project ./tsconfig.prod.json && tsc-alias",
+    "test": "jest",
     "check-types": "tsc"
   },
   "devDependencies": {

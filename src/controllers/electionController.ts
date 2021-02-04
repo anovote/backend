@@ -1,15 +1,10 @@
-import { EntityManager } from "https://denolib.com/denolib/typeorm@v0.2.23-rc10/src/entity-manager/EntityManager.ts";
 import {
-  getManager,
   getRepository,
 } from "https://denolib.com/denolib/typeorm@v0.2.23-rc10/src/index.ts";
 import { Response } from "https://deno.land/x/oak@v6.5.0/response.ts";
 import { Request } from "https://deno.land/x/oak@v6.5.0/request.ts";
-// import { getRepository } from "https://denolib.com/denolib/typeorm@v0.2.23-rc10/src/index.ts";
 
 import { Election } from "../models/Election.ts";
-import { titleCase } from "https://denolib.com/denolib/typeorm@v0.2.23-rc10/src/util/StringUtils.ts";
-import { optional } from "https://denoporter.sirjosh.workers.dev/v1/deno.land/x/computed_types/src/schema/logic.ts";
 import { RouteParams } from "https://deno.land/x/oak@v6.5.0/router.ts";
 
 export default class ElectionController {

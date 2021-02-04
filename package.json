@@ -26,5 +26,5 @@
     "tscpaths": "^0.0.9",
     "typescript": "^4.1.3"
   },
-  "dependencies": {}
+    "dotenv": "^8.2.0",
 }

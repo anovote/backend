@@ -57,13 +57,13 @@ export class Election {
   // @Column({ type: Date, nullable: true })
   // closeDate!: Date;
 
-  // @Column({ type: String, nullable: true })
-  // password!: string;
+  @Column({ type: String, nullable: true })
+  password!: string;
 
-  // @Column(
-  //   { type: "enum", enum: ElectionStatus },
-  // )
-  // status!: ElectionStatus;
+  @Column(
+    { type: "enum", enum: ElectionStatus },
+  )
+  status!: ElectionStatus;
 
   // @Column({ type: "boolean", default: true })
   // isLocked!: boolean;

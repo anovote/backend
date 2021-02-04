@@ -1,6 +1,6 @@
 import { getRepository, Request, Response, RouteParams } from "../deps.ts";
 
-import { Election } from "../models/Election.ts";
+import { Election, ElectionStatus } from "../models/Election.ts";
 
 export default class ElectionController {
   async getAllElections({ response }: { response: Response }) {
@@ -32,7 +32,6 @@ export default class ElectionController {
 
     try {
       const election = await this.getElectionFromRequest(request);
-
       await getRepository(Election).save(election);
 
       response.status = 201;
@@ -109,7 +108,7 @@ export default class ElectionController {
     const requestBody = request.body({ type: "json" });
 
     const values = await requestBody.value;
-    const { id, title, description } = values;
+    let { id, title, description, password, status } = values;
 
     const election: Election = new Election();
     if (id) {
@@ -117,6 +116,13 @@ export default class ElectionController {
     }
     election.title = title;
     election.description = description;
+    if (!password) {
+      password = null;
+    }
+    election.password = password;
+    election.status = status;
+
+    console.log(election);
     return election;
   }
 }

@@ -1,0 +1,29 @@
+{
+  "name": "backend",
+  "version": "0.0.1",
+  "description": "Anovote backend",
+  "main": "index.js",
+  "repository": "https://github.com/anovote/backend",
+  "author": "Anovote",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "dev": "ts-node-dev -r tsconfig-paths/register --respawn ./src/index.ts",
+    "build": "tsc --project ./tsconfig.prod.json && tsc-alias",
+    "check-types": "tsc"
+  },
+  "devDependencies": {
+    "@types/jest": "^26.0.20",
+    "@types/node": "^14.14.25",
+    "jest": "^26.6.3",
+    "module-alias": "^2.2.2",
+    "ts-jest": "^26.5.0",
+    "ts-node": "^9.1.1",
+    "ts-node-dev": "^1.1.1",
+    "tsc-alias": "^1.2.6",
+    "tsconfig-paths": "^3.9.0",
+    "tscpaths": "^0.0.9",
+    "typescript": "^4.1.3"
+  },
+  "dependencies": {}
+}

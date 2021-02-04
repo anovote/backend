@@ -1,11 +1,6 @@
-import {
-  getRepository,
-} from "https://denolib.com/denolib/typeorm@v0.2.23-rc10/src/index.ts";
-import { Response } from "https://deno.land/x/oak@v6.5.0/response.ts";
-import { Request } from "https://deno.land/x/oak@v6.5.0/request.ts";
+import { getRepository, Request, Response, RouteParams } from "../deps.ts";
 
 import { Election } from "../models/Election.ts";
-import { RouteParams } from "https://deno.land/x/oak@v6.5.0/router.ts";
 
 export default class ElectionController {
   async getAllElections({ response }: { response: Response }) {

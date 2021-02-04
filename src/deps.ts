@@ -46,3 +46,11 @@ export { Schema };
 export { Router } from "https://deno.land/x/oak@v6.5.0/mod.ts";
 
 export * as bcrypt from "https://deno.land/x/bcrypt@v0.2.4/mod.ts";
+
+export {
+  getRepository,
+} from "https://denolib.com/denolib/typeorm@v0.2.23-rc10/src/index.ts";
+export { Response } from "https://deno.land/x/oak@v6.5.0/response.ts";
+export { Request } from "https://deno.land/x/oak@v6.5.0/request.ts";
+
+export type { RouteParams } from "https://deno.land/x/oak@v6.5.0/router.ts";

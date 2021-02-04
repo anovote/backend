@@ -5,7 +5,7 @@ import { config } from "./deps.ts";
  */
 export class DatabaseConnection {
   dbConfig: ConnectionOptions = {
-    type: "postgres",
+    type: "mysql",
     host: config.get("DB_HOST"),
     port: Number.parseInt(config.get("DB_PORT")!),
     username: config.get("POSTGRES_USER"),
@@ -14,6 +14,7 @@ export class DatabaseConnection {
     entities: [
       Deno.cwd() + "/src/models/**/*.ts",
     ],
+    logging: true,
     synchronize: true,
   };
 

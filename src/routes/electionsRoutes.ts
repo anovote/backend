@@ -9,6 +9,7 @@ const electionController = new ElectionController();
 
 const ELECTIONS_STRING = "/elections";
 const ELECTIONS_ID_STRING = `${ELECTIONS_STRING}/:id`;
+
 router
   .get(ELECTIONS_STRING, electionController.getAllElections)
   .post(ELECTIONS_STRING, (ctx) => electionController.createElection(ctx))

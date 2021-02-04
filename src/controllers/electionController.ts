@@ -10,26 +10,20 @@ import { Request } from "https://deno.land/x/oak@v6.5.0/request.ts";
 import { Election } from "../models/Election.ts";
 import { titleCase } from "https://denolib.com/denolib/typeorm@v0.2.23-rc10/src/util/StringUtils.ts";
 import { optional } from "https://denoporter.sirjosh.workers.dev/v1/deno.land/x/computed_types/src/schema/logic.ts";
+import { RouteParams } from "https://deno.land/x/oak@v6.5.0/router.ts";
 
 export default class ElectionController {
   // entityManager: EntityManager;
 
-  // constructor() {
-  //   this.entityManager = ;
-  // }
+  constructor() {
+  }
 
   async getAllElections({ response }: { response: Response }) {
-    console.log("get to function");
-    // this.entityManager = getManager();
     try {
-      const elections: Election[] | undefined =
-        // await undefined;
-        await getRepository(Election)
-          .find();
-      // await getRepository(
-      //   Election,
-      // )
-      //   .findOne(1);
+      const elections: Election[] | undefined = await getRepository(Election)
+        .find();
+
+      response.status = 200;
       response.body = {
         success: true,
         data: elections,
@@ -42,7 +36,34 @@ export default class ElectionController {
   async createElection(
     { request, response }: { request: Request; response: Response },
   ) {
-    // this.entityManager = getManager();
+    if (!request.hasBody) {
+      response.status = 400;
+      response.body = {
+        success: false,
+        errorMessage: "No data",
+      };
+      return;
+    }
+
+    try {
+      const election = await this.getElectionFromRequest(request);
+
+      await getRepository(Election).save(election);
+
+      response.status = 201;
+      response.body = {
+        succsess: true,
+        data: election,
+      };
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  async updateElectionById(
+    { request, response }: { request: Request; response: Response },
+  ) {
+    console.log("here");
 
     if (!request.hasBody) {
       response.status = 400;
@@ -53,22 +74,70 @@ export default class ElectionController {
       return;
     }
 
+    const election = await this.getElectionFromRequest(request);
+
+    await getRepository(Election).update(election.id, election);
+
+    response.status = 201;
+    response.body = {
+      success: true,
+      data: election,
+    };
+  }
+
+  async deleteElectionById(
+    { request, response, params }: {
+      request: Request;
+      response: Response;
+      params: RouteParams;
+    },
+  ) {
+    const id = params.id;
+
+    if (!id) {
+      response.status = 400;
+      response.body = {
+        success: false,
+        errorMessage: `ID not found`,
+      };
+      return;
+    }
+
+    const election = await getRepository(Election).findOneOrFail(id);
+    if (!election) {
+      response.status = 400;
+      response.body = {
+        success: false,
+        errorMessage: `Election with id:${id} not found`,
+      };
+      return;
+    }
+
+    await getRepository(Election).remove(election);
+
+    response.status = 200;
+    response.body = {
+      success: true,
+      message: `Election with id:"${id}" was removed`,
+    };
+  }
+
+  async getElectionFromRequest(request: Request): Promise<Election> {
+    console.log("inside request");
+
     const requestBody = request.body({ type: "json" });
 
     const values = await requestBody.value;
-    const { title, description } = values;
+    const { id, title, description } = values;
 
     const election: Election = new Election();
+    if (id) {
+      election.id = id;
+    }
     election.title = title;
     election.description = description;
     console.log(election);
-
-    await getRepository(Election).save(election);
-    response.status = 200;
-    response.body = {
-      succsess: true,
-      data: election,
-    };
+    return election;
   }
 }
 

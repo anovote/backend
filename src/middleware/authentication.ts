@@ -1,4 +1,4 @@
-import { AuthenticationService } from "../classes/AuthenticationService.ts";
+import { AuthenticationService } from "../services/AuthenticationService.ts";
 import { Context } from "../deps.ts";
 
 /**

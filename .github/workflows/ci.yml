@@ -21,4 +21,4 @@ jobs:
       - name: Run format checker
         run: deno fmt --check ./src ./tests
       - name: Run tests
-        run: deno test --allow-none 
+        run: deno test tests/* --allow-none --allow-read --allow-env --allow-write --allow-net 

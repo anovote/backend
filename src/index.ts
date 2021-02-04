@@ -15,24 +15,29 @@ import express from 'express'
 import config from '@/config'
 import { load } from '@/loaders'
 
-console.log('\n==========  BOOTING UP  =========== \n')
+console.log('\n========== ⚡ BOOTING UP ⚡ =========== \n')
 
 /**
  * Initial boot function... this is where magic starts
  */
 async function boot() {
-  const server = express()
+  try {
+    const server = express()
 
-  const app = await load({ server })
+    const app = await load({ server })
 
-  server.listen(config.http.port, () => {
-    console.log(`
+    server.listen(config.http.port, () => {
+      console.log(`
             LISTNING ON 
                ${config.http.port}
               
 =========  SERVER STARTED  =========
 \n\n`)
-  })
+    })
+  } catch (error) {
+    console.log('\n\n=========== 💥  TERROR 💥  ============\n\n')
+    console.log(error)
+  }
 }
 
-boot()
+boot() // Anovote is starting here

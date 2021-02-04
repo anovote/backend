@@ -5,33 +5,33 @@ import {
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
-  UpdateDateColumn,
-} from "../deps.ts";
-import { Election } from "./Election.ts";
-import { Candidate } from "./Candidate.ts";
+  UpdateDateColumn
+} from 'typeorm'
+import { Election } from '@/models/entity/Election'
+import { Candidate } from '@/models/entity/Candidate'
 
 export enum BallotType {
   SINGLE,
   MULTIPLE,
-  RANKED,
+  RANKED
 }
 
 export enum BallotResultDisplay {
   NONE,
   SINGLE,
   RUNNER_UP,
-  ALL,
+  ALL
 }
 
 export enum BallotStatus {
   IN_QUEUE,
   IN_PROGRESS,
   IN_RESULT,
-  IN_ARCHIVE,
+  IN_ARCHIVE
 }
 
 /**
- * A ballot a voter can vote on. 
+ * A ballot a voter can vote on.
  * The ballot can have many candidates which a eligible voter can submit a vote for.
  * The entity stores information about the ballot that is being held. As well as
  * special status and states.
@@ -40,51 +40,49 @@ export enum BallotStatus {
 @Entity()
 export class Ballot {
   @PrimaryGeneratedColumn()
-  id!: number;
+  id!: number
 
   @ManyToOne(() => Election, (election) => election.id)
-  election!: Election;
+  election!: Election
 
   @Column({ type: String })
-  title!: string;
+  title!: string
 
-  @Column({ type: "text", nullable: true })
-  description!: string;
+  @Column({ type: 'text', nullable: true })
+  description!: string
 
   @Column({ type: String, nullable: true })
-  image!: string;
+  image!: string
 
-  @Column({ type: "enum", enum: BallotType })
-  type!: BallotType;
+  @Column({ type: 'enum', enum: BallotType })
+  type!: BallotType
 
-  @Column(
-    {
-      type: "enum",
-      enum: BallotResultDisplay,
-    },
-  )
-  resultDisplayType!: BallotResultDisplay;
+  @Column({
+    type: 'enum',
+    enum: BallotResultDisplay
+  })
+  resultDisplayType!: BallotResultDisplay
 
   // append an integer to result display count if display type is runner up for instance
-  @Column({ type: "int4", nullable: true })
-  resultDisplayTypeCount!: number;
+  @Column({ type: 'int4', nullable: true })
+  resultDisplayTypeCount!: number
 
   // Boolean for display count for ballot result
-  @Column({ type: "boolean", default: false })
-  displayResultCount!: boolean;
+  @Column({ type: 'boolean', default: false })
+  displayResultCount!: boolean
 
-  @Column({ type: "int" })
-  order!: boolean;
+  @Column({ type: 'int' })
+  order!: boolean
 
-  @Column({ type: "enum", enum: BallotStatus })
-  status!: BallotStatus;
+  @Column({ type: 'enum', enum: BallotStatus })
+  status!: BallotStatus
 
   @CreateDateColumn()
-  createdAt!: Date;
+  createdAt!: Date
 
   @UpdateDateColumn()
-  updatedAt!: Date;
+  updatedAt!: Date
 
   @OneToMany(() => Candidate, (candidate) => candidate.ballot)
-  candidates!: Candidate[];
+  candidates!: Candidate[]
 }

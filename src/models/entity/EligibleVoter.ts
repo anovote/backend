@@ -1,4 +1,4 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "../deps.ts";
+import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm'
 
 /**
  * An entity for representing eligible voters for an election. Voters should only have an identification.
@@ -9,8 +9,8 @@ import { Column, Entity, PrimaryGeneratedColumn } from "../deps.ts";
 @Entity()
 export class EligibleVoter {
   @PrimaryGeneratedColumn()
-  id!: number;
+  id!: number
 
-  @Column({ type: "varchar", length: 255 })
-  identification!: string;
+  @Column({ type: 'varchar', length: 255 })
+  identification!: string
 }

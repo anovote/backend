@@ -35,11 +35,11 @@ export class Election {
   @PrimaryGeneratedColumn()
   id!: number;
 
-  @ManyToOne(
-    () => ElectionOrganizer,
-    (electionOrganizer) => electionOrganizer.elections,
-  )
-  electionOrganizer!: ElectionOrganizer;
+  // @ManyToOne(
+  //   () => ElectionOrganizer,
+  //   (electionOrganizer) => electionOrganizer.elections,
+  // )
+  // electionOrganizer!: ElectionOrganizer;
 
   @Column({ type: String })
   // @IsNotEmpty()
@@ -48,28 +48,28 @@ export class Election {
   @Column({ type: "text" })
   description!: string;
 
-  @Column({ type: String, nullable: true })
-  image!: string;
+  // @Column({ type: String, nullable: true })
+  // image!: string;
 
-  @Column({ type: Date, nullable: true })
-  openDate!: Date;
+  // @Column({ type: Date, nullable: true })
+  // openDate!: Date;
 
-  @Column({ type: Date, nullable: true })
-  closeDate!: Date;
+  // @Column({ type: Date, nullable: true })
+  // closeDate!: Date;
 
-  @Column({ type: String, nullable: true })
-  password!: string;
+  // @Column({ type: String, nullable: true })
+  // password!: string;
 
-  @Column(
-    { type: "enum", enum: ElectionStatus },
-  )
-  status!: ElectionStatus;
+  // @Column(
+  //   { type: "enum", enum: ElectionStatus },
+  // )
+  // status!: ElectionStatus;
 
-  @Column({ type: "boolean", default: true })
-  isLocked!: boolean;
+  // @Column({ type: "boolean", default: true })
+  // isLocked!: boolean;
 
-  @Column({ type: "boolean", default: false })
-  isAutomatic!: boolean;
+  // @Column({ type: "boolean", default: false })
+  // isAutomatic!: boolean;
 
   @CreateDateColumn()
   createdAt!: Date;
@@ -77,7 +77,7 @@ export class Election {
   @UpdateDateColumn()
   updatedAt!: Date;
 
-  @ManyToMany(() => EligibleVoter)
-  @JoinTable()
-  eligibleVoters!: EligibleVoter[];
+  // @ManyToMany(() => EligibleVoter)
+  // @JoinTable()
+  // eligibleVoters!: EligibleVoter[];
 }

@@ -21,7 +21,7 @@ const dbConfig: ConnectionOptions = {
   synchronize: true,
 };
 
-export const connection = await createConnection(dbConfig);
+export const dbConnection = await createConnection(dbConfig);
 
 try {
   /** ADD SOME TEST DATA */
@@ -30,22 +30,14 @@ try {
   eOrg.lastName = "Andersen";
   eOrg.email = "hjallis@gmail.com";
   eOrg.password = "test123";
+  eOrg.elections = [];
 
   const election = new Election();
-  election.title = "My first election";
-  election.description = "THIS IS MY FIRST ELECTION";
-  election.status = 0;
   election.electionOrganizer = eOrg;
 
-  const voter = new EligibleVoter();
-  voter.identification = "test@gmail.com";
-  election.eligibleVoters = [voter];
+  await dbConnection.manager.save(eOrg);
 
-  await connection.manager.save(voter);
-  await connection.manager.save(election);
-  await connection.manager.save(eOrg);
-
-  console.log("Check your database: ", connection.isConnected);
+  console.log("Check your database: ", dbConnection.isConnected);
 } catch (e) {
   console.log(e);
 }

@@ -1,7 +1,8 @@
 import { AuthenticationService } from "../services/AuthenticationService.ts";
 import { ElectionOrganizer } from "../entity/barrel.ts";
 import { EncryptionService } from "../services/EncryptionService.ts";
-import { bcrypt, Context, getRepository } from "../deps.ts";
+import { Context, getRepository } from "../deps.ts";
+import { logger } from "../logger.ts";
 
 export { login };
 
@@ -21,9 +22,15 @@ async function login(ctx: Context): Promise<void> {
   const admin: LoginPayload = await ctx.request.body().value;
   const encryption = new EncryptionService();
 
-  const electionOrg = await getRepository(ElectionOrganizer).findOne({
-    email: admin.email,
-  });
+  let electionOrg: ElectionOrganizer | undefined;
+  try {
+    electionOrg = await getRepository(ElectionOrganizer).findOne({
+      email: admin.email,
+    });
+  } catch (e) {
+    logger.error("No connection found");
+    logger.error(e);
+  }
 
   if (!electionOrg) ctx.throw(404);
 

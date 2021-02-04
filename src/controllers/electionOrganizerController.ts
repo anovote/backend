@@ -1,18 +1,21 @@
-import { bcrypt } from "../deps.ts";
-import { DatabaseConnection } from "../DatabaseConnection.ts";
+import {
+  bcrypt,
+  config,
+  ConnectionOptions,
+  createConnection,
+} from "../deps.ts";
 import {
   ElectionOrganizerModel,
   electionOrganizerValidator,
 } from "../models/ElectionOrganizerModel.ts";
 import { ElectionOrganizer } from "../entity/ElectionOrganizer.ts";
+import { Election } from "../entity/Election.ts";
+import { connection } from "../main.ts";
 
 export default {
   createElectionOrganizer: createElectionOrganizer,
   getElectionOrganizerById: () => {},
 };
-
-const dbConnection = new DatabaseConnection();
-const dbManager = await dbConnection.getDatabaseManager();
 
 async function createElectionOrganizer(
   { request, response }: { request: any; response: any },
@@ -35,18 +38,20 @@ async function createElectionOrganizer(
     electionOrganizer.password =
       (await hashPassword(electionOrganizer.password)).toString();
 
-    try {
-      const eOrgEntity = new ElectionOrganizer();
-      eOrgEntity.firstName = electionOrganizer.firstName;
-      eOrgEntity.lastName = electionOrganizer.lastName;
-      eOrgEntity.email = electionOrganizer.email;
-      eOrgEntity.password = electionOrganizer.password;
+    const eOrg = new ElectionOrganizer();
+    eOrg.firstName = electionOrganizer.firstName;
+    eOrg.lastName = electionOrganizer.lastName;
+    eOrg.email = electionOrganizer.email;
+    eOrg.password = electionOrganizer.password;
 
-      //await dbManager?.save(eOrgEntity);
-    } catch (e) {
-      console.log(e);
-    }
+    const election = new Election();
+    election.title = "My first election";
+    election.description = "THIS IS MY FIRST ELECTION";
+    election.status = 0;
+    election.electionOrganizer = eOrg;
 
+    await connection.manager.save(election);
+    await connection.manager.save(eOrg);
     response.status = 201;
     response.body = {
       success: true,

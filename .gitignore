@@ -43,3 +43,6 @@ dist
 
 data/logs
 src/data/logs/**/*
+
+.env*
+.env.*

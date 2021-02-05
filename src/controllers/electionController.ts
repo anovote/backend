@@ -108,17 +108,35 @@ export default class ElectionController {
     const requestBody = request.body({ type: "json" });
 
     const values = await requestBody.value;
-    let { id, title, description, password, status } = values;
+    const {
+      id,
+      title,
+      description,
+      status,
+      eligibleVoters,
+      ...nullables
+    } = values;
 
     const election: Election = new Election();
     if (id) {
       election.id = id;
     }
+
+    // Take all nullable values and check that they are set, if not set them to null
+    // deno-lint-ignore no-explicit-any
+    nullables.forEach((nullable: any, i: number) => {
+      nullables[i] = this.validateNullable(nullable);
+    });
+
+    // Getting the nullable values
+    const { password, isLocked, isAutomatic, openDate, closeDate } = nullables;
+
     election.title = title;
     election.description = description;
-    if (!password) {
-      password = null;
-    }
+    election.isAutomatic = isAutomatic;
+    election.isLocked = isLocked;
+    election.openDate = openDate;
+    election.closeDate = closeDate;
     election.password = password;
     election.status = status;
 

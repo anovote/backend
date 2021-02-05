@@ -15,7 +15,7 @@ function getAllElections(
   response.status = 200;
   response.body = {
     success: true,
-    data: "It was succeoighswaåo",
+    data: "All the elections was received",
   };
 }
 

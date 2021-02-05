@@ -125,4 +125,15 @@ export default class ElectionController {
     console.log(election);
     return election;
   }
+
+  /**
+   * Check if a value is valid, if not set it to null
+   * @param nullable A value that can be of type T or null
+   */
+  validateNullable<T>(nullable: T | null): T | null {
+    if (!nullable) {
+      nullable = null;
+    }
+    return nullable;
+  }
 }

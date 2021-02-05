@@ -66,7 +66,7 @@ async function hashPassword(passwordToHash: string): Promise<string> {
  * @param hash the hash to compare
  * @returns returns true if they match, or false if they dont match
  */
-async function doHashAndPasswordmatch(
+async function doHashAndPasswordMatch(
   password: string,
   hash: Promise<string>,
 ): Promise<boolean> {

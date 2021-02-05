@@ -8,13 +8,28 @@ import { Application } from 'express'
 
 import expressLoader from '@/loaders/express'
 import typeormLoader from '@/loaders/typeorm'
+import { logger } from '@/loaders/logger'
+import { Connection } from 'typeorm/connection/Connection'
 
+let database!: Connection
+
+let loaded = false
 export const load = async ({ server }: { server: Application }) => {
-  console.log('--- loading express 🧬')
-  const loadedExpress = await expressLoader({ server })
-  console.log('----- express loaded ✅')
+  if (loaded) throw new Error('Application already loaded...')
 
-  console.log('--- loading typeORM 🧬')
+  logger.info('-- loading express 🧬')
+  const loadedExpress = await expressLoader({ server })
+  logger.info('------- express loaded ✅\n')
+
+  logger.info('-- loading typeORM 🧬')
   const loadedTypeOrm = await typeormLoader()
-  console.log('---- typeORM loaded ✅')
+  logger.info('------ typeORM loaded ✅')
+
+  database = loadedTypeOrm
+
+  loaded = true
+
+  return { loadedExpress, loadedTypeOrm }
 }
+
+export { database }

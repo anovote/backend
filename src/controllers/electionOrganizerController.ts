@@ -29,7 +29,7 @@ async function createElectionOrganizer(
     response.status = 400;
     response.body = {
       success: false,
-      msg: "Cannot create a election organizer from no data",
+      msg: "No data",
     };
   } else if (!validateElectionOrganizerRegistration(electionOrganizer)) {
     response.status = 400;

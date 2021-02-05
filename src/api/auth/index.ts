@@ -1,9 +1,11 @@
 import { Router } from 'express'
+import { ElectionOrganizerModel } from '../../models/ElectionOrganizerModel'
 
 const router = Router()
 
 router.post('/register', (request, response) => {
-  console.log('Register')
+  const electionOrganizer: ElectionOrganizerModel = request.body;
+  console.log(electionOrganizer);
   response.send()
 })
 

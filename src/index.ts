@@ -14,6 +14,7 @@
 import express from 'express'
 import config from '@/config'
 import { load } from '@/loaders'
+import { logger } from './loaders/logger'
 
 console.log('\n========== ⚡ BOOTING UP ⚡ =========== \n')
 
@@ -36,7 +37,7 @@ async function boot() {
     })
   } catch (error) {
     console.log('\n\n=========== 💥  TERROR 💥  ============\n\n')
-    console.log(error)
+    logger.error(error)
   }
 }
 

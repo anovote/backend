@@ -47,7 +47,7 @@ export class AuthenticationService {
    * @param authorizationSchema the authorization header provided along with request. Default schema is 'Bearer <token>'
    * @returns the payload object or string from the request
    */
-  async verifyToken(authorizationSchema: string | null): Promise<DecodedTokenValue> {
+  async verifyToken(authorizationSchema: string | undefined): Promise<DecodedTokenValue> {
     if (!authorizationSchema) {
       throw new Error('No authorization header provided')
     }

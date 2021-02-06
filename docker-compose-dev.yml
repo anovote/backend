@@ -9,4 +9,4 @@ services:
       - "./src:/app/src"
   db:
     ports:
-      - "5432:5432"
+      - "${DB_PORT}:${DB_PORT}"

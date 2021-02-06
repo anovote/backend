@@ -7,7 +7,7 @@ services:
     image: anovote:backend
     build: .
     ports:
-      - "8080:8080"
+      - "${HTTP_PORT}:${HTTP_PORT}"
     networks:
       - anovote_backend
     depends_on:

@@ -18,13 +18,13 @@ export default async () => {
     database: config.database.db,
     synchronize: true,
     logging: false,
-    entities: ['src/models/entity/**/*.ts'],
-    migrations: ['src/models/migration/**/*.ts'],
-    subscribers: ['src/models/subscriber/**/*.ts'],
+    entities: [`${config.src}/models/entity/**/*.{ts,js}`],
+    migrations: [`${config.src}/models/migration/**/*.{ts,js}`],
+    subscribers: [`${config.src}/models/subscriber/**/*.{ts,js}`],
     cli: {
-      entitiesDir: 'src/models/entity',
-      migrationsDir: 'src/models/migration',
-      subscribersDir: 'src/models/subscriber'
+      entitiesDir: `${config.src}/models/entity`,
+      migrationsDir: `${config.src}/models/migration`,
+      subscribersDir: `${config.src}/models/subscriber`
     }
   }
 

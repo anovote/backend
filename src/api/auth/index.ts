@@ -1,11 +1,12 @@
 import { Router } from 'express'
-import { ElectionOrganizerModel } from '../../models/ElectionOrganizerModel'
+import { ElectionOrganizerService } from "@/services/ElectionOrganizerService";
+import { database } from '@/loaders'
 
 const router = Router()
 
 router.post('/register', (request, response) => {
-  const electionOrganizer: ElectionOrganizerModel = request.body;
-  console.log(electionOrganizer);
+  const electionOrganizerService = new ElectionOrganizerService(database);
+  electionOrganizerService.create(request.body);
   response.send()
 })
 

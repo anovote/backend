@@ -25,5 +25,9 @@ jobs:
       - name: Install dependencies
         if: steps.yarn-cache.outputs.cache-hit != 'true'
         run: yarn
+        # Should be ported to GitHub secrets later, when .env is stable
+      - name: Use dummy env
+        run: |
+          mv .env.example .env
       - name: Run test
         run: yarn run test

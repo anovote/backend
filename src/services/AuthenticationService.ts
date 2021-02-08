@@ -1,9 +1,8 @@
 import { ElectionOrganizer } from '@/models/entity/ElectionOrganizer'
-import { config } from 'dotenv'
 import { sign, verify } from 'jsonwebtoken'
 import { getRepository } from 'typeorm'
 import { EncryptionService } from './EncryptionService'
-config()
+import config from '@/config'
 
 /**
  * Required properties to pass along to generate a token

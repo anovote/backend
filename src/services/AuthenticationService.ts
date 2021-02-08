@@ -69,15 +69,11 @@ export class AuthenticationService {
    * @param options Authentication token options to generate a token from.
    */
   async generateToken(options: AuthTokenOptions): Promise<string> {
-    const payload = {
-      ...options
-    }
-
     return sign(
       {
         ...options
       },
-      process.env.SECRET!,
+      config.secret!,
       { expiresIn: this.defaultExpirationTime }
     )
   }
@@ -95,20 +91,11 @@ export class AuthenticationService {
 
     if (!token) throw new Error('No token found on given schema')
 
-    const decoded = verify(token, process.env.SECRET!) as DecodedTokenValue
+    const decoded = verify(token, config.secret!) as DecodedTokenValue
 
     if (!decoded) throw new Error('Token is invalid. The source can not be trusted')
 
     return decoded
-  }
-
-  /**
-   * Generates a numeric date from now -> the passed
-   * in time the token should be valid
-   * @param validtime time a token is valid
-   */
-  private getNumericDate(validTime: number): number {
-    return Math.floor(Date.now() / 1000) + validTime
   }
 
   /**

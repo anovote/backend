@@ -1,4 +1,4 @@
-version: "3.9"
+version: '3.9'
 services:
   app:
     build:
@@ -6,7 +6,8 @@ services:
       dockerfile: Dockerfile
       target: source
     volumes:
-      - "./src:/app/src"
+      - './src:/app/src'
+      - './logs:/app/logs'
   db:
     ports:
-      - "${DB_PORT}:${DB_PORT}"
+      - '${DB_PORT}:${DB_PORT}'

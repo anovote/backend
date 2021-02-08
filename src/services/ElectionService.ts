@@ -45,7 +45,6 @@ export class ElectionService {
 
       return el
     } catch (error) {
-      console.error(error)
       if (error && error.name === 'QueryFailedError') {
         throw new Error('Query failed')
       }
@@ -58,9 +57,12 @@ export class ElectionService {
     return await this.manager.findOne(id)
   }
 
-  async deleteElectionById(id: number): Promise<Election> {
-    const election = await this.manager.findOneOrFail(id)
-    await this.manager.delete(id)
+  async deleteElectionById(id: number): Promise<Election | undefined> {
+    const election = await this.manager.findOne(id)
+    if (!election) {
+      throw new Error(`Entity with id: ${id} not found`)
+    }
+    await this.manager.remove(election)
     return election
   }
 }

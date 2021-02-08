@@ -1,15 +1,23 @@
 import { database } from '@/loaders'
 import { Election } from '@/models/election/Election'
+import { IElection } from '@/models/election/IElection'
 import { ElectionService } from '@/services/ElectionService'
 import { Router } from 'express'
 import { StatusCodes } from 'http-status-codes'
+import { isObjectEmpty } from '../../helpers/isObjectEmpty'
 
 const router = Router()
 
 router.post('/', async (request, response) => {
   try {
     const electionService = new ElectionService(database)
-    const election: Election | undefined = await electionService.createElection(request.body)
+    const electionDTO: IElection = request.body
+
+    if (!electionDTO || isObjectEmpty(electionDTO)) {
+      throw new Error('No data')
+    }
+
+    const election: Election | undefined = await electionService.createElection(electionDTO)
     response.status(StatusCodes.CREATED).json(election)
   } catch (error) {
     response.status(StatusCodes.BAD_REQUEST).send(error.message)

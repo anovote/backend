@@ -10,6 +10,7 @@
       "name": "Docker: Attach to Node",
       "port": 9229,
       "address": "localhost",
+      "restart": true,
       "sourceMapPathOverrides": {
         "/app/*": "${workspaceRoot}/*"
       }

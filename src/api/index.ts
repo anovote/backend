@@ -13,6 +13,6 @@ organizerRoutes.use((request, response, next) => {
   // TODO: Validate JWT token
   next()
 })
-organizerRoutes.use('/election', electionRoutes)
+organizerRoutes.use('/elections', electionRoutes)
 
 export default Router().use('/public', publicRoutes).use('/voter', voterRoutes).use('/admin', organizerRoutes)

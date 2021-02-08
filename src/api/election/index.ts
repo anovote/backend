@@ -29,6 +29,13 @@ router.get('/:id', async (request, response) => {
   const election = await electionService.getElectionById(id)
   response.status(StatusCodes.OK).json(election)
 })
+
+router.put('/:id', async (request, response) => {
+  const electionService = new ElectionService(database)
+  const id: number = Number.parseInt(request.params.id)
+  const { election } = request.body
+  const result = await electionService.updateElectionById(id, election)
+  response.status(StatusCodes.ACCEPTED).json(result)
 })
 
 export default router

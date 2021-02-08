@@ -8,9 +8,9 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn
 } from 'typeorm'
-import { ElectionOrganizer } from '@/models/entity/ElectionOrganizer.ts'
+import { ElectionOrganizer } from '@/models/ElectionOrganizer/ElectionOrganizer'
 
-import { EligibleVoter } from '@/models/entity/EligibleVoter.ts'
+import { EligibleVoter } from '@/models/entity/EligibleVoter'
 import { ElectionStatus } from '@/models/Election'
 
 /**

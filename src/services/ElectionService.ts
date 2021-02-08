@@ -1,6 +1,6 @@
 import { ElectionStatus } from '@/models/Election'
 import { Election } from '@/models/entity/Election'
-import { ElectionOrganizer } from '@/models/entity/ElectionOrganizer'
+import { ElectionOrganizer } from '@/models/ElectionOrganizer/ElectionOrganizer'
 import { Connection } from 'typeorm'
 
 /**

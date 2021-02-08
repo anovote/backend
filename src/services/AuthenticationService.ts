@@ -1,4 +1,4 @@
-import { ElectionOrganizer } from '@/models/entity/ElectionOrganizer'
+import { ElectionOrganizer } from '@/models/ElectionOrganizer/ElectionOrganizer'
 import { sign, verify } from 'jsonwebtoken'
 import { getRepository } from 'typeorm'
 import { EncryptionService } from './EncryptionService'
@@ -48,7 +48,7 @@ export class AuthenticationService {
     return await this.generateToken({
       id: electionOrganizerId,
       organizer: true
-    });
+    })
   }
 
   /**

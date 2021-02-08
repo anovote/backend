@@ -1,6 +1,6 @@
 import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm'
-import {Contains, IsInt, Length, IsEmail, IsFQDN, IsDate, Min, Max, IsOptional, IsString} from "class-validator";
-import { Election } from '@/models/entity/Election.ts'
+import { Contains, IsInt, Length, IsEmail, IsFQDN, IsDate, Min, Max, IsOptional, IsString } from 'class-validator'
+import { Election } from '@/models/entity/Election'
 
 /**
  * A model which represents the organizer of an election. An election organizer can organize many elections.
@@ -27,7 +27,7 @@ export class ElectionOrganizer {
   @CreateDateColumn()
   @IsOptional()
   createdAt!: Date
-  
+
   @UpdateDateColumn()
   @IsOptional()
   updatedAt!: Date

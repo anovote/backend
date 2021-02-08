@@ -39,11 +39,16 @@ export class AuthenticationService {
     this.encryptionService = new EncryptionService()
   }
 
+  /**
+   * Generates a token for when a election organizer gets registered.
+   * @param electionOrganizerId the id of the registered election organizer
+   * @returns the token of the registered eleciton organizer
+   */
   async register(electionOrganizerId: number): Promise<string> {
     return await this.generateToken({
       id: electionOrganizerId,
       organizer: true
-    })
+    });
   }
 
   /**

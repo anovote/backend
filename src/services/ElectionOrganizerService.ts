@@ -13,6 +13,14 @@ export class ElectionOrganizerService {
         this.encryptionService = new EncryptionService();
     }
 
+    /**
+     * Creates an election organizer and enters it into the database.
+     * It also uses the validation requirments from the eleciton organizer
+     * entity. And if the validation requirments are met, it will hash the 
+     * password and save it to the database.
+     * @param electionOrganizerModel The election organizer we want to save
+     * @returns the id of the saved election organizer
+     */
     public async create(electionOrganizerModel: ElectionOrganizerModel): Promise<number> {
         const electionOrganizer = new ElectionOrganizer();
         electionOrganizer.firstName = electionOrganizerModel.firstName;

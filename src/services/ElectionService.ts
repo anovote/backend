@@ -32,6 +32,10 @@ export class ElectionService {
     }
   }
 
+  async getElectionById(id: number): Promise<Election | undefined> {
+    return await this.manager.findOneOrFail(id)
+  }
+
   async createElection(electionDTO: IElection): Promise<Election | undefined> {
     try {
       const result = await this.manager.insert(electionDTO)
@@ -45,10 +49,10 @@ export class ElectionService {
     }
   }
 
-  async updateElectionById(electionDTO: IElection) {
-    const id = electionDTO.id
+  async updateElectionById(id: number, electionDTO: IElection): Promise<Election | undefined> {
     const updatedElection = await this.manager.update(id, electionDTO)
-    return updatedElection
+
+    return await this.manager.findOne(id)
   }
 
   async deleteElectionById(electionDTO: IElection): Promise<Election> {

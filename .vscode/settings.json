@@ -17,6 +17,11 @@
     "[typescript]": {
         "editor.defaultFormatter": "esbenp.prettier-vscode",
     },
+    "cSpell.words": [
+        "anovote",
+        "tscpaths",
+        "typeorm"
+    ],
     //DENO
     // "deno.enable": true,
     // "deno.import_intellisense_origins": {

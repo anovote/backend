@@ -4,10 +4,14 @@ import { database } from '@/loaders'
 
 const router = Router()
 
-router.post('/register', (request, response) => {
+router.post('/register', async (request, response) => {
   const electionOrganizerService = new ElectionOrganizerService(database);
-  electionOrganizerService.create(request.body);
-  response.send()
+  try {
+    await electionOrganizerService.create(request.body);
+  } catch (e) {
+    response.status(400);
+    response.send("Error in validation!");
+  }
 })
 
 router.post('/login', (request, response) => {

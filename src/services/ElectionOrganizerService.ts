@@ -1,6 +1,7 @@
 import { Connection } from "typeorm";
 import {ElectionOrganizerModel} from "@/models/ElectionOrganizerModel";
 import {ElectionOrganizer} from "@/models/entity/ElectionOrganizer";
+import {validate} from "class-validator";
 
 export class ElectionOrganizerService {
     private database: Connection;
@@ -9,13 +10,18 @@ export class ElectionOrganizerService {
         this.database = database;
     }
 
-    public create(electionOrganizerModel: ElectionOrganizerModel) {
+    public async create(electionOrganizerModel: ElectionOrganizerModel) {
         const electionOrganizer = new ElectionOrganizer();
         electionOrganizer.firstName = electionOrganizerModel.firstName;
         electionOrganizer.lastName = electionOrganizerModel.lastName;
         electionOrganizer.email = electionOrganizerModel.email;
         electionOrganizer.password = electionOrganizerModel.password;
 
-        this.database.getRepository(ElectionOrganizer).save(electionOrganizer);
+        const errors = await validate(electionOrganizer);
+        if (errors.length > 0) {
+            throw new Error("Validation failed!")
+        } else {
+            this.database.getRepository(ElectionOrganizer).save(electionOrganizer);
+        }
     }
 }

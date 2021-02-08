@@ -12,18 +12,18 @@ jobs:
       - name: Checkout branch
         uses: actions/checkout@v2
       - name: Get yarn cache directory path
-        id: yarn-cache-dir-path
+        id: yarn-cache-dir-path2
         run: echo "::set-output name=dir::$(yarn cache dir)"
       - name: Set yarn cache
         uses: actions/cache@v2
-        id: yarn-cache # use this to check for `cache-hit` (`steps.yarn-cache.outputs.cache-hit != 'true'`)
+        id: yarn-cache2 # use this to check for `cache-hit` (`steps.yarn-cache.outputs.cache-hit != 'true'`)
         with:
-          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+          path: ${{ steps.yarn-cache-dir-path2.outputs.dir }}
           key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-yarn-
       - name: Install dependencies
-        if: steps.yarn-cache.outputs.cache-hit != 'true'
-        run: yarn install
+        if: steps.yarn-cache2.outputs.cache-hit != 'true'
+        run: yarn
       - name: Run test
         run: yarn test

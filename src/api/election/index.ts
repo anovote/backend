@@ -7,7 +7,7 @@ const router = Router()
 router.post('/', (request, response) => {
   try {
     const electionService = new ElectionService(database)
-    electionService.create(request.body)
+    electionService.createElection(request.body)
     response.send('Created :D')
   } catch (error) {
     response.status(400).send()

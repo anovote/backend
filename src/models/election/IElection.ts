@@ -1,8 +1,9 @@
+import { ElectionOrganizer } from '../entity/ElectionOrganizer'
 import { ElectionStatus } from './ElectionStatus'
 
 export interface IElection {
   id: number
-  electionOrganizer: string
+  electionOrganizer: ElectionOrganizer
   title: string
   description: string
   image?: string

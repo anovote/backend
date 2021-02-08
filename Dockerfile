@@ -1,32 +1,48 @@
-FROM frolvlad/alpine-glibc
+FROM node:15.8.0 as runtime
 
-ENV DENO_VERSION=1.6.3
-
-RUN apk add --virtual .download --no-cache curl \
-    && curl -fsSL https://github.com/denoland/deno/releases/download/v${DENO_VERSION}/deno-x86_64-unknown-linux-gnu.zip \
-    --output deno.zip \
-    && unzip deno.zip \
-    && rm deno.zip \
-    && chmod 755 deno \
-    && mv deno /bin/deno \
-    && apk del .download
-
-RUN addgroup -g 1993 -S deno \
-    && adduser -u 1993 -S deno -G deno \
-    && mkdir /deno-dir/ \
-    && chown deno:deno /deno-dir/
-
-ENV DENO_DIR /deno-dir/
-ENV DENO_INSTALL_ROOT /usr/local
-
-
-EXPOSE 8000
-
-RUN deno install --allow-read --allow-env --allow-run --allow-write -f --unstable https://deno.land/x/denon/denon.ts
+# SETUP SOURCE / DEV 
+FROM runtime as source
+# Tells node that we run in development
+ENV NODE_ENV=development
 
 WORKDIR /app
 
+COPY package.json .
+COPY yarn.lock .
 
-ENV PATH="/usr/local/bin:$PATH"
+RUN yarn
 
-CMD ["denon", "run", "--allow-env", "--allow-net" "-allow-write", "--allow-read", "httpServer.ts"]
+COPY . .
+
+CMD ["yarn", "dev"]
+# ===================================
+
+
+# RUN TEST 
+FROM source as test
+RUN yarn test
+# ===================================
+
+
+# BUILD PROJECT 
+FROM source as build
+# Tells node that we run in production
+ENV NODE_ENV=production
+RUN yarn build
+# ===================================
+
+
+# CREATE PRODUCTION IMAGE
+FROM runtime as production
+# Tells node that we run in production
+ENV NODE_ENV=production
+
+WORKDIR /app
+COPY --from=build /app/dist/ dist/
+COPY --from=build /app/package.json .
+
+# Installs only dependencies that is listen in dependencies, and not devDependecies
+RUN yarn install --production
+
+CMD ["yarn", "prod"]
+# ===================================

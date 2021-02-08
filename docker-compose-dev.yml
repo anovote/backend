@@ -1,0 +1,12 @@
+version: "3.9"
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: source
+    volumes:
+      - "./src:/app/src"
+  db:
+    ports:
+      - "${DB_PORT}:${DB_PORT}"

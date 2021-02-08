@@ -11,7 +11,7 @@ import {
 import { ElectionOrganizer } from '@/models/entity/ElectionOrganizer.ts'
 
 import { EligibleVoter } from '@/models/entity/EligibleVoter.ts'
-import { ElectionStatus } from '@/models/Election'
+import { ElectionStatus } from '@/models/election/ElectionStatus'
 
 /**
  * An entity for storing an election.

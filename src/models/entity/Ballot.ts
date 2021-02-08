@@ -7,7 +7,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn
 } from 'typeorm'
-import { Election } from '@/models/entity/Election'
+import { Election } from '@/models/election/Election'
 import { Candidate } from '@/models/entity/Candidate'
 
 export enum BallotType {

@@ -60,7 +60,7 @@ export class AuthenticationService {
     if (!passwordMatches) throw new Error('Password is not matching')
 
     return await this.generateToken({
-      id: electionOrg!.id,
+      id: electionOrg.id,
       organizer: true
     })
   }
@@ -69,7 +69,7 @@ export class AuthenticationService {
    * Generates a token based on a payload and secret key.
    * @param options Authentication token options to generate a token from.
    */
-  private async generateToken(options: AuthTokenOptions): Promise<string> {
+  async generateToken(options: AuthTokenOptions): Promise<string> {
     const payload = {
       ...options
     }

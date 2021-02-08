@@ -22,22 +22,10 @@ const incorrectElectionOrganizer = {
 Deno.test({
   name: "Test fields of election organization model",
   fn: () => {
-    const electionOrganizerModel: ElectionOrganizerModel =
-      correctElectionOrganizer;
-
-    assertEquals(
-      electionOrganizerModel.firstName,
-      correctElectionOrganizer.firstName,
-    );
-    assertEquals(
-      electionOrganizerModel.lastName,
-      correctElectionOrganizer.lastName,
-    );
-    assertEquals(electionOrganizerModel.email, correctElectionOrganizer.email);
-    assertEquals(
-      electionOrganizerModel.password,
-      correctElectionOrganizer.password,
-    );
+    assertEquals(correctElectionOrganizer.firstName, "Sanderullan");
+    assertEquals(correctElectionOrganizer.lastName, "Hufsa");
+    assertEquals(correctElectionOrganizer.email, "Sander@hufsa.no");
+    assertEquals(correctElectionOrganizer.password, "SteffenErSot");
   },
 });
 

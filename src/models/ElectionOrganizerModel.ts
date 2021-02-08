@@ -9,7 +9,7 @@ import {
  * constraints for a election organizer be set.
  */
 export const ElectionOrganizerSchema = Schema({
-  firstName: string.between(3, 60),
+  firstName: string,
   lastName: string,
   email: string,
   password: string.min(6),

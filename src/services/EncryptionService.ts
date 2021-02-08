@@ -1,7 +1,7 @@
 import bcrypt from 'bcrypt'
 
 /**
- * A service wrapper for encrypting and decrypting passwords
+ * A service wrapper for encryption
  */
 export class EncryptionService {
   private service
@@ -11,19 +11,22 @@ export class EncryptionService {
   }
 
   /**
-   * Encrypts the password with a service. Passes in generated salt from encryption service
-   * @param plaintext the password in plain text
+   * Hashes the provided plaintext string and returns the hashed version.
+   * @param plaintext the string to hash
    */
-  async hashPassword(plaintext: string): Promise<string> {
+  async hash(plaintext: string): Promise<string> {
     return await this.service.hash(plaintext, await this.service.genSalt())
   }
 
   /**
-   * Compares a hashed and a unhashed password against eachother.
+   * Compares the provided plaintext string against a hashed value to check if 
+   * the plaintext is equal to the content of the hashed value.
+   * Returns true if equal, else false.
+   * 
    * @param plaintext password in plain text
    * @param hashed password in hashed form to compare against
    */
-  async comparePasswords(plaintext: string, hashed: string): Promise<boolean> {
+  async compareAgainstHash(plaintext: string, hashed: string): Promise<boolean> {
     return await this.service.compare(plaintext, hashed)
   }
 }

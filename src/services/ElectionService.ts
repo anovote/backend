@@ -46,6 +46,9 @@ export class ElectionService {
       return el
     } catch (error) {
       console.error(error)
+      if (error && error.name === 'QueryFailedError') {
+        throw new Error('Query failed')
+      }
     }
   }
 

@@ -20,7 +20,8 @@
     "cSpell.words": [
         "anovote",
         "tscpaths",
-        "typeorm"
+        "typeorm",
+        "varchar"
     ],
     //DENO
     // "deno.enable": true,

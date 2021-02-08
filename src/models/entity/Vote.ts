@@ -1,5 +1,5 @@
 import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm'
-import { Candidate } from '@/models/entity/Candidate.ts'
+import { Candidate } from '@/models/entity/Candidate'
 
 /**
  * Represents the vote on a candidate for a given ballot.

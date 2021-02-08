@@ -8,6 +8,8 @@ router.post('/register', async (request, response) => {
   const electionOrganizerService = new ElectionOrganizerService(database);
   try {
     await electionOrganizerService.create(request.body);
+    response.status(200);
+    response.send("Election organizer created!");
   } catch (e) {
     response.status(400);
     response.send("Error in validation!");

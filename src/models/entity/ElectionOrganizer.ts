@@ -1,5 +1,5 @@
 import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm'
-import {Contains, IsInt, Length, IsEmail, IsFQDN, IsDate, Min, Max} from "class-validator";
+import {Contains, IsInt, Length, IsEmail, IsFQDN, IsDate, Min, Max, IsOptional, IsString} from "class-validator";
 import { Election } from '@/models/entity/Election.ts'
 
 /**
@@ -21,12 +21,15 @@ export class ElectionOrganizer {
   email!: string
 
   @Column({ type: 'varchar', length: 255 })
-  @Min(3)
+  @Length(3, 20)
   password!: string
 
   @CreateDateColumn()
+  @IsOptional()
   createdAt!: Date
+  
   @UpdateDateColumn()
+  @IsOptional()
   updatedAt!: Date
 
   @OneToMany(() => Election, (election) => election.electionOrganizer)

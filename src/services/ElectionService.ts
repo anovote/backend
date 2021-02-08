@@ -1,7 +1,7 @@
-import { ElectionStatus } from '@/models/Election'
+import { ElectionStatus } from '@/models/IElection'
 import { Election } from '@/models/entity/Election'
 import { ElectionOrganizer } from '@/models/entity/ElectionOrganizer'
-import { Connection } from 'typeorm'
+import { Connection, EntityManager, getManager } from 'typeorm'
 
 /**
  * FOR DEMONSTRATION >
@@ -16,27 +16,37 @@ export interface ElectionBody {
  */
 export class ElectionService {
   private _db: Connection
+  private manager: EntityManager
 
   constructor(db: Connection) {
     this._db = db
+    this.manager = getManager()
   }
-  /**
-   * Creates a new election, and insert it into the database if it is valid.
-   * If it is not, errors will fly :D
-   * @param election election data
-   */
-  create(election: ElectionBody) {
-    const eOrg = new ElectionOrganizer()
-    eOrg.firstName = 'Hjalmar'
-    eOrg.lastName = 'Andersen'
-    eOrg.email = 'hjallis@gmail.com'
-    eOrg.password = 'test123'
 
-    const newElection = new Election()
-    newElection.title = 'MY Nth ELECTION'
-    newElection.description = 'ELECTIONS ARE BEST'
-    newElection.status = ElectionStatus.NotStarted
-    newElection.electionOrganizer = eOrg
-    this._db.getRepository(Election).save(newElection)
+  async getAllElections(): Promise<Election[] | undefined> {
+    try {
+      return getManager().find(Election)
+    } catch (err) {
+      console.log(err)
+    }
+  }
+
+  async createElection(electionDTO: Election): Promise<Election> {
+    try {
+      const manager = getManager()
+      return manager.insert(Election, electionDTO)
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
+  async updateElectionById(electionDTO: Election) {
+    const id = electionDTO.id
+    const updatedElection = await getManager().update(Election, id, electionDTO)
+    return updatedElection
+  }
+
+  async deleteElectionById(electionDTO: Election): Promise<Election> {
+    return getManager().remove(electionDTO)
   }
 }

@@ -8,6 +8,7 @@ import { Application } from 'express'
 
 import expressLoader from '@/loaders/express'
 import typeormLoader from '@/loaders/typeorm'
+import config from '@/config'
 import { logger } from '@/loaders/logger'
 import { Connection } from 'typeorm/connection/Connection'
 
@@ -16,6 +17,7 @@ let database!: Connection
 let loaded = false
 export const load = async ({ server }: { server: Application }) => {
   if (loaded) throw new Error('Application already loaded...')
+  logger.info(`env > ${config.environment}\n`)
 
   logger.info('-- loading express 🧬')
   const loadedExpress = await expressLoader({ server })

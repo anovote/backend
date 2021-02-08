@@ -1,7 +1,7 @@
 import bcrypt from 'bcrypt'
 
 /**
- * A service wrapper for an encrypting and decrypting passwords
+ * A service wrapper for encrypting and decrypting passwords
  */
 export class EncryptionService {
   private service

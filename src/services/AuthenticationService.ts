@@ -1,5 +1,8 @@
+import { ElectionOrganizer } from '@/models/entity/ElectionOrganizer'
 import { config } from 'dotenv'
 import { sign, verify } from 'jsonwebtoken'
+import { getRepository } from 'typeorm'
+import { EncryptionService } from './EncryptionService'
 config()
 
 /**
@@ -19,16 +22,54 @@ export interface DecodedTokenValue extends AuthTokenOptions {
 }
 
 /**
+ * Required properties for login payload
+ */
+interface LoginPayload {
+  email: string
+  password: string
+}
+
+/**
  * Handles the generation and verification of tokens.
  */
 export class AuthenticationService {
   private readonly defaultExpirationTime = '48h'
+  private encryptionService: EncryptionService
+
+  constructor() {
+    this.encryptionService = new EncryptionService()
+  }
+
+  /**
+   * Tries to login a user with provided payload, before returing the token if it was successful
+   * @param ctx the context passed from a router, typically
+   * @return token, the token for the logged in user
+   * ! TODO throw more meaningful errors
+   */
+  async login(payload: LoginPayload): Promise<string> {
+    let electionOrg: ElectionOrganizer | undefined
+
+    electionOrg = await getRepository(ElectionOrganizer).findOne({
+      email: payload.email
+    })
+
+    if (!electionOrg) throw new Error('No election organizer found')
+
+    const passwordMatches = await this.encryptionService.comparePasswords(payload.password, electionOrg.password)
+
+    if (!passwordMatches) throw new Error('Password is not matching')
+
+    return await this.generateToken({
+      id: electionOrg!.id,
+      organizer: true
+    })
+  }
 
   /**
    * Generates a token based on a payload and secret key.
    * @param options Authentication token options to generate a token from.
    */
-  async generateToken(options: AuthTokenOptions): Promise<string> {
+  private async generateToken(options: AuthTokenOptions): Promise<string> {
     const payload = {
       ...options
     }
@@ -67,7 +108,7 @@ export class AuthenticationService {
    * in time the token should be valid
    * @param validtime time a token is valid
    */
-  getNumericDate(validTime: number): number {
+  private getNumericDate(validTime: number): number {
     return Math.floor(Date.now() / 1000) + validTime
   }
 
@@ -78,7 +119,7 @@ export class AuthenticationService {
    * @param bearerSchema the string from header containing the token
    * @returns token with bearer prefix
    */
-  getBearerToken(bearerSchema: string): string {
+  private getBearerToken(bearerSchema: string): string {
     return bearerSchema.split(' ')[1]
   }
 }

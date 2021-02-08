@@ -15,6 +15,13 @@ const transports = []
 transports.push(
   new winston.transports.Console({
     format: winston.format.combine(winston.format.cli(), winston.format.splat())
+  }),
+  new winston.transports.File({
+    filename: 'logs/error.log',
+    level: 'error'
+  }),
+  new winston.transports.File({
+    filename: 'logs/all.log'
   })
 )
 

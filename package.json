@@ -9,7 +9,8 @@
   "private": true,
   "scripts": {
     "dev": "ts-node-dev -r tsconfig-paths/register --respawn ./src/index.ts",
-    "build": "tsc --project ./tsconfig.prod.json && tsc-alias",
+    "build": "NODE_ENV=production tsc --project ./tsconfig.prod.json && tsc-alias",
+    "prod": "NODE_ENV=production node dist/index.js",
     "test": "jest",
     "check-types": "tsc"
   },

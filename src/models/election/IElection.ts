@@ -1,6 +1,6 @@
 import { ElectionStatus } from './ElectionStatus'
 
-export interface Election {
+export interface IElection {
   id: number
   electionOrganizer: string
   title: string
@@ -12,6 +12,4 @@ export interface Election {
   status: ElectionStatus
   isLocked: boolean
   isAutomatic: boolean
-  created?: Date
-  updated?: Date
 }

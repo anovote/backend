@@ -55,9 +55,8 @@ export class ElectionService {
     return await this.manager.findOne(id)
   }
 
-  async deleteElectionById(electionDTO: IElection): Promise<Election> {
-    const id = electionDTO.id
-    const election = this.manager.findOneOrFail(id)
+  async deleteElectionById(id: number): Promise<Election> {
+    const election = await this.manager.findOneOrFail(id)
     await this.manager.delete(id)
     return election
   }

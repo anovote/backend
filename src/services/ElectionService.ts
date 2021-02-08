@@ -35,9 +35,9 @@ export class ElectionService {
   async createElection(electionDTO: IElection): Promise<Election | undefined> {
     try {
       const result = await this.manager.insert(electionDTO)
-      const election = result.generatedMaps
+      const id = result.identifiers[0].id
 
-      const el = new Election()
+      const el = this.manager.findOne(id)
 
       return el
     } catch (error) {

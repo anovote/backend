@@ -1,5 +1,5 @@
 import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm'
-import { Election } from '@/models/election/Election'
+import { Election } from '@/models/Election'
 
 /**
  * A model which represents the organizer of an election. An election organizer can organize many elections.

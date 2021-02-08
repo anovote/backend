@@ -22,7 +22,7 @@ export default async () => {
     migrations: [`${config.src}/models/migration/**/*.{ts,js}`],
     subscribers: [`${config.src}/models/subscriber/**/*.{ts,js}`],
     cli: {
-      entitiesDir: `${config.src}/models/`,
+      entitiesDir: `${config.src}/models`,
       migrationsDir: `${config.src}/models/migration`,
       subscribersDir: `${config.src}/models/subscriber`
     }

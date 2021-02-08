@@ -1,3 +1,5 @@
+import { ElectionStatus } from './ElectionStatus'
+
 export interface Election {
   id: number
   electionOrganizer: string
@@ -12,13 +14,4 @@ export interface Election {
   isAutomatic: boolean
   created?: Date
   updated?: Date
-}
-
-/**
- * Election status represent the state of the election
- */
-export enum ElectionStatus {
-  NotStarted,
-  Started,
-  Finished
 }

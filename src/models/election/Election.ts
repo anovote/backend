@@ -11,18 +11,19 @@ import {
 import { ElectionOrganizer } from '@/models/entity/ElectionOrganizer.ts'
 
 import { EligibleVoter } from '@/models/entity/EligibleVoter.ts'
+import { IElection } from '@/models/election/IElection'
 import { ElectionStatus } from '@/models/election/ElectionStatus'
 
 /**
  * An entity for storing an election.
  * An election is instantiated by an election organizer. The election organizer can create many elections.
- * An election hols information about the status, info and other information about the election. If the election requires to add eligble voters,
+ * An election hols information about the status, info and other information about the election. If the election requires to add eligibsle voters,
  * an election can have many eligible voters.
  * The purpose of an election entity is to hold ballots, which an election can have many of.
  */
 
 @Entity()
-export class Election {
+export class Election implements IElection {
   @PrimaryGeneratedColumn()
   id!: number
 

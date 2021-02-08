@@ -1,4 +1,4 @@
-import { ElectionOrganizer } from '../entity/ElectionOrganizer'
+import { ElectionOrganizer } from '../ElectionOrganizer'
 import { ElectionStatus } from './ElectionStatus'
 
 export interface IElection {

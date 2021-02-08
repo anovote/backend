@@ -3,7 +3,6 @@ import { Election } from '@/models/election/Election'
 import { ElectionService } from '@/services/ElectionService'
 import { Router } from 'express'
 import { StatusCodes } from 'http-status-codes'
-import { error } from 'winston'
 
 const router = Router()
 

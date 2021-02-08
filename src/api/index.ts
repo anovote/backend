@@ -1,6 +1,6 @@
 import { Router } from 'express'
 import authRoutes from '@/api/routes/auth'
-import electionRoutes from '@/api/routes/election'
+import electionRoutes from '@/api/elections'
 import { checkAuth } from './middleware/authentication'
 
 const publicRoutes = Router()

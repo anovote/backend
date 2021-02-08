@@ -8,9 +8,9 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn
 } from 'typeorm'
-import { ElectionOrganizer } from '@/models/entity/ElectionOrganizer'
+import { ElectionOrganizer } from '@/models/ElectionOrganizer'
 
-import { EligibleVoter } from '@/models/entity/EligibleVoter'
+import { EligibleVoter } from '@/models/EligibleVoter'
 import { IElection } from '@/models/election/IElection'
 import { ElectionStatus } from '@/models/election/ElectionStatus'
 
@@ -27,7 +27,7 @@ export class Election implements IElection {
   @PrimaryGeneratedColumn()
   id!: number
 
-  @ManyToOne(() => ElectionOrganizer, (electionOrganizer) => electionOrganizer.elections)
+  @ManyToOne(() => ElectionOrganizer, (electionOrganizer: ElectionOrganizer) => electionOrganizer.elections)
   electionOrganizer!: ElectionOrganizer
 
   @Column({ type: String })

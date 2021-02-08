@@ -6,7 +6,7 @@ describe('Encryption service', () => {
   beforeAll(async () => {
     encryptionService = new EncryptionService()
     password = 'Test123'
-    hashedPassword = await encryptionService.hashPassword(password)
+    hashedPassword = await encryptionService.hash(password)
   })
 
   it('should hash a string and return it as a string', () => {
@@ -15,10 +15,10 @@ describe('Encryption service', () => {
   })
 
   it('should be equal when compared to its original form', async () => {
-    expect(await encryptionService.comparePasswords(password, hashedPassword)).toBeTruthy()
+    expect(await encryptionService.compareAgainstHash(password, hashedPassword)).toBeTruthy()
   })
 
   it('should falsy when compared to a different password', async () => {
-    expect(await encryptionService.comparePasswords('differentPassword', hashedPassword)).toBeFalsy()
+    expect(await encryptionService.compareAgainstHash('differentPassword', hashedPassword)).toBeFalsy()
   })
 })

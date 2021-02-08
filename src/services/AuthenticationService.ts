@@ -54,7 +54,7 @@ export class AuthenticationService {
 
     if (!electionOrg) throw new Error('No election organizer found')
 
-    const passwordMatches = await this.encryptionService.comparePasswords(payload.password, electionOrg.password)
+    const passwordMatches = await this.encryptionService.compareAgainstHash(payload.password, electionOrg.password)
 
     if (!passwordMatches) throw new Error('Password is not matching')
 

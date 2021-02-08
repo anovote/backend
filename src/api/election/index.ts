@@ -23,9 +23,12 @@ router.get('/', async (request, response) => {
   response.json(elections)
 })
 
-router.get('/:id', (request, response) => {
-  console.log('GET')
-  response.send()
+router.get('/:id', async (request, response) => {
+  const electionService = new ElectionService(database)
+  const id: number = Number.parseInt(request.params.id)
+  const election = await electionService.getElectionById(id)
+  response.status(StatusCodes.OK).json(election)
+})
 })
 
 export default router

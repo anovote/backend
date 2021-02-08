@@ -1,7 +1,8 @@
 import { ElectionStatus } from '@/models/election/ElectionStatus'
 import { Election } from '@/models/election/Election'
 import { ElectionOrganizer } from '@/models/entity/ElectionOrganizer'
-import { Connection, EntityManager, getManager } from 'typeorm'
+import { Connection, EntityManager, getManager, Repository } from 'typeorm'
+import { IElection } from '@/models/election/IElection'
 
 /**
  * FOR DEMONSTRATION >
@@ -16,37 +17,44 @@ export interface ElectionBody {
  */
 export class ElectionService {
   private _db: Connection
-  private manager: EntityManager
+  private manager: Repository<Election>
 
   constructor(db: Connection) {
     this._db = db
-    this.manager = getManager()
+    this.manager = getManager().getRepository(Election)
   }
 
   async getAllElections(): Promise<Election[] | undefined> {
     try {
-      return getManager().find(Election)
+      return this.manager.find()
     } catch (err) {
       console.log(err)
     }
   }
 
-  async createElection(electionDTO: Election): Promise<Election> {
+  async createElection(electionDTO: IElection): Promise<Election | undefined> {
     try {
-      const manager = getManager()
-      return manager.insert(Election, electionDTO)
+      const result = await this.manager.insert(electionDTO)
+      const election = result.generatedMaps
+
+      const el = new Election()
+
+      return el
     } catch (error) {
       console.error(error)
     }
   }
 
-  async updateElectionById(electionDTO: Election) {
+  async updateElectionById(electionDTO: IElection) {
     const id = electionDTO.id
-    const updatedElection = await getManager().update(Election, id, electionDTO)
+    const updatedElection = await this.manager.update(id, electionDTO)
     return updatedElection
   }
 
-  async deleteElectionById(electionDTO: Election): Promise<Election> {
-    return getManager().remove(electionDTO)
+  async deleteElectionById(electionDTO: IElection): Promise<Election> {
+    const id = electionDTO.id
+    const election = this.manager.findOneOrFail(id)
+    await this.manager.delete(id)
+    return election
   }
 }

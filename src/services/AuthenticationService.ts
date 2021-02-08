@@ -39,6 +39,13 @@ export class AuthenticationService {
     this.encryptionService = new EncryptionService()
   }
 
+  async register(electionOrganizerId: number): Promise<string> {
+    return await this.generateToken({
+      id: electionOrganizerId,
+      organizer: true
+    })
+  }
+
   /**
    * Tries to login a user with provided payload, before returing the token if it was successful
    * @param ctx the context passed from a router, typically

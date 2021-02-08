@@ -10,8 +10,10 @@ const router = Router()
 router.post('/register', async (request, response) => {
   const electionOrganizerService = new ElectionOrganizerService(database);
   try {
-    await electionOrganizerService.create(request.body);
+    const id = await electionOrganizerService.create(request.body);
+    const token = await authService.register(id);
     response.status(200);
+    response.json({ token: token});
   } catch (e) {
     response.status(400);
     response.send("Error in validation!");

@@ -1,6 +1,6 @@
 import { Connection } from 'typeorm'
 import { ElectionOrganizerModel } from '@/models/ElectionOrganizer/ElectionOrganizerModel'
-import { ElectionOrganizer } from '@/models/ElectionOrganizer/ElectionOrganizer'
+import { ElectionOrganizer } from '@/models/ElectionOrganizer'
 import { validate } from 'class-validator'
 import { EncryptionService } from '@/services/EncryptionService'
 

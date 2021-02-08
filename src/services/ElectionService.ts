@@ -1,4 +1,4 @@
-import { ElectionStatus } from '@/models/IElection'
+import { ElectionStatus } from '@/models/election/ElectionStatus'
 import { Election } from '@/models/entity/Election'
 import { ElectionOrganizer } from '@/models/entity/ElectionOrganizer'
 import { Connection, EntityManager, getManager } from 'typeorm'

@@ -25,6 +25,7 @@ export default {
   http: {
     port: process.env.HTTP_PORT
   },
+  secret: process.env.SECRET,
   environment,
   src: environment === 'development' ? 'src' : 'dist'
 }

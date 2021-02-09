@@ -45,7 +45,9 @@ export class ElectionService {
         await this.hashEntityPassword(electionDTO)
       }
 
-      const el = this.manager.findOne(id)
+      if (await this.isDuplicate(electionDTO)) {
+        throw new Error('Entry is duplicate')
+      }
 
       return el
     } catch (error) {

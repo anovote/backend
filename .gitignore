@@ -40,4 +40,4 @@ dist
 
 .DS_Store
 
-data/logs
+logs

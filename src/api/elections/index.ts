@@ -28,8 +28,7 @@ router.get('/', async (request, response) => {
   try {
     const electionService = new ElectionService(database)
     const elections: Election[] | undefined = await electionService.getAllElections()
-    response.status(200)
-    elections ? response.json(elections) : response.send('No elections')
+    response.json(elections)
   } catch (err) {
     response.status(StatusCodes.BAD_REQUEST).send(err.message)
   }

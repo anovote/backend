@@ -65,7 +65,7 @@ router.delete('/:id', async (request, response) => {
     const electionService = new ElectionService(database)
     const id: number = Number.parseInt(request.params.id)
     const result = await electionService.deleteElectionById(id)
-    response.status(StatusCodes.ACCEPTED).json(result)
+    response.status(StatusCodes.OK).json(result)
   } catch (err) {
     response.status(StatusCodes.BAD_REQUEST).send(err.message)
   }

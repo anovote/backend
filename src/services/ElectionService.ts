@@ -26,7 +26,7 @@ export class ElectionService {
 
   async getAllElections(): Promise<Election[] | undefined> {
     try {
-      return this.manager.find()
+      return await this.manager.find()
     } catch (err) {
       console.log(err)
     }

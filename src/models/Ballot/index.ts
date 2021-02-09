@@ -53,7 +53,7 @@ export class Ballot {
   displayResultCount!: boolean
 
   @Column({ type: 'int' })
-  order!: boolean
+  order!: number
 
   @Column({ type: 'enum', enum: BallotStatus })
   status!: BallotStatus

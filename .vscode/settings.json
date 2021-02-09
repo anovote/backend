@@ -21,6 +21,7 @@
         "anovote",
         "tscpaths",
         "typeorm",
+        "unhashed",
         "varchar"
     ],
     //DENO

@@ -8,6 +8,8 @@ services:
     build: .
     ports:
       - '${HTTP_PORT}:${HTTP_PORT}'
+    volumes:
+      - './logs:/app/logs'
     networks:
       - anovote_backend
     depends_on:

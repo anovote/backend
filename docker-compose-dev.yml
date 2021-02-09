@@ -7,7 +7,6 @@ services:
       target: source
     volumes:
       - './src:/app/src'
-      - './logs:/app/logs'
   db:
     ports:
       - '${DB_PORT}:${DB_PORT}'

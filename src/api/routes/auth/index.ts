@@ -10,12 +10,17 @@ const router = Router()
 
 router.post('/register', async (request, response) => {
   try {
-    const token = electionOrganizerService.createAndSaveElectionOrganizer(request.body)
+    const token = await electionOrganizerService.createAndSaveElectionOrganizer(request.body)
     response.status(201)
     response.json({ token: token })
   } catch (e) {
-    response.status(400)
-    response.send('validation failed')
+    if (e instanceof RangeError) {
+      response.status(400)
+      response.send('validation failed')
+    } else {
+      response.status(400)
+      response.send('Something went very wrong...')
+    }
   }
 })
 

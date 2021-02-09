@@ -38,7 +38,7 @@ export class ElectionOrganizerService {
     }
   }
 
-  async createAndSaveElectionOrganizer(electionOrganizerModel: ElectionOrganizerModel) {
+  async createAndSaveElectionOrganizer(electionOrganizerModel: ElectionOrganizerModel): Promise<string> {
     const encryptionService = new EncryptionService()
     const authService = new AuthenticationService()
     let token
@@ -48,7 +48,8 @@ export class ElectionOrganizerService {
       const id = await this.save(electionOrganizer)
       token = await authService.generateTokenFromId(id)
     } else {
-      throw new Error('Validation failed')
+      throw new RangeError('Validation failed')
     }
+    return token
   }
 }

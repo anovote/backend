@@ -40,13 +40,12 @@ export class AuthenticationService {
   }
 
   /**
-   * Generates a token for when a election organizer gets registered.
-   * @param electionOrganizerId the id of the registered election organizer
-   * @returns the token of the registered eleciton organizer
+   * Generates a token from a given id and returns the token
+   * @param id, the id to create a token from
    */
-  async register(electionOrganizerId: number): Promise<string> {
+  async generateTokenFromId(id: number): Promise<string> {
     return await this.generateToken({
-      id: electionOrganizerId,
+      id: id,
       organizer: true
     })
   }
@@ -70,10 +69,7 @@ export class AuthenticationService {
 
     if (!passwordMatches) throw new Error('Password is not matching')
 
-    return await this.generateToken({
-      id: electionOrg.id,
-      organizer: true
-    })
+    return await this.generateTokenFromId(electionOrg.id)
   }
 
   /**

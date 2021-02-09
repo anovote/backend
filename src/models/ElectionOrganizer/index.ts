@@ -1,8 +1,7 @@
 import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm'
 import { Election } from '@/models/Election'
 import { IsElectionOrganizerAlreadyExists } from './IsElectionOganizerAlreadyExistsConstraint'
-import { Contains, IsEmail, IsString, Max, MaxLength, MinLength } from 'class-validator'
-import { IsCorrectPassword } from './IsCorrectPasswordConstraint'
+import { Contains, IsDateString, IsEmail, IsString, Max, MaxLength, MinLength } from 'class-validator'
 
 /**
  * A model which represents the organizer of an election. An election organizer can organize many elections.
@@ -34,6 +33,7 @@ export class ElectionOrganizer {
 
   @CreateDateColumn()
   createdAt!: Date
+
   @UpdateDateColumn()
   updatedAt!: Date
 

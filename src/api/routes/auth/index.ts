@@ -11,7 +11,7 @@ router.post('/register', async (request, response) => {
   const electionOrganizerRepository = getCustomRepository(ElectionOrganizerRepository)
   try {
     const id = await electionOrganizerRepository.createAndSave(request.body)
-    const token = await authService.register(id)
+    const token = await authService.generateTokenFromId(id)
     response.status(200)
     response.json({ token: token })
   } catch (e) {

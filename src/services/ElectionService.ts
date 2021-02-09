@@ -1,7 +1,5 @@
-import { ElectionStatus } from '@/models/election/ElectionStatus'
 import { Election } from '@/models/Election'
-import { ElectionOrganizer } from '@/models/ElectionOrganizer'
-import { Connection, EntityManager, getManager, Repository } from 'typeorm'
+import { Connection, getManager, Repository } from 'typeorm'
 import { IElection } from '@/models/election/IElection'
 import { EncryptionService } from './EncryptionService'
 
@@ -17,12 +15,10 @@ export interface ElectionBody {
  * Responsible for handling elections
  */
 export class ElectionService {
-  private _db: Connection
   private manager: Repository<Election>
   private readonly encryptionService: EncryptionService
 
   constructor(db: Connection) {
-    this._db = db
     this.manager = getManager().getRepository(Election)
     this.encryptionService = new EncryptionService()
   }
@@ -49,8 +45,13 @@ export class ElectionService {
         throw new Error('Entry is duplicate')
       }
 
-      return el
+      const election = this.manager.create(electionDTO)
+      // election.id = -1
+
+      return await this.manager.save(election)
     } catch (error) {
+      console.log(error.message)
+
       if (error && error.name === 'QueryFailedError') {
         throw new Error('Query failed')
       }
@@ -64,9 +65,10 @@ export class ElectionService {
   }
 
   async updateElectionById(id: number, electionDTO: IElection): Promise<Election | undefined> {
-    const updatedElection = await this.manager.update(id, electionDTO)
-
-    return await this.manager.findOne(id)
+    const election = this.manager.create(electionDTO)
+    election.id = id
+    return await this.manager.save(election)
+    // return await this.manager.findOne(id)
   }
 
   async deleteElectionById(id: number): Promise<Election | undefined> {
@@ -92,4 +94,5 @@ export class ElectionService {
       }
     })
     return duplicate.length > 0
+  }
 }

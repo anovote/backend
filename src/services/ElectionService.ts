@@ -65,4 +65,19 @@ export class ElectionService {
     await this.manager.remove(election)
     return election
   }
+
+  async isDuplicate(election: IElection): Promise<boolean> {
+    const { title, description, image, openDate, closeDate, password, status, isLocked, isAutomatic } = election
+    const duplicate = await this.manager.find({
+      where: {
+        title,
+        description,
+        // image, openDate, closeDate,
+        // password,
+        status,
+        isLocked,
+        isAutomatic
+      }
+    })
+    return duplicate.length > 0
 }

@@ -56,7 +56,7 @@ router.put('/:id', async (request, response) => {
     const result = await electionService.updateElectionById(id, election)
     response.status(StatusCodes.OK).json(result)
   } catch (err) {
-    response.status(StatusCodes.BAD_REQUEST).send(err.message)
+    response.status(StatusCodes.BAD_REQUEST).send('Update not successful')
   }
 })
 

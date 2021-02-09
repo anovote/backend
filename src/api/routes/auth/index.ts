@@ -1,7 +1,7 @@
 import { AuthenticationService } from '@/services/AuthenticationService'
 import { Router } from 'express'
-import { getCustomRepository } from 'typeorm'
-import { ElectionOrganizerRepository } from '@/models/ElectionOrganizer/ElectionOrganizerRepository'
+import { getCustomRepository, getConnection } from 'typeorm'
+import { ElectionOrganizerRepository } from '@/Repositores/ElectionOrganizerRepository'
 
 const authService = new AuthenticationService()
 

@@ -1,5 +1,7 @@
 import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm'
 import { Election } from '@/models/Election'
+import { IsElectionOrganizerAlreadyExists } from './IsElectionOganizerAlreadyExistsConstraint'
+//import { IsElectionOrganizerAlreadyExists } from './IsElectionOganizerAlreadyExistsConstraint'
 
 /**
  * A model which represents the organizer of an election. An election organizer can organize many elections.
@@ -17,6 +19,7 @@ export class ElectionOrganizer {
   lastName!: string
 
   @Column({ type: 'varchar', length: 255 })
+  @IsElectionOrganizerAlreadyExists()
   email!: string
 
   @Column({ type: 'varchar', length: 255 })

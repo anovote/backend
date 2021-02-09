@@ -5,15 +5,28 @@ import { validate } from 'class-validator'
 import { getCustomRepository, getRepository } from 'typeorm'
 
 export class ElectionOrganizerService {
+  /**
+   * Creates an election organizer entity from a given election organizer model
+   * @param electionOrganizerModel
+   */
   create(electionOrganizerModel: ElectionOrganizerModel): ElectionOrganizer {
     return getCustomRepository(ElectionOrganizerRepository).createElectionOrganizer(electionOrganizerModel)
   }
 
+  /**
+   * Saves an given election organizer to the database and returns the id of it.
+   * @param electionOrganizer the election organizer we want to save
+   */
   async save(electionOrganizer: ElectionOrganizer): Promise<number> {
     const save = await getCustomRepository(ElectionOrganizerRepository).save(electionOrganizer)
     return save.id
   }
 
+  /**
+   * Validates if an election organizer is correct, returns true if it is, or false
+   * if it is not
+   * @param electionOrganizer the election organizer we want to validate.
+   */
   async isElectionOrganizerValid(electionOrganizer: ElectionOrganizer): Promise<boolean> {
     const errors = await validate(electionOrganizer)
     if (errors.length > 0) {

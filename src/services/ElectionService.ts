@@ -3,6 +3,7 @@ import { Election } from '@/models/Election'
 import { ElectionOrganizer } from '@/models/ElectionOrganizer'
 import { Connection, EntityManager, getManager, Repository } from 'typeorm'
 import { IElection } from '@/models/election/IElection'
+import { EncryptionService } from './EncryptionService'
 
 /**
  * FOR DEMONSTRATION >
@@ -18,10 +19,12 @@ export interface ElectionBody {
 export class ElectionService {
   private _db: Connection
   private manager: Repository<Election>
+  private readonly encryptionService: EncryptionService
 
   constructor(db: Connection) {
     this._db = db
     this.manager = getManager().getRepository(Election)
+    this.encryptionService = new EncryptionService()
   }
 
   async getAllElections(): Promise<Election[] | undefined> {
@@ -38,8 +41,9 @@ export class ElectionService {
 
   async createElection(electionDTO: IElection): Promise<Election | undefined> {
     try {
-      const result = await this.manager.insert(electionDTO)
-      const id = result.identifiers[0].id
+      if (electionDTO.password) {
+        await this.hashEntityPassword(electionDTO)
+      }
 
       const el = this.manager.findOne(id)
 
@@ -49,6 +53,12 @@ export class ElectionService {
         throw new Error('Query failed')
       }
     }
+  }
+
+  private async hashEntityPassword(electionDTO: IElection) {
+    const unhashedPassword = electionDTO.password
+    const hashedPassword = await this.encryptionService.hash(unhashedPassword)
+    electionDTO.password = hashedPassword
   }
 
   async updateElectionById(id: number, electionDTO: IElection): Promise<Election | undefined> {

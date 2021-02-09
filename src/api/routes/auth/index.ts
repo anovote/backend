@@ -1,22 +1,25 @@
 import { AuthenticationService } from '@/services/AuthenticationService'
 import { Router } from 'express'
-import { getCustomRepository, getConnection } from 'typeorm'
-import { ElectionOrganizerRepository } from '@/models/ElectionOrganizer/ElectionOrganizerRepository'
+import { ElectionOrganizerService } from '@/services/ElectionOrganizerService'
+import { EncryptionService } from '@/services/EncryptionService'
 
 const authService = new AuthenticationService()
-
+const electionOrganizerService = new ElectionOrganizerService()
+const encryptionService = new EncryptionService()
 const router = Router()
 
 router.post('/register', async (request, response) => {
-  const electionOrganizerRepository = getCustomRepository(ElectionOrganizerRepository)
-  try {
-    const id = await electionOrganizerRepository.createAndSave(request.body)
+  const electionOrganizer = electionOrganizerService.create(request.body)
+
+  if (await electionOrganizerService.isElectionOrganizerValid(electionOrganizer)) {
+    electionOrganizer.password = await encryptionService.hash(electionOrganizer.password)
+    const id = await electionOrganizerService.save(electionOrganizer)
     const token = await authService.generateTokenFromId(id)
-    response.status(200)
+    response.status(201)
     response.json({ token: token })
-  } catch (e) {
+  } else {
     response.status(400)
-    response.send('Error in validation!')
+    response.send('Something went very wrong...')
   }
 })
 

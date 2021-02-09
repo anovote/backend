@@ -13,7 +13,7 @@ import { ElectionOrganizerRepository } from '../../Repositores/ElectionOrganizer
 export class IsElectionOrganizerAlreadyExistsConstraint implements ValidatorConstraintInterface {
   validate(email: any, args: ValidationArguments) {
     return getRepository(ElectionOrganizer)
-      .find({ where: { email: email } })
+      .findOne({ email: email })
       .then((electionOrganizer) => {
         if (electionOrganizer) return false
         return true

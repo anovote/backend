@@ -1,6 +1,6 @@
 import { EntityRepository, AbstractRepository, Repository } from 'typeorm'
-import { ElectionOrganizer } from '../models/ElectionOrganizer'
-import { ElectionOrganizerModel } from '../models/ElectionOrganizer/ElectionOrganizerModel'
+import { ElectionOrganizer } from '.'
+import { ElectionOrganizerModel } from './ElectionOrganizerModel'
 import { validate } from 'class-validator'
 import { EncryptionService } from '@/services/EncryptionService'
 

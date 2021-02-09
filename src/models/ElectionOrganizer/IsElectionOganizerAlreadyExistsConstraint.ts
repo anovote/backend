@@ -5,9 +5,8 @@ import {
   ValidatorConstraintInterface,
   ValidationArguments
 } from 'class-validator'
-import { getCustomRepository, getRepository } from 'typeorm'
+import { getRepository } from 'typeorm'
 import { ElectionOrganizer } from '.'
-import { ElectionOrganizerRepository } from '../../Repositores/ElectionOrganizerRepository'
 
 @ValidatorConstraint({ async: true })
 export class IsElectionOrganizerAlreadyExistsConstraint implements ValidatorConstraintInterface {

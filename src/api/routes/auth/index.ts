@@ -9,17 +9,13 @@ const encryptionService = new EncryptionService()
 const router = Router()
 
 router.post('/register', async (request, response) => {
-  const electionOrganizer = electionOrganizerService.create(request.body)
-
-  if (await electionOrganizerService.isElectionOrganizerValid(electionOrganizer)) {
-    electionOrganizer.password = await encryptionService.hash(electionOrganizer.password)
-    const id = await electionOrganizerService.save(electionOrganizer)
-    const token = await authService.generateTokenFromId(id)
+  try {
+    const token = electionOrganizerService.createAndSaveElectionOrganizer(request.body)
     response.status(201)
     response.json({ token: token })
-  } else {
+  } catch (e) {
     response.status(400)
-    response.send('Something went very wrong...')
+    response.send('validation failed')
   }
 })
 

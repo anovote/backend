@@ -3,6 +3,8 @@ import { ElectionOrganizerModel } from '@/models/ElectionOrganizer/ElectionOrgan
 import { ElectionOrganizerRepository } from '@/models/ElectionOrganizer/ElectionOrganizerRepository'
 import { validate } from 'class-validator'
 import { getCustomRepository, getRepository } from 'typeorm'
+import { AuthenticationService } from './AuthenticationService'
+import { EncryptionService } from './EncryptionService'
 
 export class ElectionOrganizerService {
   /**
@@ -33,6 +35,20 @@ export class ElectionOrganizerService {
       return false
     } else {
       return true
+    }
+  }
+
+  async createAndSaveElectionOrganizer(electionOrganizerModel: ElectionOrganizerModel) {
+    const encryptionService = new EncryptionService()
+    const authService = new AuthenticationService()
+    let token
+    const electionOrganizer = this.create(electionOrganizerModel)
+    if (await this.isElectionOrganizerValid(electionOrganizer)) {
+      electionOrganizer.password = await encryptionService.hash(electionOrganizer.password)
+      const id = await this.save(electionOrganizer)
+      token = await authService.generateTokenFromId(id)
+    } else {
+      throw new Error('Validation failed')
     }
   }
 }

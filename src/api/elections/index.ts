@@ -54,7 +54,7 @@ router.put('/:id', async (request, response) => {
       throw new Error('No data')
     }
     const result = await electionService.updateElectionById(id, election)
-    response.status(StatusCodes.ACCEPTED).json(result)
+    response.status(StatusCodes.OK).json(result)
   } catch (err) {
     response.status(StatusCodes.BAD_REQUEST).send(err.message)
   }

@@ -1,5 +1,5 @@
 import { ElectionOrganizer } from '../ElectionOrganizer'
-import { ElectionStatus } from './ElectionStatus'
+import { ElectionStatus } from './enums'
 
 export interface IElection {
   id: number

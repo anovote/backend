@@ -1,6 +1,6 @@
 import { database } from '@/loaders'
-import { Election } from '@/models/election/Election'
-import { IElection } from '@/models/election/IElection'
+import { Election } from '@/models/Election'
+import { IElection } from '@/models/Election/IElection'
 import { ElectionService } from '@/services/ElectionService'
 import { Router } from 'express'
 import { StatusCodes } from 'http-status-codes'

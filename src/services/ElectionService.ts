@@ -1,6 +1,6 @@
 import { Election } from '@/models/Election'
 import { Connection, getManager, Repository } from 'typeorm'
-import { IElection } from '@/models/election/IElection'
+import { IElection } from '@/models/Election/IElection'
 import { EncryptionService } from './EncryptionService'
 
 /**

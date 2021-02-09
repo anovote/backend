@@ -8,17 +8,34 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        deno-version: [1.6.3]
     steps:
       - name: Checkout branch
         uses: actions/checkout@v2
-      - name: Setup deno with version ${{ matrix.deno-version }}
-        uses: denolib/setup-deno@v2
+      - name: Setup node
+        uses: actions/setup-node@v2
         with:
-          deno-version: ${{ matrix.deno-version }}
-      - name: Run format checker
-        run: deno fmt --check ./src ./tests
-      - name: Run tests
-        run: deno test --allow-none 
+          node-version: "15.8"
+      - name: Get yarn cache directory path
+        id: yarn-cache-dir-path
+        run: echo "::set-output name=dir::$(yarn cache dir)"
+      - name: Set yarn cache
+        uses: actions/cache@v2
+        id: yarn-cache # use this to check for `cache-hit` (`steps.yarn-cache.outputs.cache-hit != 'true'`)
+        with:
+          path: "**/node_modules"
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+      - name: Install dependencies
+        if: steps.yarn-cache.outputs.cache-hit != 'true'
+        run: yarn
+      - name: Use dummy env
+        # Should be ported to GitHub secrets later, when .env is stable
+        # https://docs.github.com/en/actions/reference/encrypted-secrets
+        # Pipe secret content to .env file
+        run: |
+          mv .env.example .env
+      - name: Run test
+        run: yarn run test
+      - name: Build project
+        run: yarn run build

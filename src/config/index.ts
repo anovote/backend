@@ -3,16 +3,24 @@ import dotenv from 'dotenv'
 dotenv.config()
 
 /* Node runtime enviroment state */
-const development = 'development'
-const production = 'production'
-const environment = process.env.NODE_ENV ? process.env.NODE_ENV : development
+const environments = {
+  development: 'development',
+  test: 'test',
+  production: 'production'
+}
+const environment = process.env.NODE_ENV ? process.env.NODE_ENV : environments.development
 
 // Verify the runtime environment for node
-if (environment != development && environment != production) {
+if (!Object.values(environments).find((val) => environment === val)) {
   throw new Error(
-    `${environment} is not a valid runtime environment\nPlease set NODE_ENV to either ${development}/${production}`
+    `${environment} is not a valid runtime environment\nPlease set NODE_ENV to either ${[
+      ...Object.values(environments)
+    ]}`
   )
 }
+
+// The src folder where the project will be when in dev / prduction
+const src = environment === environments.development || environment === environments.test ? 'src' : 'dist'
 
 export default {
   database: {
@@ -27,5 +35,5 @@ export default {
   },
   secret: process.env.SECRET,
   environment,
-  src: environment === 'development' ? 'src' : 'dist'
+  src
 }

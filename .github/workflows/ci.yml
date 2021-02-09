@@ -2,7 +2,7 @@ name: CI
 
 on:
   push:
-    branches: [develop, main]
+    branches: [develop, main, feature/port-actions]
   pull_request:
     branches: [develop, main]
 jobs:

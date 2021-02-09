@@ -80,8 +80,7 @@ export class ElectionService {
     if (!election) {
       throw new Error(`Entity with id: ${id} not found`)
     }
-    await this.manager.remove(election)
-    return election
+    return await this.manager.remove(election)
   }
 
   async isDuplicate(election: IElection): Promise<boolean> {

@@ -44,7 +44,7 @@ export class Ballot {
   })
   resultDisplayType!: BallotResultDisplay
 
-  // append an integer to result display count if display type is runner up for instance
+  // How many results for the given display type to display
   @Column({ type: 'int4', nullable: true })
   resultDisplayTypeCount!: number
 

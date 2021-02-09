@@ -46,7 +46,7 @@ export class ElectionService {
       }
 
       const election = this.manager.create(electionDTO)
-      // election.id = -1
+      election.id = -1
 
       return await this.manager.save(election)
     } catch (error) {
@@ -72,7 +72,6 @@ export class ElectionService {
     const election = this.manager.create(electionDTO)
     election.id = id
     return await this.manager.save(election)
-    // return await this.manager.findOne(id)
   }
 
   async deleteElectionById(id: number): Promise<Election | undefined> {
@@ -89,8 +88,10 @@ export class ElectionService {
       where: {
         title,
         description,
-        // image, openDate, closeDate,
-        // password,
+        image,
+        openDate,
+        closeDate,
+        password,
         status,
         isLocked,
         isAutomatic

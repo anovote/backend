@@ -51,6 +51,10 @@ export class ElectionService {
       return await this.manager.save(election)
     } catch (error) {
       console.log(error.message)
+      if (error.message === 'Entry is duplicate') {
+        // TODO this should be handled better
+        throw error
+      }
 
       if (error && error.name === 'QueryFailedError') {
         throw new Error('Query failed')

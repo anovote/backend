@@ -1,3 +1,5 @@
+import { Candidate } from '@/models/Candidate'
+import { Election } from '@/models/Election'
 import {
   Column,
   CreateDateColumn,
@@ -7,11 +9,9 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn
 } from 'typeorm'
-import { Election } from '@/models/Election'
-import { Candidate } from '@/models/Candidate'
-import { BallotType } from './BallotType'
 import { BallotResultDisplay } from './BallotResultDisplay'
 import { BallotStatus } from './BallotStatus'
+import { BallotType } from './BallotType'
 
 /**
  * A ballot a voter can vote on.
@@ -57,7 +57,7 @@ export class Ballot {
   @Column({ type: 'int' })
   order!: number
 
-  @Column({ type: 'enum', enum: BallotStatus })
+  @Column({ type: 'enum', enum: BallotStatus, default: BallotStatus.IN_QUEUE })
   status!: BallotStatus
 
   @CreateDateColumn()

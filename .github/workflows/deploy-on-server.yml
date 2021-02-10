@@ -14,4 +14,4 @@ jobs:
           host: ${{ secrets.SERVERIP }}
           username: ${{ secrets.AUTODELPLOYUSERNAME }}
           password: ${{ secrets.SERVERUSERPASSWORD }}
-          script: cd ${{ secrets.AUTODEPLOYPROJECTPATH }} && git pull
+          script: cd ${{ secrets.AUTODEPLOYPROJECTPATH }}/backend && git pull

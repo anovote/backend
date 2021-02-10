@@ -1,5 +1,5 @@
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm'
-import { Ballot } from '@/models/Ballot'
+import { Ballot } from '@/models/Ballot/BallotEntity'
 
 /**
  * Represents a candidate for a ballot.
@@ -14,6 +14,6 @@ export class Candidate {
   @Column({ type: String })
   candidate!: string
 
-  @ManyToOne(() => Ballot, (ballot) => ballot.candidates)
+  @ManyToOne(() => Ballot, (ballot: Ballot) => ballot.candidates)
   ballot!: Ballot
 }

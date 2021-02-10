@@ -1,7 +1,5 @@
 import { database } from '@/loaders'
-import { logger } from '@/loaders/logger'
-import { Ballot } from '@/models/Ballot'
-import { ElectionService } from '@/services/ElectionService'
+import { Ballot } from '@/models/Ballot/BallotEntity'
 import { Router } from 'express'
 
 const router = Router()

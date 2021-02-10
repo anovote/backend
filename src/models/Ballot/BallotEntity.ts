@@ -9,7 +9,9 @@ import {
 } from 'typeorm'
 import { Election } from '@/models/Election'
 import { Candidate } from '@/models/Candidate'
-import { BallotResultDisplay, BallotStatus, BallotType } from './enums'
+import { BallotType } from './BallotType'
+import { BallotResultDisplay } from './BallotResultDisplay'
+import { BallotStatus } from './BallotStatus'
 
 /**
  * A ballot a voter can vote on.

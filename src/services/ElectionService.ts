@@ -1,7 +1,7 @@
-import { ElectionStatus } from '@/models/Election/enums'
 import { Election } from '@/models/Election'
-import { ElectionOrganizer } from '@/models/ElectionOrganizer'
-import { Connection } from 'typeorm'
+import { Connection, getManager, Repository } from 'typeorm'
+import { IElection } from '@/models/Election/IElection'
+import { EncryptionService } from './EncryptionService'
 
 /**
  * FOR DEMONSTRATION >
@@ -15,28 +15,88 @@ export interface ElectionBody {
  * Responsible for handling elections
  */
 export class ElectionService {
-  private _db: Connection
+  private manager: Repository<Election>
+  private readonly encryptionService: EncryptionService
 
   constructor(db: Connection) {
-    this._db = db
+    this.manager = getManager().getRepository(Election)
+    this.encryptionService = new EncryptionService()
   }
-  /**
-   * Creates a new election, and insert it into the database if it is valid.
-   * If it is not, errors will fly :D
-   * @param election election data
-   */
-  create(election: ElectionBody) {
-    const eOrg = new ElectionOrganizer()
-    eOrg.firstName = 'Hjalmar'
-    eOrg.lastName = 'Andersen'
-    eOrg.email = 'hjallis@gmail.com'
-    eOrg.password = 'test123'
 
-    const newElection = new Election()
-    newElection.title = 'MY Nth ELECTION'
-    newElection.description = 'ELECTIONS ARE BEST'
-    newElection.status = ElectionStatus.NotStarted
-    newElection.electionOrganizer = eOrg
-    this._db.getRepository(Election).save(newElection)
+  async getAllElections(): Promise<Election[] | undefined> {
+    try {
+      return await this.manager.find()
+    } catch (err) {
+      console.log(err)
+    }
+  }
+
+  async getElectionById(id: number): Promise<Election | undefined> {
+    return await this.manager.findOneOrFail(id)
+  }
+
+  async createElection(electionDTO: IElection): Promise<Election | undefined> {
+    try {
+      if (electionDTO.password) {
+        await this.hashEntityPassword(electionDTO)
+      }
+
+      if (await this.isDuplicate(electionDTO)) {
+        throw new Error('Entry is duplicate')
+      }
+
+      const election = this.manager.create(electionDTO)
+      election.id = -1
+
+      return await this.manager.save(election)
+    } catch (error) {
+      console.log(error.message)
+      if (error.message === 'Entry is duplicate') {
+        // TODO this should be handled better
+        throw error
+      }
+
+      if (error && error.name === 'QueryFailedError') {
+        throw new Error('Query failed')
+      }
+    }
+  }
+
+  private async hashEntityPassword(electionDTO: IElection) {
+    const unhashedPassword = electionDTO.password
+    const hashedPassword = await this.encryptionService.hash(unhashedPassword)
+    electionDTO.password = hashedPassword
+  }
+
+  async updateElectionById(id: number, electionDTO: IElection): Promise<Election | undefined> {
+    const election = this.manager.create(electionDTO)
+    election.id = id
+    return await this.manager.save(election)
+  }
+
+  async deleteElectionById(id: number): Promise<Election | undefined> {
+    const election = await this.manager.findOne(id)
+    if (!election) {
+      throw new Error(`Entity with id: ${id} not found`)
+    }
+    return await this.manager.remove(election)
+  }
+
+  async isDuplicate(election: IElection): Promise<boolean> {
+    const { title, description, image, openDate, closeDate, password, status, isLocked, isAutomatic } = election
+    const duplicate = await this.manager.find({
+      where: {
+        title,
+        description,
+        image,
+        openDate,
+        closeDate,
+        password,
+        status,
+        isLocked,
+        isAutomatic
+      }
+    })
+    return duplicate.length > 0
   }
 }

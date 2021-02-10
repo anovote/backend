@@ -1,16 +1,16 @@
 import { EntityRepository, AbstractRepository, Repository } from 'typeorm'
 import { ElectionOrganizer } from '.'
-import { ElectionOrganizerModel } from './ElectionOrganizerModel'
+import { IElectionOrganizer } from './IElectionOrganizer'
 
 @EntityRepository(ElectionOrganizer)
 export class ElectionOrganizerRepository extends Repository<ElectionOrganizer> {
-  createElectionOrganizer(electionOrganizerModel: ElectionOrganizerModel): ElectionOrganizer {
+  createElectionOrganizer(iElectionOrganizer: IElectionOrganizer): ElectionOrganizer {
     const electionOrganizer = new ElectionOrganizer()
 
-    electionOrganizer.firstName = electionOrganizerModel.firstName
-    electionOrganizer.lastName = electionOrganizerModel.lastName
-    electionOrganizer.password = electionOrganizerModel.password
-    electionOrganizer.email = electionOrganizerModel.email
+    electionOrganizer.firstName = iElectionOrganizer.firstName
+    electionOrganizer.lastName = iElectionOrganizer.lastName
+    electionOrganizer.password = iElectionOrganizer.password
+    electionOrganizer.email = iElectionOrganizer.email
 
     return electionOrganizer
   }

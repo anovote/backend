@@ -1,6 +1,6 @@
 import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm'
 import { Election } from '@/models/Election'
-import { IsElectionOrganizerAlreadyExists } from './IsElectionOganizerAlreadyExistsConstraint'
+import { IsElectionOrganizerUnique } from './IsElectionOrganizerUniqueConstraint'
 import { Contains, IsDateString, IsEmail, IsString, Max, MaxLength, MinLength } from 'class-validator'
 
 /**
@@ -21,8 +21,8 @@ export class ElectionOrganizer {
   lastName!: string
 
   @Column({ type: 'varchar', length: 255 })
-  @IsElectionOrganizerAlreadyExists()
   @IsEmail()
+  @IsElectionOrganizerUnique()
   email!: string
 
   @Column({ type: 'varchar', length: 255 })

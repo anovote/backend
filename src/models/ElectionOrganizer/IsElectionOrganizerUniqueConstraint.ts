@@ -9,7 +9,7 @@ import { getRepository } from 'typeorm'
 import { ElectionOrganizer } from '.'
 
 @ValidatorConstraint({ async: true })
-export class IsElectionOrganizerAlreadyExistsConstraint implements ValidatorConstraintInterface {
+export class IsElectionOrganizerUniqueConstraint implements ValidatorConstraintInterface {
   validate(email: any, args: ValidationArguments) {
     return getRepository(ElectionOrganizer)
       .findOne({ email: email })
@@ -20,7 +20,7 @@ export class IsElectionOrganizerAlreadyExistsConstraint implements ValidatorCons
   }
 }
 
-export function IsElectionOrganizerAlreadyExists(validationOptions?: ValidationOptions) {
+export function IsElectionOrganizerUnique(validationOptions?: ValidationOptions) {
   return function (object: Object, propertyName: string) {
     registerDecorator({
       name: 'IsElectionOrganizerAlreadyExists',
@@ -28,7 +28,7 @@ export function IsElectionOrganizerAlreadyExists(validationOptions?: ValidationO
       propertyName: propertyName,
       options: validationOptions,
       constraints: [],
-      validator: IsElectionOrganizerAlreadyExistsConstraint
+      validator: IsElectionOrganizerUniqueConstraint
     })
   }
 }

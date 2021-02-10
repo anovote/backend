@@ -1,5 +1,5 @@
 import { ElectionOrganizer } from '@/models/ElectionOrganizer'
-import { ElectionOrganizerModel } from '@/models/ElectionOrganizer/ElectionOrganizerModel'
+import { IElectionOrganizer } from '@/models/ElectionOrganizer/IElectionOrganizer'
 import { ElectionOrganizerRepository } from '@/models/ElectionOrganizer/ElectionOrganizerRepository'
 import { validate } from 'class-validator'
 import { getCustomRepository, getRepository } from 'typeorm'
@@ -9,10 +9,10 @@ import { EncryptionService } from './EncryptionService'
 export class ElectionOrganizerService {
   /**
    * Creates an election organizer entity from a given election organizer model
-   * @param electionOrganizerModel
+   * @param iElectionOrganizer
    */
-  create(electionOrganizerModel: ElectionOrganizerModel): ElectionOrganizer {
-    return getCustomRepository(ElectionOrganizerRepository).createElectionOrganizer(electionOrganizerModel)
+  create(iElectionOrganizer: IElectionOrganizer): ElectionOrganizer {
+    return getCustomRepository(ElectionOrganizerRepository).createElectionOrganizer(iElectionOrganizer)
   }
 
   /**
@@ -29,8 +29,9 @@ export class ElectionOrganizerService {
    * if it is not
    * @param electionOrganizer the election organizer we want to validate.
    */
-  async isElectionOrganizerValid(electionOrganizer: ElectionOrganizer): Promise<boolean> {
+  private async isElectionOrganizerValid(electionOrganizer: ElectionOrganizer): Promise<boolean> {
     const errors = await validate(electionOrganizer)
+
     if (errors.length > 0) {
       return false
     } else {
@@ -38,18 +39,19 @@ export class ElectionOrganizerService {
     }
   }
 
-  async createAndSaveElectionOrganizer(electionOrganizerModel: ElectionOrganizerModel): Promise<string> {
+  async createAndSaveElectionOrganizer(iElectionOrganizer: IElectionOrganizer): Promise<string> {
     const encryptionService = new EncryptionService()
     const authService = new AuthenticationService()
     let token
-    const electionOrganizer = this.create(electionOrganizerModel)
-    if (await this.isElectionOrganizerValid(electionOrganizer)) {
-      electionOrganizer.password = await encryptionService.hash(electionOrganizer.password)
-      const id = await this.save(electionOrganizer)
-      token = await authService.generateTokenFromId(id)
-    } else {
+    const electionOrganizer = this.create(iElectionOrganizer)
+
+    if (!(await this.isElectionOrganizerValid(electionOrganizer))) {
       throw new RangeError('Validation failed')
     }
+
+    electionOrganizer.password = await encryptionService.hash(electionOrganizer.password)
+    const id = await this.save(electionOrganizer)
+    token = await authService.generateTokenFromId(id)
     return token
   }
 }

@@ -5,13 +5,12 @@ import { EncryptionService } from '@/services/EncryptionService'
 
 const authService = new AuthenticationService()
 const electionOrganizerService = new ElectionOrganizerService()
-const encryptionService = new EncryptionService()
 const router = Router()
 
 router.post('/register', async (request, response) => {
   try {
     const token = await electionOrganizerService.createAndSaveElectionOrganizer(request.body)
-    response.status(201)
+    response.status(201) // TODO add StatusCode.CREATED
     response.json({ token: token })
   } catch (e) {
     if (e instanceof RangeError) {

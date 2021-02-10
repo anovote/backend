@@ -11,15 +11,13 @@ let election: Election
 
 beforeAll(async () => {
   db = await getTestDatabase()
-  db.getRepository(Election)
-
   organizer = await createDummyOganizer(db)
   election = await createDummyElection(db, organizer)
 })
 
 afterAll(async () => {
-  await deleteDummyOrganizer(db, organizer)
   await deleteDummyElections(db, [election])
+  await deleteDummyOrganizer(db, organizer)
 })
 
 it('should create a ballot', () => {

@@ -21,5 +21,5 @@ export const deleteDummyOrganizer = async (
   electionOrganizer: ElectionOrganizer
 ): Promise<void> => {
   const repository = database.getRepository(ElectionOrganizer)
-  repository.remove(electionOrganizer)
+  await repository.remove(electionOrganizer)
 }

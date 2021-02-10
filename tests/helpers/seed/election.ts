@@ -23,10 +23,10 @@ export const createDummyElection = async (connection: Connection, organizer: Ele
     updatedAt: new Date(),
     eligibleVoters: []
   })
-  return repository.save(election)
+  return await repository.save(election)
 }
 
 export const deleteDummyElections = async (connection: Connection, elections: Array<Election>) => {
   const repository = connection.getRepository(Election)
-  repository.remove(elections)
+  await repository.remove(elections)
 }

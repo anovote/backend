@@ -41,3 +41,6 @@ dist
 .DS_Store
 
 logs
+
+# yarn
+yarn-error.log

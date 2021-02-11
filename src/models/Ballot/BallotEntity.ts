@@ -1,5 +1,3 @@
-import { Candidate } from '@/models/Candidate'
-import { Election } from '@/models/Election'
 import {
   Column,
   CreateDateColumn,
@@ -12,7 +10,8 @@ import {
 import { BallotResultDisplay } from './BallotResultDisplay'
 import { BallotStatus } from './BallotStatus'
 import { BallotType } from './BallotType'
-
+import { Election } from '@/models/Election/ElectionEntity'
+import { Candidate } from '@/models/Candidate/CandidateEntity'
 /**
  * A ballot a voter can vote on.
  * The ballot can have many candidates which a eligible voter can submit a vote for.

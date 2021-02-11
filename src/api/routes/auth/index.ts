@@ -10,7 +10,7 @@ const router = Router()
 router.post('/register', async (request, response) => {
   try {
     const token = await electionOrganizerService.createAndSaveElectionOrganizer(request.body)
-    response.status(StatusCodes.CREATED) // TODO add StatusCode.CREATED
+    response.status(StatusCodes.CREATED)
     response.json({ token })
   } catch (e) {
     if (e instanceof RangeError) {

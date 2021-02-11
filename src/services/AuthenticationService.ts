@@ -40,6 +40,17 @@ export class AuthenticationService {
   }
 
   /**
+   * Generates a token from a given id and returns the token
+   * @param id, the id to create a token from
+   */
+  async generateTokenFromId(id: number): Promise<string> {
+    return await this.generateToken({
+      id: id,
+      organizer: true
+    })
+  }
+
+  /**
    * Tries to login a user with provided payload, before returing the token if it was successful
    * @param ctx the context passed from a router, typically
    * @return token, the token for the logged in user
@@ -58,10 +69,7 @@ export class AuthenticationService {
 
     if (!passwordMatches) throw new Error('Password is not matching')
 
-    return await this.generateToken({
-      id: electionOrg.id,
-      organizer: true
-    })
+    return await this.generateTokenFromId(electionOrg.id)
   }
 
   /**

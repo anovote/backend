@@ -1,3 +1,6 @@
+import { Candidate } from '@/models/Candidate/CandidateEntity'
+import { Election } from '@/models/Election/ElectionEntity'
+import { IsString, Min } from 'class-validator'
 import {
   Column,
   CreateDateColumn,
@@ -10,8 +13,6 @@ import {
 import { BallotResultDisplay } from './BallotResultDisplay'
 import { BallotStatus } from './BallotStatus'
 import { BallotType } from './BallotType'
-import { Election } from '@/models/Election/ElectionEntity'
-import { Candidate } from '@/models/Candidate/CandidateEntity'
 /**
  * A ballot a voter can vote on.
  * The ballot can have many candidates which a eligible voter can submit a vote for.
@@ -25,15 +26,15 @@ export class Ballot {
   id!: number
 
   @ManyToOne(() => Election, (election) => election.id)
-  election!: Election
+  election!: Election | number
 
-  @Column({ type: String })
+  @Column({ type: 'varchar' })
   title!: string
 
   @Column({ type: 'text', nullable: true })
   description!: string
 
-  @Column({ type: String, nullable: true })
+  @Column({ type: 'varchar', nullable: true })
   image!: string
 
   @Column({ type: 'enum', enum: BallotType })
@@ -54,6 +55,7 @@ export class Ballot {
   displayResultCount!: boolean
 
   @Column({ type: 'int' })
+  @Min(0)
   order!: number
 
   @Column({ type: 'enum', enum: BallotStatus, default: BallotStatus.IN_QUEUE })

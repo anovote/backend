@@ -1,10 +1,9 @@
 import { Candidate } from '@/models/Candidate/CandidateEntity'
-import { Election } from '@/models/Election/ElectionEntity'
 import { BallotResultDisplay } from './BallotResultDisplay'
 import { BallotType } from './BallotType'
 
 export interface IBallot {
-  election: Election
+  election: number
   title: string
   description?: string
   image?: string

@@ -1,7 +1,7 @@
 import { AuthenticationService } from '@/services/AuthenticationService'
 import { Router } from 'express'
 import { ElectionOrganizerService } from '@/services/ElectionOrganizerService'
-import { EncryptionService } from '@/services/EncryptionService'
+import { StatusCodes } from 'http-status-codes'
 
 const authService = new AuthenticationService()
 const electionOrganizerService = new ElectionOrganizerService()
@@ -10,14 +10,14 @@ const router = Router()
 router.post('/register', async (request, response) => {
   try {
     const token = await electionOrganizerService.createAndSaveElectionOrganizer(request.body)
-    response.status(201) // TODO add StatusCode.CREATED
+    response.status(StatusCodes.CREATED) // TODO add StatusCode.CREATED
     response.json({ token })
   } catch (e) {
     if (e instanceof RangeError) {
-      response.status(400)
+      response.status(StatusCodes.BAD_REQUEST)
       response.send('validation failed')
     } else {
-      response.status(400)
+      response.status(StatusCodes.BAD_REQUEST)
       response.send('Something went very wrong...')
     }
   }
@@ -30,7 +30,7 @@ router.post('/login', async (request, response) => {
     response.json({ token })
   } catch (e) {
     console.log('ERROR: ', e)
-    response.sendStatus(404)
+    response.sendStatus(StatusCodes.NOT_FOUND)
   }
 })
 

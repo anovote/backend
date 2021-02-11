@@ -26,4 +26,4 @@ jobs:
           host: ${{ secrets.SERVERIP }}
           username: ${{ secrets.AUTODELPLOYUSERNAME }}
           password: ${{ secrets.SERVERUSERPASSWORD }}
-          script: cd ${{ secrets.AUTODEPLOYPROJECTPATH }}/backend && git pull
+          script: cd ${{ secrets.AUTODEPLOYPROJECTPATH }}/backend && git pull && ./anovote prod --build

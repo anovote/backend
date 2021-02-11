@@ -1,5 +1,5 @@
 import 'reflect-metadata'
-import { createConnection } from 'typeorm'
+import { ConnectionOptions, createConnection } from 'typeorm'
 import config from '@/config'
 
 /**

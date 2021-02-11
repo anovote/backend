@@ -1,0 +1,47 @@
+{
+  "name": "backend",
+  "version": "0.0.1",
+  "description": "Anovote backend",
+  "main": "index.js",
+  "repository": "https://github.com/anovote/backend",
+  "author": "Anovote",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "dev": "ts-node-dev -r tsconfig-paths/register --respawn --inspect=0.0.0.0:9229 ./src/index.ts",
+    "build": "NODE_ENV=production tsc --project ./tsconfig.prod.json && tsc-alias",
+    "prod": "NODE_ENV=production node dist/index.js",
+    "test": "jest",
+    "check-types": "tsc"
+  },
+  "devDependencies": {
+    "@types/bcrypt": "^3.0.0",
+    "@types/cors": "^2.8.9",
+    "@types/express": "^4.17.11",
+    "@types/jest": "^26.0.20",
+    "@types/jsonwebtoken": "^8.5.0",
+    "@types/node": "^14.14.25",
+    "jest": "^26.6.3",
+    "module-alias": "^2.2.2",
+    "ts-jest": "^26.5.0",
+    "ts-node": "^9.1.1",
+    "ts-node-dev": "^1.1.1",
+    "tsc-alias": "^1.2.6",
+    "tsconfig-paths": "^3.9.0",
+    "tscpaths": "^0.0.9",
+    "typescript": "^4.1.3"
+  },
+  "dependencies": {
+    "bcrypt": "^5.0.0",
+    "class-validator": "^0.13.1",
+    "cors": "^2.8.5",
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "http-status-codes": "^2.1.4",
+    "jsonwebtoken": "^8.5.1",
+    "pg": "^8.5.1",
+    "reflect-metadata": "^0.1.13",
+    "typeorm": "^0.2.30",
+    "winston": "^3.3.3"
+  }
+}

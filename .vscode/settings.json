@@ -3,18 +3,23 @@
     "editor.formatOnSave": true,
     "editor.autoIndent": "full",
     "files.eol": "\n",
-    "deno.import_intellisense_origins": {
-        "https://deno.land": true,
+    "files.exclude": {
+        "**/.git": true,
+        "**/.svn": true,
+        "**/.hg": true,
+        "**/CVS": true,
+        "**/.DS_Store": true,
+        "node_modules": true
     },
     "[typescript]": {
-        "editor.defaultFormatter": "denoland.vscode-deno",
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
     },
-    "[typescriptreact]": {
-        "editor.defaultFormatter": "denoland.vscode-deno",
-    },
+    "cSpell.words": [
+        "anovote",
+        "tscpaths",
+        "typeorm",
+        "unhashed",
+        "varchar"
+    ],
     //DENO
-    "deno.enable": true,
-    "deno.import_intellisense_origins": {
-        "https://deno.land": true
-    },
 }

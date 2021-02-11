@@ -1,5 +1,4 @@
 .idea/
-.vscode/
 node_modules/
 build/
 tmp/
@@ -41,4 +40,7 @@ dist
 
 .DS_Store
 
-data/logs
+logs
+
+# yarn
+yarn-error.log

@@ -11,9 +11,6 @@
         "**/.DS_Store": true,
         "node_modules": true
     },
-    // "deno.import_intellisense_origins": {
-    //     "https://deno.land": true,
-    // },
     "[typescript]": {
         "editor.defaultFormatter": "esbenp.prettier-vscode",
     },

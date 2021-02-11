@@ -1,15 +1,19 @@
 name: Newman Run
 
 on:
-  push:
-    branches:
-      - feature/github-actions-newman
+  # push:
+  #   branches:
+  #     - feature/github-actions-newman
+  repository_dispatch:
+    types: [trigger-newman-check]
 
 jobs:
   newman:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@master
+        with:
+          ref: ${{ github.event.client_payload.sha }}
       - uses: matt-ball/newman-action@master
         with:
           apiKey: ${{ secrets.postmanApiKey }}

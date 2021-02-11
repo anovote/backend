@@ -3,19 +3,6 @@ name: Deploy on autodeploy
 on: [push]
 
 jobs:
-  build:
-    name: Build
-    runs-on: ubuntu-latest
-    steps:
-      - name: executing remote ssh commands using password
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.SERVERIP }}
-          username: ${{ secrets.AUTODELPLOYUSERNAME }}
-          password: ${{ secrets.SERVERUSERPASSWORD }}
-          port: ${{ secrets.PORT }}
-          script: whoami
-
   deploy:
     runs-on: ubuntu-latest
     steps:
@@ -27,3 +14,12 @@ jobs:
           username: ${{ secrets.AUTODELPLOYUSERNAME }}
           password: ${{ secrets.SERVERUSERPASSWORD }}
           script: cd ${{ secrets.AUTODEPLOYPROJECTPATH }}/backend && git pull && ./anovote prod --build
+      - name: Trigger next workflow
+        # https://stevenmortimer.com/running-github-actions-sequentially/
+        if: success()
+        uses: peter-evans/repository-dispatch@v1
+        with:
+          token: ${{ secrets.REPO_GHA_PAT }}
+          repository: ${{ github.repository }}
+          event-type: trigger-newman-check
+          client-payload: '{"ref": "${{ github.ref }}", "sha": "${{ github.sha }}"}'

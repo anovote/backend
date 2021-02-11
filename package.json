@@ -32,7 +32,6 @@
     "typescript": "^4.1.3"
   },
   "dependencies": {
-    "@types/winston": "^2.4.4",
     "bcrypt": "^5.0.0",
     "class-validator": "^0.13.1",
     "cors": "^2.8.5",

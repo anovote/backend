@@ -1,6 +1,6 @@
-import { Election } from '@/models/Election'
-import { ElectionStatus } from '@/models/Election/enums'
-import { ElectionOrganizer } from '@/models/ElectionOrganizer'
+import { Election } from '@/models/Election/ElectionEntity'
+import { ElectionStatus } from '@/models/Election/ElectionStatus'
+import { ElectionOrganizer } from '@/models/ElectionOrganizer/ElectionOrganizerEntity'
 import { EncryptionService } from '@/services/EncryptionService'
 import { Connection } from 'typeorm'
 

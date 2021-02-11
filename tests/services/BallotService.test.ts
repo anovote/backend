@@ -1,5 +1,5 @@
-import { Election } from '@/models/Election'
-import { ElectionOrganizer } from '@/models/ElectionOrganizer'
+import { Election } from '@/models/Election/ElectionEntity'
+import { ElectionOrganizer } from '@/models/ElectionOrganizer/ElectionOrganizerEntity'
 import { Connection } from 'typeorm'
 import { getTestDatabase } from '../helpers/database'
 import { createDummyElection, deleteDummyElections } from '../helpers/seed/election'

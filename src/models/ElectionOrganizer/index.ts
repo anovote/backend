@@ -1,6 +1,6 @@
 import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm'
 import { Election } from '@/models/Election'
-import { IsElectionOrganizerUnique } from './IsElectionOrganizerUniqueConstraint'
+import { IsElectionOrganizerUnique } from './constraints/IsElectionOrganizerUniqueConstraint'
 import { Contains, IsDateString, IsEmail, IsString, Max, MaxLength, MinLength } from 'class-validator'
 
 /**

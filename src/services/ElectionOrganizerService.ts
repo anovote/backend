@@ -32,7 +32,11 @@ export class ElectionOrganizerService {
   private async isElectionOrganizerValid(electionOrganizer: ElectionOrganizer): Promise<boolean> {
     const errors = await validate(electionOrganizer)
 
-    return (errors.length > 0) 
+    if (errors.length > 0) {
+      return false
+    } else {
+      return true
+    }
   }
 
   async createAndSaveElectionOrganizer(iElectionOrganizer: IElectionOrganizer): Promise<string> {

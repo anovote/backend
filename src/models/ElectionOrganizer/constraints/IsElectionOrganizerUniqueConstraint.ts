@@ -6,7 +6,7 @@ import {
   ValidationArguments
 } from 'class-validator'
 import { getRepository } from 'typeorm'
-import { ElectionOrganizer } from '.'
+import { ElectionOrganizer } from '..'
 
 @ValidatorConstraint({ async: true })
 export class IsElectionOrganizerUniqueConstraint implements ValidatorConstraintInterface {

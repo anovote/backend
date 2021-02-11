@@ -6,10 +6,8 @@ import config from '@/config'
  * Responsible for initializing TypeORM
  */
 export default async () => {
-  /**
-   * Figure out this type
-   */
-  const typeormConfig: any = {
+
+  const typeormConfig: ConnectionOptions = {
     type: 'postgres',
     host: config.database.host,
     port: Number.parseInt(config.database.port!),

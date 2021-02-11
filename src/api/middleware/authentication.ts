@@ -1,4 +1,4 @@
-import { AuthenticationService } from '@/services/AuthenticationService.ts'
+import { AuthenticationService } from '@/services/AuthenticationService'
 import { NextFunction, Request, Response } from 'express'
 
 /**

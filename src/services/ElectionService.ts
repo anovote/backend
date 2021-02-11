@@ -1,11 +1,8 @@
-import { Election } from '@/models/Election'
+import { Election } from '@/models/Election/ElectionEntity'
 import { Connection, getManager, Repository } from 'typeorm'
 import { IElection } from '@/models/Election/IElection'
 import { EncryptionService } from './EncryptionService'
 
-/**
- * FOR DEMONSTRATION >
- */
 export interface ElectionBody {
   title: string
   description: string

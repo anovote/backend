@@ -1,10 +1,10 @@
 import { database } from '@/loaders'
-import { Election } from '@/models/Election'
+import { Election } from '@/models/Election/ElectionEntity'
 import { IElection } from '@/models/Election/IElection'
 import { ElectionService } from '@/services/ElectionService'
 import { Router } from 'express'
 import { StatusCodes } from 'http-status-codes'
-import { isObjectEmpty } from '../../helpers/isObjectEmpty'
+import { isObjectEmpty } from '@/helpers/isObjectEmpty'
 
 const router = Router()
 

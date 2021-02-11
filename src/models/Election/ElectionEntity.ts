@@ -8,16 +8,16 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn
 } from 'typeorm'
-import { ElectionOrganizer } from '@/models/ElectionOrganizer'
+import { ElectionOrganizer } from '@/models/ElectionOrganizer/ElectionOrganizerEntity'
 
-import { EligibleVoter } from '@/models/EligibleVoter'
+import { EligibleVoter } from '@/models/EligibleVoter/EligibleVoterEntity'
 import { IElection } from '@/models/Election/IElection'
-import { ElectionStatus } from '@/models/Election/enums'
+import { ElectionStatus } from '@/models/Election/ElectionStatus'
 
 /**
  * An entity for storing an election.
  * An election is instantiated by an election organizer. The election organizer can create many elections.
- * An election hols information about the status, info and other information about the election. If the election requires to add eligible voters,
+ * An election holds information about the status, info and other information about the election. If the election requires to add eligible voters,
  * an election can have many eligible voters.
  * The purpose of an election entity is to hold ballots, which an election can have many of.
  */

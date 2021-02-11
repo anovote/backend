@@ -1,5 +1,5 @@
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm'
-import { Ballot } from '@/models/Ballot'
+import { Ballot } from '@/models/Ballot/BallotEntity'
 
 /**
  * Represents a candidate for a ballot.

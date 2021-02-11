@@ -1,5 +1,5 @@
-import { Candidate } from '@/models/Candidate'
-import { Election } from '@/models/Election'
+import { Candidate } from '@/models/Candidate/CandidateEntity'
+import { Election } from '@/models/Election/ElectionEntity'
 import { BallotResultDisplay } from './BallotResultDisplay'
 import { BallotType } from './BallotType'
 

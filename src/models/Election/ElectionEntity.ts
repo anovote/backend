@@ -8,11 +8,11 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn
 } from 'typeorm'
-import { ElectionOrganizer } from '@/models/ElectionOrganizer'
+import { ElectionOrganizer } from '@/models/ElectionOrganizer/ElectionOrganizerEntity'
 
-import { EligibleVoter } from '@/models/EligibleVoter'
+import { EligibleVoter } from '@/models/EligibleVoter/EligibleVoterEntity'
 import { IElection } from '@/models/Election/IElection'
-import { ElectionStatus } from '@/models/Election/enums'
+import { ElectionStatus } from '@/models/Election/ElectionStatus'
 
 /**
  * An entity for storing an election.

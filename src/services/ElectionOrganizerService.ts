@@ -1,8 +1,8 @@
-import { ElectionOrganizer } from '@/models/ElectionOrganizer'
-import { IElectionOrganizer } from '@/models/ElectionOrganizer/IElectionOrganizer'
+import { ElectionOrganizer } from '@/models/ElectionOrganizer/ElectionOrganizerEntity'
 import { ElectionOrganizerRepository } from '@/models/ElectionOrganizer/ElectionOrganizerRepository'
+import { IElectionOrganizer } from '@/models/ElectionOrganizer/IElectionOrganizer'
 import { validate } from 'class-validator'
-import { getCustomRepository, getRepository } from 'typeorm'
+import { getCustomRepository } from 'typeorm'
 import { AuthenticationService } from './AuthenticationService'
 import { EncryptionService } from './EncryptionService'
 

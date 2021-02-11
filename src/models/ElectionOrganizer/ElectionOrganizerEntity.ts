@@ -1,7 +1,7 @@
+import { Election } from '@/models/Election/ElectionEntity'
+import { IsEmail, IsString, MaxLength, MinLength } from 'class-validator'
 import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm'
-import { Election } from '@/models/Election'
 import { IsElectionOrganizerUnique } from './constraints/IsElectionOrganizerUniqueConstraint'
-import { Contains, IsDateString, IsEmail, IsString, Max, MaxLength, MinLength } from 'class-validator'
 
 /**
  * A model which represents the organizer of an election. An election organizer can organize many elections.

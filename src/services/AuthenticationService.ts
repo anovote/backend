@@ -1,4 +1,4 @@
-import { ElectionOrganizer } from '@/models/ElectionOrganizer'
+import { ElectionOrganizer } from '@/models/ElectionOrganizer/ElectionOrganizerEntity'
 import { sign, verify } from 'jsonwebtoken'
 import { getRepository } from 'typeorm'
 import { EncryptionService } from './EncryptionService'

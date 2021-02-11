@@ -1,5 +1,5 @@
 import { database } from '@/loaders'
-import { Election } from '@/models/Election'
+import { Election } from '@/models/Election/ElectionEntity'
 import { IElection } from '@/models/Election/IElection'
 import { ElectionService } from '@/services/ElectionService'
 import { Router } from 'express'

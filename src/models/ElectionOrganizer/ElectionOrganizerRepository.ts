@@ -1,5 +1,5 @@
-import { EntityRepository, AbstractRepository, Repository } from 'typeorm'
-import { ElectionOrganizer } from '.'
+import { EntityRepository, Repository } from 'typeorm'
+import { ElectionOrganizer } from './ElectionOrganizerEntity'
 import { IElectionOrganizer } from './IElectionOrganizer'
 
 @EntityRepository(ElectionOrganizer)

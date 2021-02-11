@@ -1,3 +1,11 @@
 {
-  "recommendations": ["yatki.vscode-surround"]
+  "recommendations": [
+    "yatki.vscode-surround",
+    "mikestead.dotenv",
+    "streetsidesoftware.code-spell-checker",
+    "salbert.comment-ts",
+    "esbenp.prettier-vscode",
+    "gamunu.vscode-yarn",
+    "waderyan.gitblame"
+  ]
 }

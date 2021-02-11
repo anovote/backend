@@ -18,4 +18,4 @@ jobs:
         with:
           apiKey: ${{ secrets.postmanApiKey }}
           collection: 8579911-603f09aa-1eee-421d-b708-c6db344a9631
-          environment: 8579911-7b9dd4e7-c4e3-456e-b44b-30009dcb05a7
+          environment: 8579911-df694936-de6f-4a32-a752-ee387039d3ec

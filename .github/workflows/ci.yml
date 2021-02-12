@@ -56,6 +56,8 @@ jobs:
           POSTGRES_DB: ${{secrets.DB_TEST_DATABASE}}
           DB_PORT: ${{secrets.DB_TEST_PORT}}
           DB_HOST: ${{secrets.DB_TEST_HOST}}
+        run: |
+          echo "ENV SET"
       - name: Run test
         run: yarn run test
       - name: Build project

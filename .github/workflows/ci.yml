@@ -44,12 +44,6 @@ jobs:
       - name: Install dependencies
         if: steps.yarn-cache.outputs.cache-hit != 'true'
         run: yarn
-      - name: Set ENV variables
-        # Should be ported to GitHub secrets later, when .env is stable
-        # https://docs.github.com/en/actions/reference/encrypted-secrets
-        # Pipe secret content to .env file
-        run: |
-          echo "ENV SET"
       - name: Run test
         env:
           SECRET: ${{secrets.SECRET_TEST}}

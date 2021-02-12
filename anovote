@@ -24,6 +24,7 @@ docker()
         echo "--force to force recreation of containers"
         echo "--down clear environment"
         echo "-d run detach"
+        exit 2
     fi
 }
 
@@ -44,6 +45,7 @@ else
         docker $2
     else
         echo "$typeArgError"
+        exit 1
     fi
 fi
 

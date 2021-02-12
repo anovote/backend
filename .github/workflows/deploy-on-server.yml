@@ -13,7 +13,7 @@ jobs:
           host: ${{ secrets.SERVERIP }}
           username: ${{ secrets.AUTODELPLOYUSERNAME }}
           password: ${{ secrets.SERVERUSERPASSWORD }}
-          script: cd ${{ secrets.AUTODEPLOYPROJECTPATH }}/backend && git pull && ./anovote prod --build
+          script: cd ${{ secrets.AUTODEPLOYPROJECTPATH }}/backend && git pull && docker-compose down && ./anovote prod -d
       - name: Trigger next workflow
         # https://stevenmortimer.com/running-github-actions-sequentially/
         if: success()

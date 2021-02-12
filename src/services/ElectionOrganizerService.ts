@@ -63,18 +63,12 @@ export class ElectionOrganizerService {
     })
 
     if (!electionOrganizer) {
-      throw new Error('Did not find the election organizer')
+      throw new RangeError('Did not find the election organizer')
     }
 
     const hashedPassword = (await encryptionService.hash(passwordToUpdate)).toString()
     electionOrganizer.password = hashedPassword
-    const updatedEO = await repository.save(electionOrganizer)
-    return updatedEO
-    //   getCustomRepository(ElectionOrganizerRepository)
-    //     .createQueryBuilder()
-    //     .update(electionOrganizer)
-    //     .set({ password: hashedPassword })
-    //     .where('id = :id', { id: electionOrganizer })
-    //     .execute()
+    const updatedElectionOrganizer = await repository.save(electionOrganizer)
+    return updatedElectionOrganizer
   }
 }

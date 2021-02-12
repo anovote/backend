@@ -2,7 +2,6 @@ import { AuthenticationService } from '@/services/AuthenticationService'
 import { Router } from 'express'
 import { ElectionOrganizerService } from '@/services/ElectionOrganizerService'
 import { StatusCodes } from 'http-status-codes'
-import { IUpdatePassword } from '../../../models/ElectionOrganizer/IUpdatePassword'
 
 const authService = new AuthenticationService()
 const electionOrganizerService = new ElectionOrganizerService()
@@ -35,16 +34,4 @@ router.post('/login', async (request, response) => {
   }
 })
 
-router.put('/change-password', async (request, response) => {
-  try {
-    const updateObject: IUpdatePassword = request.body
-    const updatedElectionOrganizer = await electionOrganizerService.updatePassword(
-      updateObject.passwordToUpdate,
-      updateObject.emailOfElectionOrganizer
-    )
-    response.json({ updatedElectionOrganizer })
-  } catch (e) {
-    console.log('ERROR: ', e)
-  }
-})
 export default router

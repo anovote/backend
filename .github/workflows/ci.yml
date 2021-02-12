@@ -2,9 +2,7 @@ name: CI
 
 on:
   push:
-    branches: [develop, main]
   pull_request:
-    branches: [develop, main]
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -13,9 +11,9 @@ jobs:
         # Docker Hub image
         image: postgres
         env:
-          POSTGRES_DB: test
-          POSTGRES_USER: test
-          POSTGRES_PASSWORD: test
+          POSTGRES_DB: ${{secret.DB_TEST_DATABASE}}
+          POSTGRES_USER: ${{secret.DB_TEST_USER}}
+          POSTGRES_PASSWORD: ${{secrets.DB_TEST_PASSWORD}}
         # Set health checks to wait until postgres has started
         options: >-
           --health-cmd pg_isready
@@ -46,12 +44,18 @@ jobs:
       - name: Install dependencies
         if: steps.yarn-cache.outputs.cache-hit != 'true'
         run: yarn
-      - name: Use dummy env
+      - name: Set ENV variables
         # Should be ported to GitHub secrets later, when .env is stable
         # https://docs.github.com/en/actions/reference/encrypted-secrets
         # Pipe secret content to .env file
-        run: |
-          mv .env.example .env
+        env:
+          SECRET: ${{secrets.SECRET_TEST}}
+          HTTP_POST: ${{secrets.HTTP_PORT_TEST}}
+          POSTGRES_PASSWORD: ${{secrets.DB_TEST_PASSWORD}}
+          POSTGRES_USER: ${{secrests.DB_TEST_USER}}
+          POSTGRES_DB: ${{secrets.DB_TEST_DATABASE}}
+          DB_PORT: ${{secrets.DB_TEST_PORT}}
+          DB_HOST: ${{secrets.DB_TEST_HOST}}
       - name: Run test
         run: yarn run test
       - name: Build project

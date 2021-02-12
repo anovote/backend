@@ -13,6 +13,8 @@ docker()
         docker-compose  $composes up --build
     elif [[ "$1" == "--force" ]]; then 
         docker-compose  $composes up --force-recreate
+    elif [[ "$1" == "-d" ]]; then 
+        docker-compose  $composes up -d
     elif [[ "$1" == "--down" ]]; then 
         docker-compose  $composes down -v --remove-orphans
     else 
@@ -21,6 +23,7 @@ docker()
         echo "--build for building"
         echo "--force to force recreation of containers"
         echo "--down clear environment"
+        echo "-d run detach"
     fi
 }
 

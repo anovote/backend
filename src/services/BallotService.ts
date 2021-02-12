@@ -1,7 +1,13 @@
+import { CreateError } from '@/lib/Errors/CreateError'
+import { NotFoundError } from '@/lib/Errors/NotFoundError'
+import { UpdateError } from '@/lib/Errors/UpdateError'
+import { ValidationError } from '@/lib/Errors/ValidationError'
 import { logger } from '@/loaders/logger'
 import { Ballot } from '@/models/Ballot/BallotEntity'
 import { IBallot } from '@/models/Ballot/IBallot'
+import { validate } from 'class-validator'
 import { Connection, Repository } from 'typeorm'
+import { error } from 'winston'
 import { ElectionService } from './ElectionService'
 
 /**
@@ -11,9 +17,9 @@ import { ElectionService } from './ElectionService'
 export class BallotService {
   private _database: Connection
   private _ballotRepository: Repository<Ballot>
-  private _electionService?: ElectionService
+  private _electionService: ElectionService
 
-  constructor(database: Connection, electionService?: ElectionService) {
+  constructor(database: Connection, electionService: ElectionService) {
     this._database = database
     this._ballotRepository = this._database.getRepository(Ballot)
     this._electionService = electionService
@@ -24,19 +30,20 @@ export class BallotService {
    * Throws error if database, or query fails
    * @param newBallot the ballot to create
    */
-  async create(newBallot: IBallot) {
+  async create(newBallot: IBallot): Promise<Ballot | undefined> {
     try {
-      if (this._electionService) {
-        const election = await this._electionService.getElectionById(newBallot.election)
-        if (!election) return
-        const ballotEntiy = this._ballotRepository.create(newBallot)
-        ballotEntiy.id = -1
-        return await this._ballotRepository.save(ballotEntiy)
-      }
-      return
+      const election = await this._electionService.getElectionById(newBallot.election)
+      if (!election) throw new NotFoundError(`Election with id ${newBallot.election} doesnt exist for ballot`)
+      const ballotEntiy = this._ballotRepository.create(newBallot)
+      ballotEntiy.id = -1
+      const validation = await this.validateBallot(ballotEntiy)
+      if (!validation.isValid) throw new ValidationError('Failed to create new ballot, failed validation')
+      return await this._ballotRepository.save(ballotEntiy)
     } catch (error) {
       logger.error(error)
-      throw new Error('Unable to create ballot')
+      if (error instanceof NotFoundError) throw error
+      if (error instanceof ValidationError) throw new CreateError('Unable to create ballot')
+      throw new Error('Unexpected error')
     }
   }
 
@@ -50,14 +57,19 @@ export class BallotService {
   async update(id: number, updatedBallot: IBallot) {
     try {
       const existingBallot = await this._ballotRepository.findOne({ id })
-      if (!existingBallot) return
+      if (!existingBallot) throw new NotFoundError(`Ballot with id ${id} does not exist`)
       // Todo; make better implementation of this (makes sure it cant be updated by user).
       delete (updatedBallot as any)['createdAt']
       delete (updatedBallot as any)['updatedAt']
-      return await this._ballotRepository.update(id, updatedBallot)
+      const mergedBallot = Object.assign(existingBallot, updatedBallot)
+      const validation = await this.validateBallot(mergedBallot)
+      if (!validation.isValid) throw new ValidationError('Failed to create new ballot, failed validation')
+      return await this._ballotRepository.save(mergedBallot)
     } catch (error) {
       logger.error(error)
-      throw new Error('Failed to update ballot')
+      if (error instanceof NotFoundError) throw error
+      if (error instanceof ValidationError) throw new UpdateError('Unable to create ballot')
+      throw new Error('Unexpected error')
     }
   }
   /**
@@ -73,7 +85,7 @@ export class BallotService {
       return await this._ballotRepository.remove(existingBallot)
     } catch (error) {
       logger.error(error)
-      throw new Error('Failed to delete ballot')
+      throw new Error('Unexpected error')
     }
   }
   /**
@@ -87,7 +99,23 @@ export class BallotService {
       return await this._ballotRepository.findOne({ id })
     } catch (error) {
       logger.error(error)
-      throw new Error('Failed to get ballot')
+      throw new Error('Unexpected error')
     }
+  }
+
+  private async validateBallot(ballot: Ballot) {
+    const validation = await validate(ballot)
+    const isValid = validation.length === 0
+    const messages = []
+    for (const validationMessage of validation) {
+      for (const key in validationMessage.constraints) {
+        if (Object.prototype.hasOwnProperty.call(validationMessage.constraints, key)) {
+          const message: string = (validationMessage.constraints as any)[key]
+          messages.push(message)
+        }
+      }
+    }
+
+    return { isValid, messages }
   }
 }

@@ -1,6 +1,6 @@
 import { Candidate } from '@/models/Candidate/CandidateEntity'
 import { Election } from '@/models/Election/ElectionEntity'
-import { IsString, Min } from 'class-validator'
+import { IsPositive, IsString, Min } from 'class-validator'
 import {
   Column,
   CreateDateColumn,
@@ -29,6 +29,7 @@ export class Ballot {
   election!: Election | number
 
   @Column({ type: 'varchar' })
+  @IsString()
   title!: string
 
   @Column({ type: 'text', nullable: true })
@@ -55,7 +56,7 @@ export class Ballot {
   displayResultCount!: boolean
 
   @Column({ type: 'int' })
-  @Min(0)
+  @IsPositive()
   order!: number
 
   @Column({ type: 'enum', enum: BallotStatus, default: BallotStatus.IN_QUEUE })

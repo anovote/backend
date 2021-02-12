@@ -39,6 +39,7 @@ router.get('/:id', async (request, response) => {
     const electionService = new ElectionService(database)
     const id: number = Number.parseInt(request.params.id)
     const election = await electionService.getElectionById(id)
+    if (!election) throw new Error(`Could not find election with id ${id}`)
     response.status(StatusCodes.OK).json(election)
   } catch (err) {
     response.status(StatusCodes.BAD_REQUEST).send(err.message)

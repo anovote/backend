@@ -29,7 +29,7 @@ export class ElectionService {
   }
 
   async getElectionById(id: number): Promise<Election | undefined> {
-    return await this.manager.findOneOrFail(id)
+    return await this.manager.findOne(id)
   }
 
   async createElection(electionDTO: IElection): Promise<Election | undefined> {

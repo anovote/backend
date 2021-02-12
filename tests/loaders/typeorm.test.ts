@@ -11,6 +11,6 @@ afterAll(async () => {
   await dbConnection.close()
 })
 
-it('should get a connecton to the database', () => {
+it('should get a connection to the database', () => {
   expect(dbConnection).toBeDefined()
 })

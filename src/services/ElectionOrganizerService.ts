@@ -54,4 +54,27 @@ export class ElectionOrganizerService {
     token = await authService.generateTokenFromId(id)
     return token
   }
+
+  async updatePassword(passwordToUpdate: string, emailOfElectionOrganizer: string) {
+    const encryptionService = new EncryptionService()
+    const repository = getCustomRepository(ElectionOrganizerRepository)
+    const electionOrganizer: ElectionOrganizer | undefined = await repository.findOne({
+      email: emailOfElectionOrganizer
+    })
+
+    if (!electionOrganizer) {
+      throw new Error('Did not find the election organizer')
+    }
+
+    const hashedPassword = (await encryptionService.hash(passwordToUpdate)).toString()
+    electionOrganizer.password = hashedPassword
+    const updatedEO = await repository.save(electionOrganizer)
+    return updatedEO
+    //   getCustomRepository(ElectionOrganizerRepository)
+    //     .createQueryBuilder()
+    //     .update(electionOrganizer)
+    //     .set({ password: hashedPassword })
+    //     .where('id = :id', { id: electionOrganizer })
+    //     .execute()
+  }
 }

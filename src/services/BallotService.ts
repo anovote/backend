@@ -81,10 +81,11 @@ export class BallotService {
   async delete(id: number) {
     try {
       const existingBallot = await this._ballotRepository.findOne(id)
-      if (!existingBallot) return
+      if (!existingBallot) throw new NotFoundError(`Ballot with id ${id} does not exist`)
       return await this._ballotRepository.remove(existingBallot)
     } catch (error) {
       logger.error(error)
+      if (error instanceof NotFoundError) throw error
       throw new Error('Unexpected error')
     }
   }

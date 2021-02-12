@@ -47,6 +47,7 @@ router.delete('/:id', async (request, response) => {
     response.send()
   } catch (error) {
     logger.error(error)
+    if (error instanceof NotFoundError) return response.status(StatusCodes.NOT_FOUND).send('Unable to find ballot')
     response.status(StatusCodes.BAD_REQUEST).send('Something went wrong')
   }
 })

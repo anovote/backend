@@ -1,4 +1,4 @@
-import { ElectionOrganizer } from '@/models/ElectionOrganizer'
+import { ElectionOrganizer } from '@/models/ElectionOrganizer/ElectionOrganizerEntity'
 import { EncryptionService } from '@/services/EncryptionService'
 import { Connection } from 'typeorm'
 

@@ -48,6 +48,9 @@ jobs:
         # Should be ported to GitHub secrets later, when .env is stable
         # https://docs.github.com/en/actions/reference/encrypted-secrets
         # Pipe secret content to .env file
+        run: |
+          echo "ENV SET"
+      - name: Run test
         env:
           SECRET: ${{secrets.SECRET_TEST}}
           HTTP_POST: ${{secrets.HTTP_PORT_TEST}}
@@ -56,9 +59,6 @@ jobs:
           POSTGRES_DB: ${{secrets.DB_TEST_DATABASE}}
           DB_PORT: ${{secrets.DB_TEST_PORT}}
           DB_HOST: ${{secrets.DB_TEST_HOST}}
-        run: |
-          echo "ENV SET"
-      - name: Run test
         run: yarn run test
       - name: Build project
         run: yarn run build

@@ -1,6 +1,7 @@
 import { ElectionOrganizer } from '@/models/ElectionOrganizer/ElectionOrganizerEntity'
 import { ElectionOrganizerRepository } from '@/models/ElectionOrganizer/ElectionOrganizerRepository'
 import { IElectionOrganizer } from '@/models/ElectionOrganizer/IElectionOrganizer'
+import { IUpdatePassword } from '@/models/ElectionOrganizer/IUpdatePassword'
 import { validate } from 'class-validator'
 import { getCustomRepository } from 'typeorm'
 import { AuthenticationService } from './AuthenticationService'
@@ -55,20 +56,29 @@ export class ElectionOrganizerService {
     return token
   }
 
-  async updatePassword(passwordToUpdate: string, emailOfElectionOrganizer: string) {
+  async updatePassword(iUpdatePassword: IUpdatePassword) {
     const encryptionService = new EncryptionService()
     const repository = getCustomRepository(ElectionOrganizerRepository)
-    const electionOrganizer: ElectionOrganizer | undefined = await repository.findOne({
-      email: emailOfElectionOrganizer
-    })
+    const authService = new AuthenticationService()
 
-    if (!electionOrganizer) {
-      throw new RangeError('Did not find the election organizer')
+    try {
+      const decoded = await authService.verifyToken(iUpdatePassword.token)
+      const idOfElectionOrganizer = decoded.id
+
+      const electionOrganizer: ElectionOrganizer | undefined = await repository.findOne({
+        id: idOfElectionOrganizer
+      })
+
+      if (!electionOrganizer) {
+        throw new RangeError('Did not find the election organizer')
+      }
+
+      const hashedPassword = (await encryptionService.hash(iUpdatePassword.newPassword)).toString()
+      electionOrganizer.password = hashedPassword
+      const updatedElectionOrganizer = await repository.save(electionOrganizer)
+      return updatedElectionOrganizer
+    } catch (e) {
+      console.log('Error: ', e)
     }
-
-    const hashedPassword = (await encryptionService.hash(passwordToUpdate)).toString()
-    electionOrganizer.password = hashedPassword
-    const updatedElectionOrganizer = await repository.save(electionOrganizer)
-    return updatedElectionOrganizer
   }
 }

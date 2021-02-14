@@ -1,24 +1,19 @@
 import { Router } from 'express'
-import { IUpdatePassword } from '../../../models/ElectionOrganizer/IUpdatePassword'
 import { ElectionOrganizerService } from '@/services/ElectionOrganizerService'
 import { StatusCodes } from 'http-status-codes'
+import { AuthenticationService } from '@/services/AuthenticationService'
 
 const router = Router()
 const electionOrganizerService = new ElectionOrganizerService()
-
 router.put('/', async (request, response) => {
   try {
-    const updateObject: IUpdatePassword = request.body
-    const updatedElectionOrganizer = await electionOrganizerService.updatePassword(
-      updateObject.passwordToUpdate,
-      updateObject.emailOfElectionOrganizer
-    )
-    response.status(StatusCodes.ACCEPTED)
-    response.json({ updatedElectionOrganizer })
+    const updatedElectionOrganizer = electionOrganizerService.updatePassword(request.body)
+    response.status(StatusCodes.OK)
+    response.send(updatedElectionOrganizer)
   } catch (e) {
-    if (e instanceof RangeError) {
-      console.log('ERROR: ', e)
-    }
+    response.status(StatusCodes.BAD_REQUEST)
+    response.send('Election organizer not found')
+    console.log(e)
   }
 })
 

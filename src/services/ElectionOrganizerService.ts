@@ -56,6 +56,10 @@ export class ElectionOrganizerService {
     return token
   }
 
+  /**
+   * Updates the password of a election organizer
+   * @param iUpdatePassword the details needed to update the password
+   */
   async updatePassword(iUpdatePassword: IUpdatePassword) {
     const encryptionService = new EncryptionService()
     const repository = getCustomRepository(ElectionOrganizerRepository)

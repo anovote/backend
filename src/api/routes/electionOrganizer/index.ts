@@ -5,6 +5,7 @@ import { AuthenticationService } from '@/services/AuthenticationService'
 
 const router = Router()
 const electionOrganizerService = new ElectionOrganizerService()
+
 router.put('/', async (request, response) => {
   try {
     const updatedElectionOrganizer = electionOrganizerService.updatePassword(request.body)

@@ -17,7 +17,11 @@ router.post('/', async (request, response) => {
     const ballotSerivce = new BallotService(database, new ElectionService(database))
     const newBallot = request.body as IBallot
     const ballot = await ballotSerivce.create(newBallot)
-    return ballot ? response.send(ballot) : response.status(StatusCodes.BAD_REQUEST).send('Unable to create ballot')
+    if (ballot) {
+      return response.send(ballot)
+    } else {
+      return response.status(StatusCodes.BAD_REQUEST).send('Unable to create ballot')
+    }
   } catch (error) {
     if (error instanceof NotFoundError) return response.status(StatusCodes.NOT_FOUND).send('Unable to find election')
     if (error instanceof CreateError) return response.status(StatusCodes.BAD_REQUEST).send('Unable to create ballot')
@@ -31,9 +35,14 @@ router.get('/:id', async (request, response) => {
     const ballotSerivce = new BallotService(database, new ElectionService(database))
     const id = Number.parseInt(request.params.id)
     const ballot = await ballotSerivce.get(id)
-    return ballot instanceof Ballot ? response.send(ballot) : response.status(StatusCodes.NOT_FOUND).send()
+
+    if (ballot instanceof Ballot) {
+      return response.send(ballot)
+    } else {
+      return response.status(StatusCodes.NOT_FOUND).send('Could not find ballot')
+    }
   } catch (error) {
-    response.status(StatusCodes.INTERNAL_SERVER_ERROR).send('Something went wrong')
+    return response.status(StatusCodes.INTERNAL_SERVER_ERROR).send('Something went wrong')
   }
 })
 
@@ -43,12 +52,13 @@ router.delete('/:id', async (request, response) => {
     const ballotSerivce = new BallotService(database, new ElectionService(database))
     const id = Number.parseInt(request.params.id)
     const deletedBallot = await ballotSerivce.delete(id)
-    deletedBallot ? response.status(StatusCodes.OK) : response.status(StatusCodes.NOT_FOUND)
-    response.send()
+
+    const statusCode = deletedBallot ? StatusCodes.OK : StatusCodes.NOT_FOUND
+    return response.status(statusCode).send()
   } catch (error) {
     logger.error(error)
     if (error instanceof NotFoundError) return response.status(StatusCodes.NOT_FOUND).send('Unable to find ballot')
-    response.status(StatusCodes.BAD_REQUEST).send('Something went wrong')
+    return response.status(StatusCodes.BAD_REQUEST).send('Something went wrong')
   }
 })
 
@@ -59,11 +69,15 @@ router.put('/:id', async (request, response) => {
     const id = Number.parseInt(request.params.id)
     const ballot = request.body as IBallot
     const updatedBallot = await ballotSerivce.update(id, ballot)
-    updatedBallot ? response.send(updatedBallot) : response.status(StatusCodes.NOT_FOUND).send()
+    if (updatedBallot) {
+      return response.send(updatedBallot)
+    } else {
+      return response.status(StatusCodes.NOT_FOUND).send()
+    }
   } catch (error) {
     if (error instanceof NotFoundError) return response.status(StatusCodes.NOT_FOUND).send('Unable to find ballot')
     if (error instanceof UpdateError) return response.status(StatusCodes.BAD_REQUEST).send('Unable to update ballot')
-    response.status(StatusCodes.INTERNAL_SERVER_ERROR).send('Something went wrong')
+    return response.status(StatusCodes.INTERNAL_SERVER_ERROR).send('Something went wrong')
   }
 })
 

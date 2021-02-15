@@ -1,0 +1,21 @@
+name: Newman Run
+
+on:
+  # push:
+  #   branches:
+  #     - feature/github-actions-newman
+  repository_dispatch:
+    types: [trigger-newman-check]
+
+jobs:
+  newman:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@master
+        with:
+          ref: ${{ github.event.client_payload.sha }}
+      - uses: matt-ball/newman-action@master
+        with:
+          apiKey: ${{ secrets.postmanApiKey }}
+          collection: 8579911-603f09aa-1eee-421d-b708-c6db344a9631
+          environment: 8579911-df694936-de6f-4a32-a752-ee387039d3ec

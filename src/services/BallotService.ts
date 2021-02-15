@@ -34,11 +34,13 @@ export class BallotService {
     try {
       const election = await this._electionService.getElectionById(newBallot.election)
       if (!election) throw new NotFoundError(`Election with id ${newBallot.election} doesnt exist for ballot`)
-      const ballotEntiy = this._ballotRepository.create(newBallot)
-      ballotEntiy.id = -1
-      const validation = await this.validateBallot(ballotEntiy)
+
+      const ballotEntity = this._ballotRepository.create(newBallot)
+      ballotEntity.id = -1
+      const validation = await this.validateBallot(ballotEntity)
       if (!validation.isValid) throw new ValidationError('Failed to create new ballot, failed validation')
-      return await this._ballotRepository.save(ballotEntiy)
+
+      return await this._ballotRepository.save(ballotEntity)
     } catch (error) {
       logger.error(error)
       if (error instanceof NotFoundError) throw error

@@ -1,13 +1,16 @@
+import { CreateError } from '@/lib/Errors/CreateError'
 import { NotFoundError } from '@/lib/Errors/NotFoundError'
 import { Ballot } from '@/models/Ballot/BallotEntity'
 import { BallotResultDisplay } from '@/models/Ballot/BallotResultDisplay'
 import { BallotType } from '@/models/Ballot/BallotType'
+import { IBallot } from '@/models/Ballot/IBallot'
 import { Election } from '@/models/Election/ElectionEntity'
 import { ElectionOrganizer } from '@/models/ElectionOrganizer/ElectionOrganizerEntity'
 import { BallotService } from '@/services/BallotService'
 import { ElectionService } from '@/services/ElectionService'
 import { Connection } from 'typeorm'
 import { getTestDatabase } from '../helpers/database'
+import { deepCopy } from '../helpers/object'
 import { createDummyElection, deleteDummyElections } from '../helpers/seed/election'
 import { createDummyOganizer, deleteDummyOrganizer } from '../helpers/seed/organizer'
 
@@ -95,18 +98,31 @@ it('should not create a ballot if election does not exist with not found excpeti
   }
 })
 
-it('should not create a ballot', async () => {
+it('should throw create error on negative order', async () => {
+  const ballot = deepCopy<IBallot>(seedBallot)
+  ballot.order = -1
   try {
-    const ballot = await ballotSerivce.create({
-      candidates: [],
-      election: election.id,
-      order: 1,
-      displayResultCount: true,
-      resultDisplayType: 99,
-      resultDisplayTypeCount: 2,
-      title: 'Test ballot',
-      type: 77
-    })
+    await ballotSerivce.create(ballot)
+  } catch (error) {
+    expect(error).toBeInstanceOf(CreateError)
+  }
+})
+
+it('should throw error on out of range ballot type', async () => {
+  const ballot = deepCopy<IBallot>(seedBallot)
+  ballot.type = 99 // Out of range of ENUM
+  try {
+    await ballotSerivce.create(ballot)
+  } catch (error) {
+    expect(error).toBeInstanceOf(Error)
+  }
+})
+
+it('should throw error on out of range result display type', async () => {
+  const ballot = deepCopy<IBallot>(seedBallot)
+  ballot.resultDisplayType = 99 // Out of range of ENUM
+  try {
+    await ballotSerivce.create(ballot)
   } catch (error) {
     expect(error).toBeInstanceOf(Error)
   }

@@ -60,11 +60,14 @@ export class BallotService {
     try {
       const existingBallot = await this._ballotRepository.findOne({ id })
       if (!existingBallot) throw new NotFoundError(`Ballot with id ${id} does not exist`)
+
       // Todo; make better implementation of this (makes sure it cant be updated by user).
       delete (updatedBallot as any)['createdAt']
       delete (updatedBallot as any)['updatedAt']
+
       const mergedBallot = Object.assign(existingBallot, updatedBallot)
       const validation = await this.validateBallot(mergedBallot)
+
       if (!validation.isValid) throw new ValidationError('Failed to create new ballot, failed validation')
       return await this._ballotRepository.save(mergedBallot)
     } catch (error) {

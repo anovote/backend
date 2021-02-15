@@ -1,7 +1,7 @@
 import { ElectionOrganizer } from '@/models/ElectionOrganizer/ElectionOrganizerEntity'
 import { ElectionOrganizerRepository } from '@/models/ElectionOrganizer/ElectionOrganizerRepository'
 import { IElectionOrganizer } from '@/models/ElectionOrganizer/IElectionOrganizer'
-import { IUpdatePassword } from '@/models/ElectionOrganizer/IUpdatePassword'
+import { IUpdatePassword } from '@/helpers/IUpdatePassword'
 import { validate } from 'class-validator'
 import { getCustomRepository } from 'typeorm'
 import { AuthenticationService } from './AuthenticationService'
@@ -60,29 +60,21 @@ export class ElectionOrganizerService {
    * Updates the password of a election organizer
    * @param iUpdatePassword the details needed to update the password
    */
-  async updatePassword(iUpdatePassword: IUpdatePassword) {
+  async updatePassword(newPassword: string, idOfElectionOrganizer: number) {
     const encryptionService = new EncryptionService()
     const repository = getCustomRepository(ElectionOrganizerRepository)
     const authService = new AuthenticationService()
 
-    try {
-      const decoded = await authService.verifyToken(iUpdatePassword.token)
-      const idOfElectionOrganizer = decoded.id
+    const electionOrganizer: ElectionOrganizer | undefined = await repository.findOne({
+      id: idOfElectionOrganizer
+    })
 
-      const electionOrganizer: ElectionOrganizer | undefined = await repository.findOne({
-        id: idOfElectionOrganizer
-      })
-
-      if (!electionOrganizer) {
-        throw new RangeError('Did not find the election organizer')
-      }
-
-      const hashedPassword = (await encryptionService.hash(iUpdatePassword.newPassword)).toString()
-      electionOrganizer.password = hashedPassword
-      const updatedElectionOrganizer = await repository.save(electionOrganizer)
-      return updatedElectionOrganizer
-    } catch (e) {
-      console.log('Error: ', e)
+    if (!electionOrganizer) {
+      throw new RangeError('Did not find the election organizer')
     }
+
+    electionOrganizer.password = await encryptionService.hash(newPassword)
+    const updatedElectionOrganizer = await repository.save(electionOrganizer)
+    return updatedElectionOrganizer
   }
 }

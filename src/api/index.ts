@@ -13,7 +13,7 @@ const voterRoutes = Router()
 
 const organizerRoutes = Router()
 organizerRoutes.use(enforceContentTypeJson)
-// organizerRoutes.use(checkAuth)
+organizerRoutes.use(checkAuth)
 organizerRoutes.use('/elections', electionRoutes)
 organizerRoutes.use('/electionOrganizer', electionOrganizerRoutes)
 

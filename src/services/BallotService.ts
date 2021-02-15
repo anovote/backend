@@ -11,7 +11,7 @@ import { error } from 'winston'
 import { ElectionService } from './ElectionService'
 
 /**
- * Responsible for providng services for handling ballots.
+ * Responsible for providing services for handling ballots.
  * It provides methods for creating, updating, deleting and getting ballot(s)
  */
 export class BallotService {

@@ -8,10 +8,11 @@ jobs:
   spellcheck:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v2
       - name: Spell check
-        uses: zwaldowski/cspell-action@1.0.0
+        uses: streetsidesoftware/cspell-action@v1.0.1
         with:
-          paths: '../**/*.{md,js,ts,tsx,yml,json}'
+          files: /**/*.{md,js,ts,tsx,yml,json}
           config: .vscode/cspell.json
 
       # exclude: "LICENSE.md"

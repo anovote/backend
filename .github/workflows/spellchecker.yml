@@ -14,7 +14,7 @@ jobs:
         with:
           files: '**/*.{md,js,ts,tsx,yml,json}'
           config: .vscode/cspell.json
-          github_token: '.'
+          github_token: ''
       - name: Spell check zwaldowski
         uses: zwaldowski/cspell-action@v1
         with:

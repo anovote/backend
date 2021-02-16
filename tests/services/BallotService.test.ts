@@ -20,6 +20,7 @@ let election: Election
 let ballotSerivce: BallotService
 let ballots: Ballot[] = []
 let seedBallot: Ballot
+
 beforeAll(async () => {
   db = await getTestDatabase()
   organizer = await createDummyOganizer(db)

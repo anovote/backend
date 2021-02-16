@@ -19,8 +19,6 @@ export const createDummyElection = async (connection: Connection, organizer: Ele
     closeDate: new Date(),
     isLocked: true,
     isAutomatic: false,
-    createdAt: new Date(),
-    updatedAt: new Date(),
     eligibleVoters: []
   })
   return await repository.save(election)

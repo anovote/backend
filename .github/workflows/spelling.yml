@@ -1,4 +1,4 @@
-name: simple-cspell
+name: Spellchecker
 on:
   push:
     branches: [develop, main]

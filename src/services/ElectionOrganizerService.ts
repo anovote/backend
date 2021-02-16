@@ -1,7 +1,6 @@
 import { ElectionOrganizer } from '@/models/ElectionOrganizer/ElectionOrganizerEntity'
 import { ElectionOrganizerRepository } from '@/models/ElectionOrganizer/ElectionOrganizerRepository'
 import { IElectionOrganizer } from '@/models/ElectionOrganizer/IElectionOrganizer'
-import { IUpdatePassword } from '@/helpers/IUpdatePassword'
 import { validate } from 'class-validator'
 import { getCustomRepository } from 'typeorm'
 import { AuthenticationService } from './AuthenticationService'
@@ -64,7 +63,6 @@ export class ElectionOrganizerService {
   async updatePassword(newPassword: string, id: number) {
     const encryptionService = new EncryptionService()
     const repository = getCustomRepository(ElectionOrganizerRepository)
-    const authService = new AuthenticationService()
 
     const electionOrganizer: ElectionOrganizer | undefined = await repository.findOne({
       id: id

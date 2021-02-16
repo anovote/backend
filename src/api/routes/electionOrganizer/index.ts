@@ -10,7 +10,8 @@ const authenticationService = new AuthenticationService()
 router.put('/changePassword', async (request, response) => {
   try {
     const id = (await authenticationService.verifyToken(request.headers.authorization)).id
-    electionOrganizerService.updatePassword(request.body.newPassword, id)
+    const newPassword: string = request.body.newPassword
+    electionOrganizerService.updatePassword(newPassword, id)
     response.status(StatusCodes.OK)
     response.send('Password was updated')
   } catch (e) {

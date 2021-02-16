@@ -8,33 +8,14 @@ jobs:
   spellcheck:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - name: Spell check streetsidesoftware
-        uses: streetsidesoftware/cspell-action@v1.0.1
-        with:
-          files: '**/*.{md,js,ts,tsx,yml,json}'
-          config: .vscode/cspell.json
+#       - uses: actions/checkout@v2
+#       - name: Spell check streetsidesoftware
+#         uses: streetsidesoftware/cspell-action@v1.0.1
+#         with:
+#           files: '**/*.{md,js,ts,tsx,yml,json}'
+#           config: .vscode/cspell.json
       - name: Spell check zwaldowski
         uses: zwaldowski/cspell-action@v1
         with:
           paths: '**/*.{md,js,ts,tsx,yml,json}'
           config: .vscode/cspell.json
-
-      # exclude: "LICENSE.md"
-  # description: A Spell Checker for Code! (Unofficial)
-  # inputs:
-  #   paths:
-  #     description: Glob pattern of files to check
-  #     required: true
-  #   config:
-  #     description: '../cspell.json'
-  #     required: true
-  #   exclude:
-  #     description: Exclude files matching the glob pattern
-  #     required: false
-  # runs:
-  #   using: 'node12'
-  #   main: 'index.js'
-  # branding:
-  #   icon: 'book-open'
-  #   color: 'gray-dark'

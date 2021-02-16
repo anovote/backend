@@ -1,1 +1,1 @@
-test file afkpamvp lapfme spmef
+test file afkpamvp spmef

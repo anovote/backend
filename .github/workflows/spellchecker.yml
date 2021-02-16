@@ -19,3 +19,4 @@ jobs:
         with:
           paths: '**/*.{md,js,ts,tsx,yml,json}'
           config: .vscode/cspell.json
+          unique: true

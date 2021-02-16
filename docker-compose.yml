@@ -21,6 +21,8 @@ services:
       - anovote-data:/var/lib/postgresql
     networks:
       - anovote_backend
+    environment:
+      TZ: 'Europe/Oslo'
     env_file:
       - .env
 volumes:

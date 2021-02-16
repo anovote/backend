@@ -13,6 +13,9 @@ jobs:
         with:
           paths: '**/*.{md,js,ts,tsx,yml,json}'
           config: .vscode/cspell.json
+      - name: simple-cspell
+        uses: zwaldowski/cspell-action@1.0.0
+
       # exclude: "LICENSE.md"
   # description: A Spell Checker for Code! (Unofficial)
   # inputs:

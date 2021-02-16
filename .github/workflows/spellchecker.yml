@@ -12,7 +12,7 @@ jobs:
       - name: Spell check
         uses: streetsidesoftware/cspell-action@v1.0.1
         with:
-          files: /**/*.{md,js,ts,tsx,yml,json}
+          files: '**/*.{md,js,ts,tsx,yml,json}'
           config: .vscode/cspell.json
 
       # exclude: "LICENSE.md"

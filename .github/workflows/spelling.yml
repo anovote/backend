@@ -5,12 +5,14 @@ on:
   pull_request:
     branches: [develop, main]
 jobs:
-  runs-on: ubuntu-latest
   spellcheck:
-    uses: zwaldowski/cspell-action@v1
-    with:
-      paths: '**/*.{md,js,ts,tsx}'
-      config: .vscode/cspell.json
+    runs-on: ubuntu-latest
+    steps:
+      - name: Spell check
+        uses: zwaldowski/cspell-action@v1
+        with:
+          paths: '**/*.{md,js,ts,tsx}'
+          config: .vscode/cspell.json
       # exclude: "LICENSE.md"
   # description: A Spell Checker for Code! (Unofficial)
   # inputs:

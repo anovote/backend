@@ -1,6 +1,6 @@
 import winston from 'winston'
 /**
- * Setsup Winston
+ * Sets up Winston
  *
  * https://github.com/winstonjs/winston
  */

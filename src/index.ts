@@ -1,7 +1,7 @@
 /**
  * ANOVOTE BACKEND APPLICATION
  * This is the main entry of the application!
- * This is where anonymouse voting starts 💻
+ * This is where anonymous voting starts 💻
  *
  * Let the ballots fly 🦄 🌈 🍭
  *
@@ -29,7 +29,7 @@ async function boot() {
 
     server.listen(config.http.port, () => {
       console.log(`
-            LISTNING ON 
+            LISTENING ON 
                ${config.http.port}
               
 =========  SERVER STARTED  =========

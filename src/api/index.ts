@@ -1,6 +1,8 @@
 import { Router } from 'express'
 import authRoutes from '@/api/routes/auth'
+
 import electionRoutes from '@/api/routes/elections'
+import ballotRoutes from '@/api/routes/ballot'
 import { checkAuth } from './middleware/authentication'
 import { enforceContentTypeJson } from './middleware/enforceContentTypeJson'
 import morgan from 'morgan'
@@ -15,6 +17,7 @@ const organizerRoutes = Router()
 organizerRoutes.use(enforceContentTypeJson)
 organizerRoutes.use(checkAuth)
 organizerRoutes.use('/elections', electionRoutes)
+organizerRoutes.use('/ballots', ballotRoutes)
 
 export default Router()
   .use(morgan('dev'))

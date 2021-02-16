@@ -14,6 +14,6 @@ export class Candidate {
   @Column({ type: String })
   candidate!: string
 
-  @ManyToOne(() => Ballot, (ballot) => ballot.candidates)
+  @ManyToOne(() => Ballot, (ballot: Ballot) => ballot.candidates)
   ballot!: Ballot
 }

@@ -1,20 +1,23 @@
 {
-  "version": "0.1",
-  "language": "en",
-  "words": [
-    "anovote",
-    "Christoffer",
-    "en",
-    "Holanger",
-    "Hurlen",
-    "Nilsen",
-    "Steffen",
-    "Tr",
-    "Træen",
-    "tscpaths",
-    "typeorm",
-    "unhashed",
-    "varchar"
-  ],
-  "flagWords": ["hte"]
+    "version": "0.1",
+    "language": "en",
+    "words": [
+        "anovote",
+        "Christoffer",
+        "en",
+        "Holanger",
+        "Hurlen",
+        "Nilsen",
+        "Steffen",
+        "Tr",
+        "Træen",
+        "tscpaths",
+        "typeorm",
+        "unhashed",
+        "varchar",
+        "zwaldowski"
+    ],
+    "flagWords": [
+        "hte"
+    ]
 }

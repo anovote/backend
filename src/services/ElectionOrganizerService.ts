@@ -58,15 +58,16 @@ export class ElectionOrganizerService {
 
   /**
    * Updates the password of a election organizer
-   * @param iUpdatePassword the details needed to update the password
+   * @param newPassword The password we want to change to
+   * @param id The id of the election organizer who is changing its password
    */
-  async updatePassword(newPassword: string, idOfElectionOrganizer: number) {
+  async updatePassword(newPassword: string, id: number) {
     const encryptionService = new EncryptionService()
     const repository = getCustomRepository(ElectionOrganizerRepository)
     const authService = new AuthenticationService()
 
     const electionOrganizer: ElectionOrganizer | undefined = await repository.findOne({
-      id: idOfElectionOrganizer
+      id: id
     })
 
     if (!electionOrganizer) {

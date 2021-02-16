@@ -36,7 +36,7 @@ router.get('/:id', async (request, response) => {
     const id = Number.parseInt(request.params.id)
     const ballot = await ballotSerivce.get(id)
 
-    if (ballot instanceof Ballot) {
+    if (ballot) {
       return response.send(ballot)
     } else {
       return response.status(StatusCodes.NOT_FOUND).send('Could not find ballot')

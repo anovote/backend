@@ -18,7 +18,6 @@ router.post('/register', async (request, response, next) => {
 })
 
 router.post('/login', async (request, response, next) => {
-  console.log('Login')
   try {
     const token = await authService.login(request.body)
     response.json({ token })

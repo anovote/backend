@@ -4,21 +4,7 @@ import electionRoutes from '@/api/routes/elections'
 import { checkAuth } from './middleware/authentication'
 import { enforceContentTypeJson } from './middleware/enforceContentTypeJson'
 import morgan from 'morgan'
-import rateLimit from 'express-rate-limit'
-
-const apiLimiter = rateLimit({
-  windowMs: 10 * 60 * 1000, // 10 min
-  max: 100,
-  message: 'Request limit reached',
-  headers: true
-})
-
-const loginLimiter = rateLimit({
-  windowMs: 10 * 60 * 1000, // 10 min
-  max: 10,
-  message: 'Too many login attempts. Try again later',
-  headers: true
-})
+import { loginLimiter, apiLimiter } from './apiLimiter'
 
 const publicRoutes = Router()
 publicRoutes.use('/auth/login', loginLimiter)

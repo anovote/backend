@@ -1,3 +1,4 @@
+import { NotFoundError } from '@/lib/Errors/NotFoundError'
 import { logger } from '@/loaders/logger'
 import { NextFunction, Request, Response } from 'express'
 import HttpStatusCodes from 'http-status-codes'
@@ -5,15 +6,16 @@ import HttpStatusCodes from 'http-status-codes'
 export const errorHandler = (err: Error, req: Request, res: Response, next: NextFunction) => {
   logger.error(err.message)
 
-  if (err instanceof Error) {
-    res.status(418).json({
+  if (err instanceof NotFoundError) {
+    return res.status(404).json({
       error: {
-        status: 500,
-        message: 'test',
+        status: 404,
+        name: err.name,
+        message: err.message,
         original: err
       }
     })
   }
 
-  res.status(HttpStatusCodes.INTERNAL_SERVER_ERROR).json(err.message)
+  return res.status(HttpStatusCodes.INTERNAL_SERVER_ERROR).json('waiting for christoffer to add more errors')
 }

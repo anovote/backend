@@ -13,8 +13,7 @@ export const checkAuth = async (req: Request, res: Response, next: NextFunction)
   try {
     await new AuthenticationService().verifyToken(bearerSchema)
   } catch (e) {
-    res.sendStatus(403)
-    // ! TODO throw more meaningful error
+    next(e)
   }
 
   next()

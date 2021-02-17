@@ -6,7 +6,7 @@ import { ServerErrorMessage } from '../messages/ServerErrorMessages'
  * Unathorized error has default status code of 401
  */
 export class UnauthorizedError extends BaseError {
-  constructor() {
-    super({ message: ServerErrorMessage.unauthorized(), httpStatus: StatusCodes.UNAUTHORIZED })
+  constructor({ message }: { message: string } = { message: ServerErrorMessage.unauthorized() }) {
+    super({ message, httpStatus: StatusCodes.UNAUTHORIZED })
   }
 }

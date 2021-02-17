@@ -4,6 +4,9 @@ interface ServerErrorMessages extends IErrorMessage {
   unexpected: () => string
   notFound: (entity: string) => string
   unauthorized: () => string
+  noAuthorizationHeader: () => string
+  invalidTokenFormat: () => string
+  invalidToken: () => string
   forbidden: () => string
 }
 
@@ -11,5 +14,8 @@ export const ServerErrorMessage: ServerErrorMessages = {
   unexpected: () => 'Unexpected server error',
   notFound: (entity: string) => `${entity} not found`,
   unauthorized: () => 'You are unauthorized, please login',
+  noAuthorizationHeader: () => 'No authorization header provided',
+  invalidTokenFormat: () => 'Token format is invalid',
+  invalidToken: () => 'Invalid token, please login again',
   forbidden: () => 'You are forbidden to access this resource'
 }

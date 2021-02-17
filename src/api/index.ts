@@ -6,6 +6,7 @@ import ballotRoutes from '@/api/routes/ballot'
 import { checkAuth } from './middleware/authentication'
 import { enforceContentTypeJson } from './middleware/enforceContentTypeJson'
 import morgan from 'morgan'
+import { errorHandler } from './middleware/errorHandler'
 
 const publicRoutes = Router()
 publicRoutes.use('/auth', authRoutes)
@@ -24,3 +25,4 @@ export default Router()
   .use('/public', publicRoutes)
   .use('/voter', voterRoutes)
   .use('/admin', organizerRoutes)
+  .use(errorHandler)

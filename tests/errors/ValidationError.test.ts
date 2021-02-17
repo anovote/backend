@@ -1,4 +1,4 @@
-import { ValidationError } from '@/lib/error/validation/ValidationError'
+import { ValidationError } from '@/lib/errors/validation/ValidationError'
 
 it('should have default http status code of 400', async () => {
   const error = new ValidationError()

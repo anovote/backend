@@ -1,4 +1,4 @@
-import { UnauthorizedError } from '@/lib/error/http/UnauthorizedError'
+import { UnauthorizedError } from '@/lib/errors/http/UnauthorizedError'
 import { StatusCodes } from 'http-status-codes'
 
 it('should have http status code 401', async () => {

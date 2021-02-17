@@ -1,4 +1,4 @@
-import { ForbiddenError } from '@/lib/error/http/ForbiddenError'
+import { ForbiddenError } from '@/lib/errors/http/ForbiddenError'
 import { StatusCodes } from 'http-status-codes'
 
 it('should have http status code 403', async () => {

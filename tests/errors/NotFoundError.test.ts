@@ -1,4 +1,4 @@
-import { NotFoundError } from '@/lib/error/http/NotFoundError'
+import { NotFoundError } from '@/lib/errors/http/NotFoundError'
 import { StatusCodes } from 'http-status-codes'
 
 it('should have http status code 404', async () => {

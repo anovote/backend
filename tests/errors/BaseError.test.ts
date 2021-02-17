@@ -1,4 +1,4 @@
-import { BaseError } from '@/lib/error/BaseError'
+import { BaseError } from '@/lib/errors/BaseError'
 import { StatusCodes } from 'http-status-codes'
 
 it('should return internal server error as default http status', async () => {

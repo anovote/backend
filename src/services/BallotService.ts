@@ -1,13 +1,9 @@
-import { CreateError } from '@/lib/Errors/CreateError'
-import { NotFoundError } from '@/lib/Errors/NotFoundError'
-import { UpdateError } from '@/lib/Errors/UpdateError'
-import { ValidationError } from '@/lib/Errors/ValidationError'
-import { logger } from '@/loaders/logger'
+import { validateEntity } from '@/helpers/validateEntity'
+import { NotFoundError } from '@/lib/errors/http/NotFoundError'
+import { ServerErrorMessage } from '@/lib/errors/messages/ServerErrorMessages'
 import { Ballot } from '@/models/Ballot/BallotEntity'
 import { IBallot } from '@/models/Ballot/IBallot'
-import { validate } from 'class-validator'
 import { Connection, Repository } from 'typeorm'
-import { error } from 'winston'
 import { ElectionService } from './ElectionService'
 
 /**
@@ -31,22 +27,14 @@ export class BallotService {
    * @param newBallot the ballot to create
    */
   async create(newBallot: IBallot): Promise<Ballot | undefined> {
-    try {
-      const election = await this._electionService.getElectionById(newBallot.election)
-      if (!election) throw new NotFoundError(`Election with id ${newBallot.election} doesnt exist for ballot`)
+    const election = await this._electionService.getElectionById(newBallot.election)
+    if (!election) throw new NotFoundError({ message: ServerErrorMessage.notFound('Election') })
 
-      const ballotEntity = this._ballotRepository.create(newBallot)
-      ballotEntity.id = -1
-      const validation = await this.validateBallot(ballotEntity)
-      if (!validation.isValid) throw new ValidationError('Failed to create new ballot, failed validation')
+    const ballotEntity = this._ballotRepository.create(newBallot)
+    ballotEntity.id = -1
+    await validateEntity(ballotEntity)
 
-      return await this._ballotRepository.save(ballotEntity)
-    } catch (error) {
-      logger.error(error)
-      if (error instanceof NotFoundError) throw error
-      if (error instanceof ValidationError) throw new CreateError('Unable to create ballot')
-      throw new Error('Unexpected error')
-    }
+    return await this._ballotRepository.save(ballotEntity)
   }
 
   /**
@@ -57,25 +45,17 @@ export class BallotService {
    * @param updatedBallot the updated ballot details
    */
   async update(id: number, updatedBallot: IBallot) {
-    try {
-      const existingBallot = await this._ballotRepository.findOne({ id })
-      if (!existingBallot) throw new NotFoundError(`Ballot with id ${id} does not exist`)
+    const existingBallot = await this._ballotRepository.findOne({ id })
+    if (!existingBallot) throw new NotFoundError({ message: ServerErrorMessage.notFound('Ballot') })
 
-      // Todo; make better implementation of this (makes sure it cant be updated by user).
-      delete (updatedBallot as any)['createdAt']
-      delete (updatedBallot as any)['updatedAt']
+    // Todo; make better implementation of this (makes sure it cant be updated by user).
+    delete (updatedBallot as any)['createdAt']
+    delete (updatedBallot as any)['updatedAt']
 
-      const mergedBallot = Object.assign(existingBallot, updatedBallot)
-      const validation = await this.validateBallot(mergedBallot)
+    const mergedBallot = Object.assign(existingBallot, updatedBallot)
+    await validateEntity(mergedBallot)
 
-      if (!validation.isValid) throw new ValidationError('Failed to create new ballot, failed validation')
-      return await this._ballotRepository.save(mergedBallot)
-    } catch (error) {
-      logger.error(error)
-      if (error instanceof NotFoundError) throw error
-      if (error instanceof ValidationError) throw new UpdateError('Unable to create ballot')
-      throw new Error('Unexpected error')
-    }
+    return await this._ballotRepository.save(mergedBallot)
   }
   /**
    * Deletes a ballot by the given ID, if it exists,
@@ -84,15 +64,9 @@ export class BallotService {
    * @param id the id of the ballot to delete
    */
   async delete(id: number) {
-    try {
-      const existingBallot = await this._ballotRepository.findOne(id)
-      if (!existingBallot) throw new NotFoundError(`Ballot with id ${id} does not exist`)
-      return await this._ballotRepository.remove(existingBallot)
-    } catch (error) {
-      logger.error(error)
-      if (error instanceof NotFoundError) throw error
-      throw new Error('Unexpected error')
-    }
+    const existingBallot = await this._ballotRepository.findOne(id)
+    if (!existingBallot) throw new NotFoundError({ message: ServerErrorMessage.notFound('Ballot') })
+    return await this._ballotRepository.remove(existingBallot)
   }
   /**
    * Tries to get a ballot with the given ID, if the ballot exists return it,
@@ -101,27 +75,6 @@ export class BallotService {
    * @param id the id of the ballot to get
    */
   async get(id: number) {
-    try {
-      return await this._ballotRepository.findOne({ id })
-    } catch (error) {
-      logger.error(error)
-      throw new Error('Unexpected error')
-    }
-  }
-
-  private async validateBallot(ballot: Ballot) {
-    const validation = await validate(ballot)
-    const isValid = validation.length === 0
-    const messages = []
-    for (const validationMessage of validation) {
-      for (const key in validationMessage.constraints) {
-        if (Object.prototype.hasOwnProperty.call(validationMessage.constraints, key)) {
-          const message: string = (validationMessage.constraints as any)[key]
-          messages.push(message)
-        }
-      }
-    }
-
-    return { isValid, messages }
+    return await this._ballotRepository.findOne({ id })
   }
 }

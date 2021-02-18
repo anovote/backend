@@ -1,6 +1,6 @@
 import config from '@/config'
-import { UnauthorizedError } from '@/lib/error/http/UnauthorizedError'
-import { ServerErrorMessage } from '@/lib/error/messages/ServerErrorMessages'
+import { UnauthorizedError } from '@/lib/errors/http/UnauthorizedError'
+import { ServerErrorMessage } from '@/lib/errors/messages/ServerErrorMessages'
 import { ElectionOrganizer } from '@/models/ElectionOrganizer/ElectionOrganizerEntity'
 import { sign, verify } from 'jsonwebtoken'
 import { getRepository } from 'typeorm'
@@ -56,7 +56,6 @@ export class AuthenticationService {
    * Tries to login a user with provided payload, before returing the token if it was successful
    * @param ctx the context passed from a router, typically
    * @return token, the token for the logged in user
-   * ! TODO throw more meaningful errors
    */
   async login(payload: LoginPayload): Promise<string | undefined> {
     const electionOrg = await getRepository(ElectionOrganizer).findOne({

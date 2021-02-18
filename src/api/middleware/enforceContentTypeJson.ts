@@ -1,6 +1,7 @@
 import { NextFunction } from 'connect'
 import { Request, Response } from 'express'
 import { NotAcceptableError } from '@/lib/errors/http/NotAcceptableError'
+import { ServerErrorMessage } from '@/lib/errors/messages/ServerErrorMessages'
 /**
  * Enforces content type json
  * Middelware can be used on any endpoint.
@@ -14,7 +15,7 @@ import { NotAcceptableError } from '@/lib/errors/http/NotAcceptableError'
 export function enforceContentTypeJson(request: Request, response: Response, next: NextFunction) {
   try {
     if (!request.is('json') && request.method != 'GET' && request.method != 'DELETE') {
-      throw new NotAcceptableError({ message: 'Wrong content type. Content type must be of type: application/json' })
+      throw new NotAcceptableError({ message: ServerErrorMessage.wrongContentType('application/json') })
     }
   } catch (error) {
     next(error)

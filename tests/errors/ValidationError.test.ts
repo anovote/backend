@@ -9,6 +9,6 @@ it('should return validation error messages in response', async () => {
   const missing = 'missing'
   const required = 'required'
   const validationMessages = [required, missing]
-  const error = new ValidationError({ message: 'test', httpStatus: 400, validation: validationMessages })
+  const error = new ValidationError({ message: 'test', validation: validationMessages })
   expect(error.toResponse().validationMessages).toEqual(validationMessages)
 })

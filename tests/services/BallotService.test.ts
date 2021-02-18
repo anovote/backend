@@ -1,5 +1,4 @@
 import { NotFoundError } from '@/lib/errors/http/NotFoundError'
-import { BadRequestError } from '@/lib/errors/http/BadRequestError'
 import { Ballot } from '@/models/Ballot/BallotEntity'
 import { BallotResultDisplay } from '@/models/Ballot/BallotResultDisplay'
 import { BallotType } from '@/models/Ballot/BallotType'
@@ -13,6 +12,8 @@ import { getTestDatabase } from '../helpers/database'
 import { deepCopy } from '@/helpers/object'
 import { createDummyElection, deleteDummyElections } from '../helpers/seed/election'
 import { createDummyOganizer, deleteDummyOrganizer } from '../helpers/seed/organizer'
+import { ValidationError } from '@/lib/errors/validation/ValidationError'
+import { BaseError } from '@/lib/errors/BaseError'
 
 let db: Connection
 let organizer: ElectionOrganizer
@@ -105,7 +106,9 @@ it('should throw create error on negative order', async () => {
   try {
     await ballotSerivce.create(ballot)
   } catch (error) {
-    expect(error).toBeInstanceOf(BadRequestError)
+    expect(error).toBeInstanceOf(ValidationError)
+    const err = error as ValidationError
+    expect(err.toResponse().validationMessages).toContain('order must be a positive number')
   }
 })
 

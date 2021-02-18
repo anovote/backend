@@ -1,25 +1,17 @@
 {
-    //EDITOR
-    "editor.formatOnSave": true,
-    "editor.autoIndent": "full",
-    "files.eol": "\n",
-    "files.exclude": {
-        "**/.git": true,
-        "**/.svn": true,
-        "**/.hg": true,
-        "**/CVS": true,
-        "**/.DS_Store": true,
-        "node_modules": true
-    },
-    "[typescript]": {
-        "editor.defaultFormatter": "esbenp.prettier-vscode",
-    },
-    "cSpell.words": [
-        "anovote",
-        "tscpaths",
-        "typeorm",
-        "unhashed",
-        "varchar"
-    ],
-    //DENO
+  //EDITOR
+  "editor.formatOnSave": true,
+  "editor.autoIndent": "full",
+  "files.eol": "\n",
+  "files.exclude": {
+    "**/.git": true,
+    "**/.svn": true,
+    "**/.hg": true,
+    "**/CVS": true,
+    "**/.DS_Store": true,
+    "node_modules": true
+  },
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  }
 }

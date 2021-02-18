@@ -4,7 +4,7 @@ import { NotAcceptableError } from '@/lib/errors/http/NotAcceptableError'
 import { ServerErrorMessage } from '@/lib/errors/messages/ServerErrorMessages'
 /**
  * Enforces content type json
- * Middelware can be used on any endpoint.
+ * Middleware can be used on any endpoint.
  *
  * Example to add middleware:
  * `router.use(enforceContentTypeJson)`

@@ -141,11 +141,10 @@ it('should not update if no ballot exists', async () => {
 })
 
 it('should not change id of updated ballot', async () => {
-  let ballot
   const passedInId = seedBallot.id
   const data = deepCopy<Ballot>(seedBallot)
   data.id = 5
-  ballot = await ballotSerivce.update(passedInId, deepCopy<IBallot>(data))
+  const ballot = await ballotSerivce.update(passedInId, deepCopy<IBallot>(data))
   expect(ballot.id).toBe(passedInId)
 })
 

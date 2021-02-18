@@ -10,7 +10,7 @@ import { BallotService } from '@/services/BallotService'
 import { ElectionService } from '@/services/ElectionService'
 import { Connection } from 'typeorm'
 import { getTestDatabase } from '../helpers/database'
-import { deepCopy } from '../helpers/object'
+import { deepCopy } from '@/helpers/object'
 import { createDummyElection, deleteDummyElections } from '../helpers/seed/election'
 import { createDummyOganizer, deleteDummyOrganizer } from '../helpers/seed/organizer'
 

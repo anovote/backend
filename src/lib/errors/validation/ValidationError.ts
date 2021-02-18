@@ -17,13 +17,12 @@ export class ValidationError extends BaseError {
   private _validationMessages: Array<string> = []
 
   constructor(
-    { message, validation, httpStatus }: { message: string; validation: ValidationMessage; httpStatus: number } = {
+    { message, validation }: { message: string; validation: ValidationMessage } = {
       message: 'Validation error',
-      validation: [],
-      httpStatus: StatusCodes.BAD_REQUEST
+      validation: []
     }
   ) {
-    super({ message, httpStatus })
+    super({ message, httpStatus: StatusCodes.BAD_REQUEST })
     this.setValidationMessages(validation)
   }
 

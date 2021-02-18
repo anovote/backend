@@ -55,7 +55,7 @@ export class ElectionService {
 
   private async hashEntityPassword(electionDTO: IElection) {
     const unhashedPassword = electionDTO.password
-    const hashedPassword = await this.encryptionService.hash(unhashedPassword)
+    const hashedPassword = await this.encryptionService.hash(unhashedPassword!)
     electionDTO.password = hashedPassword
   }
 

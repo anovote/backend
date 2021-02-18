@@ -9,6 +9,7 @@ interface ServerErrorMessages extends IErrorMessage {
   invalidToken: () => string
   invalidData: () => string
   forbidden: () => string
+  wrongContentType: (validType: string) => string
 }
 
 export const ServerErrorMessage: ServerErrorMessages = {
@@ -19,5 +20,6 @@ export const ServerErrorMessage: ServerErrorMessages = {
   invalidTokenFormat: () => 'Token format is invalid',
   invalidToken: () => 'Invalid token, please login again',
   invalidData: () => 'Invalid data',
-  forbidden: () => 'You are forbidden to access this resource'
+  forbidden: () => 'You are forbidden to access this resource',
+  wrongContentType: (validType: string) => `Wrong content type. Acceptable content type is: ${validType}`
 }

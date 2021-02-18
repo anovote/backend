@@ -7,6 +7,7 @@ interface ServerErrorMessages extends IErrorMessage {
   noAuthorizationHeader: () => string
   invalidTokenFormat: () => string
   invalidToken: () => string
+  invalidData: () => string
   forbidden: () => string
 }
 
@@ -17,5 +18,6 @@ export const ServerErrorMessage: ServerErrorMessages = {
   noAuthorizationHeader: () => 'No authorization header provided',
   invalidTokenFormat: () => 'Token format is invalid',
   invalidToken: () => 'Invalid token, please login again',
+  invalidData: () => 'Invalid data',
   forbidden: () => 'You are forbidden to access this resource'
 }

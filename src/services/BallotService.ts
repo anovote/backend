@@ -1,3 +1,4 @@
+import { strip } from '@/helpers/sanitize'
 import { validateEntity } from '@/helpers/validateEntity'
 import { NotFoundError } from '@/lib/errors/http/NotFoundError'
 import { ServerErrorMessage } from '@/lib/errors/messages/ServerErrorMessages'
@@ -48,11 +49,8 @@ export class BallotService {
     const existingBallot = await this._ballotRepository.findOne({ id })
     if (!existingBallot) throw new NotFoundError({ message: ServerErrorMessage.notFound('Ballot') })
 
-    // Todo; make better implementation of this (makes sure it cant be updated by user).
-    delete (updatedBallot as any)['createdAt']
-    delete (updatedBallot as any)['updatedAt']
-
-    const mergedBallot = Object.assign(existingBallot, updatedBallot)
+    const strippedBallot = strip(updatedBallot, ['id', 'createdAt', 'updatedAt'])
+    const mergedBallot = Object.assign(existingBallot, strippedBallot)
     await validateEntity(mergedBallot)
 
     return await this._ballotRepository.save(mergedBallot)

@@ -4,7 +4,7 @@ import { StatusCodes } from 'http-status-codes'
 
 /**
  * Enforces content type json
- * Middelware can be used on any endpoint.
+ * Middleware can be used on any endpoint.
  *
  * Example to add middleware:
  * `router.use(enforceContentTypeJson)`

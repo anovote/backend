@@ -2,7 +2,7 @@ import dotenv from 'dotenv'
 
 dotenv.config()
 
-/* Node runtime enviroment state */
+/* Node runtime environment state */
 const environments = {
   development: 'development',
   test: 'test',
@@ -19,7 +19,7 @@ if (!Object.values(environments).find((val) => environment === val)) {
   )
 }
 
-// The src folder where the project will be when in dev / prduction
+// The src folder where the project will be when in dev / production
 const src = environment === environments.development || environment === environments.test ? 'src' : 'dist'
 
 export default {

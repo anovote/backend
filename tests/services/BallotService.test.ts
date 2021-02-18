@@ -1,5 +1,5 @@
-import { CreateError } from '@/lib/Errors/CreateError'
-import { NotFoundError } from '@/lib/Errors/NotFoundError'
+import { NotFoundError } from '@/lib/errors/http/NotFoundError'
+import { BadRequestError } from '@/lib/errors/http/BadRequestError'
 import { Ballot } from '@/models/Ballot/BallotEntity'
 import { BallotResultDisplay } from '@/models/Ballot/BallotResultDisplay'
 import { BallotType } from '@/models/Ballot/BallotType'
@@ -105,7 +105,7 @@ it('should throw create error on negative order', async () => {
   try {
     await ballotSerivce.create(ballot)
   } catch (error) {
-    expect(error).toBeInstanceOf(CreateError)
+    expect(error).toBeInstanceOf(BadRequestError)
   }
 })
 

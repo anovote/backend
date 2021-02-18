@@ -5,6 +5,9 @@ import { ElectionService } from '@/services/ElectionService'
 import { Router } from 'express'
 import { StatusCodes } from 'http-status-codes'
 import { isObjectEmpty } from '@/helpers/isObjectEmpty'
+import { NotFoundError } from '@/lib/error/http/NotFoundError'
+import { ServerErrorMessage } from '@/lib/error/messages/ServerErrorMessages'
+import { BadRequestError } from '@/lib/error/http/BadRequestError'
 
 const router = Router()
 
@@ -14,7 +17,7 @@ router.post('/', async (request, response, next) => {
     const electionDTO: IElection = request.body
 
     if (!electionDTO || isObjectEmpty(electionDTO)) {
-      throw new Error('No data')
+      throw new BadRequestError({ message: 'Empty request' })
     }
 
     const election: Election | undefined = await electionService.createElection(electionDTO)
@@ -39,7 +42,7 @@ router.get('/:id', async (request, response, next) => {
     const electionService = new ElectionService(database)
     const id: number = Number.parseInt(request.params.id)
     const election = await electionService.getElectionById(id)
-    if (!election) throw new Error(`Could not find election with id ${id}`)
+    if (!election) throw new NotFoundError({ message: ServerErrorMessage.notFound(`Election`) })
     response.status(StatusCodes.OK).json(election)
   } catch (error) {
     next(error)
@@ -52,7 +55,7 @@ router.put('/:id', async (request, response, next) => {
     const id: number = Number.parseInt(request.params.id)
     const { election } = request.body
     if (!election) {
-      throw new Error('No data')
+      throw new BadRequestError({ message: 'Empty request' })
     }
     const result = await electionService.updateElectionById(id, election)
     response.status(StatusCodes.OK).json(result)

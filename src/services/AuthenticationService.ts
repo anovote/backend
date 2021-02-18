@@ -53,7 +53,7 @@ export class AuthenticationService {
   }
 
   /**
-   * Tries to login a user with provided payload, before returing the token if it was successful
+   * Tries to login a user with provided payload, before returning the token if it was successful
    * @param ctx the context passed from a router, typically
    * @return token, the token for the logged in user
    */

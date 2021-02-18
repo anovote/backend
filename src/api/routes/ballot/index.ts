@@ -12,9 +12,9 @@ const router = Router()
 
 router.post('/', async (request, response, next) => {
   try {
-    const ballotSerivce = new BallotService(database, new ElectionService(database))
+    const ballotService = new BallotService(database, new ElectionService(database))
     const newBallot = request.body as IBallot
-    const ballot = await ballotSerivce.create(newBallot)
+    const ballot = await ballotService.create(newBallot)
     return response.send(ballot)
   } catch (error) {
     next(error)
@@ -23,7 +23,7 @@ router.post('/', async (request, response, next) => {
 
 router.get('/:id', async (request, response, next) => {
   try {
-    // TODO Validate that the user owns/ is allowd to get this ballot
+    // TODO Validate that the user owns/ is allowed to get this ballot
     const ballotSerivce = new BallotService(database, new ElectionService(database))
     const id = Number.parseInt(request.params.id)
     const ballot = await ballotSerivce.get(id)
@@ -37,7 +37,7 @@ router.get('/:id', async (request, response, next) => {
 
 router.delete('/:id', async (request, response, next) => {
   try {
-    // TODO Validate that the user owns/ is allowd to delete this ballot
+    // TODO Validate that the user owns/ is allowed to delete this ballot
     const ballotSerivce = new BallotService(database, new ElectionService(database))
     const id = Number.parseInt(request.params.id)
     await ballotSerivce.delete(id)
@@ -50,7 +50,7 @@ router.delete('/:id', async (request, response, next) => {
 
 router.put('/:id', async (request, response, next) => {
   try {
-    // TODO Validate that the user owns/ is allowd to update this ballot
+    // TODO Validate that the user owns/ is allowed to update this ballot
     const ballotSerivce = new BallotService(database, new ElectionService(database))
     const id = Number.parseInt(request.params.id)
     const ballot = request.body as IBallot

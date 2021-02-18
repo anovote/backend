@@ -2,7 +2,7 @@ import { AuthenticationService } from '@/services/AuthenticationService'
 import { Router } from 'express'
 import { ElectionOrganizerService } from '@/services/ElectionOrganizerService'
 import { StatusCodes } from 'http-status-codes'
-import { BadRequestError } from '@/lib/error/http/BadRequestError'
+import { BadRequestError } from '@/lib/errors/http/BadRequestError'
 
 const authService = new AuthenticationService()
 const electionOrganizerService = new ElectionOrganizerService()

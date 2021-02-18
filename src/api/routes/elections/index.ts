@@ -5,9 +5,9 @@ import { ElectionService } from '@/services/ElectionService'
 import { Router } from 'express'
 import { StatusCodes } from 'http-status-codes'
 import { isObjectEmpty } from '@/helpers/isObjectEmpty'
-import { NotFoundError } from '@/lib/error/http/NotFoundError'
-import { ServerErrorMessage } from '@/lib/error/messages/ServerErrorMessages'
-import { BadRequestError } from '@/lib/error/http/BadRequestError'
+import { NotFoundError } from '@/lib/errors/http/NotFoundError'
+import { ServerErrorMessage } from '@/lib/errors/messages/ServerErrorMessages'
+import { BadRequestError } from '@/lib/errors/http/BadRequestError'
 
 const router = Router()
 

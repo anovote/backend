@@ -64,6 +64,7 @@ export class ElectionService {
     if (!existingElection) throw new NotFoundError({ message: ServerErrorMessage.notFound('Election') })
 
     const strippedElection = strip(electionDTO, ['id', 'createdAt', 'updatedAt'])
+    if (strippedElection?.password) await this.hashEntityPassword(strippedElection)
     const updatedElection = this.manager.create(strippedElection!)
     updatedElection.id = existingElection.id
     await validateEntity(updatedElection)

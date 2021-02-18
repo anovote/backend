@@ -13,7 +13,6 @@ import { deepCopy } from '@/helpers/object'
 import { createDummyElection, deleteDummyElections } from '../helpers/seed/election'
 import { createDummyOganizer, deleteDummyOrganizer } from '../helpers/seed/organizer'
 import { ValidationError } from '@/lib/errors/validation/ValidationError'
-import { BaseError } from '@/lib/errors/BaseError'
 
 let db: Connection
 let organizer: ElectionOrganizer
@@ -49,6 +48,7 @@ afterAll(async () => {
   await ballotSerivce.delete(seedBallot.id)
   await deleteDummyElections(db, [election])
   await deleteDummyOrganizer(db, organizer)
+  await db.close()
 })
 
 it('should create a ballot with all data filled out', async () => {
@@ -130,6 +130,23 @@ it('should throw error on out of range result display type', async () => {
   } catch (error) {
     expect(error).toBeInstanceOf(Error)
   }
+})
+
+it('should not update if no ballot exists', async () => {
+  try {
+    const updated = await ballotSerivce.update(100, deepCopy<IBallot>(seedBallot))
+  } catch (e) {
+    expect(e).toBeInstanceOf(NotFoundError)
+  }
+})
+
+it('should not change id of updated ballot', async () => {
+  let ballot
+  const passedInId = seedBallot.id
+  const data = deepCopy<Ballot>(seedBallot)
+  data.id = 5
+  ballot = await ballotSerivce.update(passedInId, deepCopy<IBallot>(data))
+  expect(ballot.id).toBe(passedInId)
 })
 
 it('should return the ballot with given id', async () => {

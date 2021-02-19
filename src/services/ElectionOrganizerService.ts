@@ -35,4 +35,26 @@ export class ElectionOrganizerService {
     const id = await this.save(organizer)
     return await authService.generateTokenFromId(id)
   }
+
+  /**
+   * Updates the password of a election organizer
+   * @param newPassword The password we want to change to
+   * @param id The id of the election organizer who is changing its password
+   */
+  async updatePassword(newPassword: string, id: number) {
+    const encryptionService = new EncryptionService()
+    const repository = getCustomRepository(ElectionOrganizerRepository)
+
+    const electionOrganizer: ElectionOrganizer | undefined = await repository.findOne({
+      id: id
+    })
+
+    if (!electionOrganizer) {
+      throw new RangeError('Did not find the election organizer')
+    }
+
+    electionOrganizer.password = await encryptionService.hash(newPassword)
+    const updatedElectionOrganizer = await repository.save(electionOrganizer)
+    return updatedElectionOrganizer
+  }
 }

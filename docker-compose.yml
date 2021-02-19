@@ -26,6 +26,7 @@ services:
     env_file:
       - .env.docker
   postgres_tests:
+    container_name: 'test-db'
     image: postgres:11
     env_file:
       - .env.docker

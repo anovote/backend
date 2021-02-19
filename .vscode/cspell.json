@@ -1,26 +1,34 @@
 {
-  "version": "0.1",
-  "language": "en",
-  "words": [
-    "anovote",
-    "postgres",
-    "postgresql",
-    "chmod",
-    "Christoffer",
-    "en",
-    "Holanger",
-    "Hurlen",
-    "Nilsen",
-    "spmef",
-    "Steffen",
-    "streetsidesoftware",
-    "Tr",
-    "Træen",
-    "tscpaths",
-    "typeorm",
-    "unhashed",
-    "varchar",
-    "zwaldowski"
-  ],
-  "flagWords": ["hte"]
+    "version": "0.1",
+    "language": "en",
+    "words": [
+        "anovote",
+        "chmod",
+        "Christoffer",
+        "downlevel",
+        "en",
+        "es",
+        "Holanger",
+        "Hurlen",
+        "map",
+        "Nilsen",
+        "postgres",
+        "postgresql",
+        "respawn",
+        "source",
+        "spmef",
+        "Steffen",
+        "streetsidesoftware",
+        "Tr",
+        "Træen",
+        "tscpaths",
+        "tslib",
+        "typeorm",
+        "unhashed",
+        "varchar",
+        "zwaldowski"
+    ],
+    "flagWords": [
+        "hte"
+    ]
 }

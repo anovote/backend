@@ -2,7 +2,7 @@ import config from '@/config'
 import { createConnection } from 'typeorm'
 
 async function setupConnection() {
-  await createConnection({
+  return await createConnection({
     name: 'test',
     type: 'postgres',
     host: 'localhost',

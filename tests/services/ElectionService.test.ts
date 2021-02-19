@@ -7,7 +7,7 @@ import { ElectionOrganizer } from '@/models/ElectionOrganizer/ElectionOrganizerE
 import { ElectionService } from '@/services/ElectionService'
 import { Connection } from 'typeorm'
 import { getTestDatabase } from '../helpers/database'
-import { createDummyOganizer, deleteDummyOrganizer } from '../helpers/seed/organizer'
+import { createDummyOrganizer, deleteDummyOrganizer } from '../helpers/seed/organizer'
 
 let db: Connection
 let organizer: ElectionOrganizer
@@ -17,7 +17,7 @@ let seedElection: Election
 
 beforeAll(async () => {
   db = await getTestDatabase()
-  organizer = await createDummyOganizer(db)
+  organizer = await createDummyOrganizer(db)
   electionService = new ElectionService(db)
 
   seedElection = await (electionService.createElection({

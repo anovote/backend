@@ -134,7 +134,7 @@ it('should throw error on out of range result display type', async () => {
 
 it('should not update if no ballot exists', async () => {
   try {
-    const updated = await ballotSerivce.update(100, deepCopy<IBallot>(seedBallot))
+    const updated = await ballotService.update(100, deepCopy<IBallot>(seedBallot))
   } catch (e) {
     expect(e).toBeInstanceOf(NotFoundError)
   }
@@ -144,7 +144,7 @@ it('should not change id of updated ballot', async () => {
   const passedInId = seedBallot.id
   const data = deepCopy<Ballot>(seedBallot)
   data.id = 5
-  const ballot = await ballotSerivce.update(passedInId, deepCopy<IBallot>(data))
+  const ballot = await ballotService.update(passedInId, deepCopy<IBallot>(data))
   expect(ballot.id).toBe(passedInId)
 })
 

@@ -1,8 +1,18 @@
 import config from '@/config'
-import { createConnection } from 'typeorm'
+import { Connection, createConnection } from 'typeorm'
+
+let databaseConnectionPromise: Promise<Connection>
 
 async function setupConnection() {
-  return await createConnection({
+  if (databaseConnectionPromise) {
+    console.log('here')
+
+    return databaseConnectionPromise
+  }
+
+  console.log('or here')
+
+  databaseConnectionPromise = createConnection({
     name: 'test',
     type: 'postgres',
     host: 'localhost',
@@ -15,6 +25,8 @@ async function setupConnection() {
     dropSchema: true,
     logging: false
   })
+
+  return databaseConnectionPromise
 }
 
 export default setupConnection

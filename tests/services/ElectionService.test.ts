@@ -118,7 +118,7 @@ it('should delete a election which exists', async () => {
   expect(deleted!.title).toBe(election!.title)
 })
 
-it('should throw not found eror when deleting a election which do not exist', async () => {
+it('should throw not found error when deleting a election which do not exist', async () => {
   try {
     const deleted = await electionService.deleteElectionById(99999999)
   } catch (error) {

@@ -30,7 +30,7 @@ it('should not alter the original object', async () => {
   expect(stripped).not.toEqual(targetObject)
 })
 
-it('should not change object if keys dont exist', async () => {
+it('should not change object if keys do not exist', async () => {
   const stripKeys = ['x', 'y']
   let stripped = strip(targetObject, stripKeys)
   expect(stripped).toEqual(targetObject)

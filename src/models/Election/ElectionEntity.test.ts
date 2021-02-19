@@ -3,23 +3,12 @@ import { ElectionOrganizer } from '../ElectionOrganizer/ElectionOrganizerEntity'
 import { Election } from './ElectionEntity'
 import { ElectionStatus } from './ElectionStatus'
 import config from '@/config'
+import setupConnection from '@/loaders/setupTestDB'
 
 let repo: Repository<Election>
 
 beforeEach(async () => {
-  await createConnection({
-    name: 'test',
-    type: 'postgres',
-    host: 'localhost',
-    port: 5433,
-    username: config.database.user,
-    password: config.database.password,
-    database: 'TestDB',
-    entities: [`${config.src}/models/**/*.{ts,js}`],
-    synchronize: true,
-    dropSchema: true,
-    logging: false
-  })
+  await setupConnection()
   repo = getConnection('test').getRepository(Election)
 })
 

@@ -43,7 +43,8 @@ export class Ballot {
 
   @Column({
     type: 'enum',
-    enum: BallotResultDisplay
+    enum: BallotResultDisplay,
+    default: BallotResultDisplay.SINGLE
   })
   resultDisplayType!: BallotResultDisplay
 

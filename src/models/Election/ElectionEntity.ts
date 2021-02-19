@@ -48,7 +48,7 @@ export class Election implements IElection {
   @Column({ type: String, nullable: true })
   password!: string
 
-  @Column({ type: 'enum', enum: ElectionStatus })
+  @Column({ type: 'enum', enum: ElectionStatus, default: ElectionStatus.NotStarted })
   status!: ElectionStatus
 
   @Column({ type: 'boolean', default: true })

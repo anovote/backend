@@ -52,9 +52,8 @@ export class ElectionOrganizerService {
    */
   async updatePassword(newPassword: string, id: number) {
     const encryptionService = new EncryptionService()
-    const repository = this._organizerRepository
 
-    const electionOrganizer: ElectionOrganizer | undefined = await repository.findOne({
+    const electionOrganizer: ElectionOrganizer | undefined = await this._organizerRepository.findOne({
       id
     })
 
@@ -63,7 +62,7 @@ export class ElectionOrganizerService {
     }
 
     electionOrganizer.password = await encryptionService.hash(newPassword)
-    const updatedElectionOrganizer = await repository.save(electionOrganizer)
+    const updatedElectionOrganizer = await this._organizerRepository.save(electionOrganizer)
     return updatedElectionOrganizer
   }
   /**

@@ -27,7 +27,7 @@ export class ValidationError extends BaseError {
   }
 
   /**
-   * Sets the validation message from provided array of validation messags and class validation errors.
+   * Sets the validation message from provided array of validation messages and class validation errors.
    * If the array is empty, a default response message is set.
    * @param validation array of validation messages and/or class validation messages
    */

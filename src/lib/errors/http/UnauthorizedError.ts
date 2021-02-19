@@ -3,7 +3,7 @@ import { BaseError } from '../BaseError'
 import { ServerErrorMessage } from '../messages/ServerErrorMessages'
 
 /**
- * Unathorized error has default status code of 401
+ * Unauthorized error has default status code of 401
  */
 export class UnauthorizedError extends BaseError {
   constructor({ message }: { message: string } = { message: ServerErrorMessage.unauthorized() }) {

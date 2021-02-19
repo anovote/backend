@@ -10,14 +10,9 @@ import { IErrorResponse } from './IErrorResponse'
 export class BaseError extends Error {
   private _httpStatus: number = StatusCodes.INTERNAL_SERVER_ERROR
 
-  constructor(
-    { message, httpStatus }: { message: string; httpStatus: StatusCodes } = {
-      message: ServerErrorMessage.unexpected(),
-      httpStatus: StatusCodes.INTERNAL_SERVER_ERROR
-    }
-  ) {
-    super(message)
-    this._httpStatus = httpStatus
+  constructor({ message, httpStatus }: { message?: string; httpStatus?: StatusCodes } = {}) {
+    super(message ? message : ServerErrorMessage.unexpected())
+    if (httpStatus) this._httpStatus = httpStatus
   }
 
   /**

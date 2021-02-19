@@ -3,7 +3,7 @@ services:
   app:
     container_name: 'anovote_backend'
     env_file:
-      - .env
+      - .env.docker
     image: anovote:backend
     build: .
     ports:
@@ -24,7 +24,7 @@ services:
     environment:
       TZ: 'Europe/Oslo'
     env_file:
-      - .env
+      - .env.docker
 volumes:
   anovote-data:
 networks:

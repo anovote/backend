@@ -17,13 +17,6 @@ COPY . .
 CMD ["yarn", "dev"]
 # ===================================
 
-
-# RUN TEST 
-FROM source as test
-RUN yarn test
-# ===================================
-
-
 # BUILD PROJECT 
 FROM source as build
 # Tells node that we run in production

@@ -1,8 +1,10 @@
+import config from '@/config'
+import { UnauthorizedError } from '@/lib/errors/http/UnauthorizedError'
+import { ServerErrorMessage } from '@/lib/errors/messages/ServerErrorMessages'
 import { ElectionOrganizer } from '@/models/ElectionOrganizer/ElectionOrganizerEntity'
 import { sign, verify } from 'jsonwebtoken'
 import { getRepository } from 'typeorm'
 import { EncryptionService } from './EncryptionService'
-import config from '@/config'
 
 /**
  * Required properties to pass along to generate a token
@@ -51,24 +53,18 @@ export class AuthenticationService {
   }
 
   /**
-   * Tries to login a user with provided payload, before returing the token if it was successful
+   * Tries to login a user with provided payload, before returning the token if it was successful
    * @param ctx the context passed from a router, typically
    * @return token, the token for the logged in user
-   * ! TODO throw more meaningful errors
    */
-  async login(payload: LoginPayload): Promise<string> {
-    let electionOrg: ElectionOrganizer | undefined
-
-    electionOrg = await getRepository(ElectionOrganizer).findOne({
+  async login(payload: LoginPayload): Promise<string | undefined> {
+    const electionOrg = await getRepository(ElectionOrganizer).findOne({
       email: payload.email
     })
 
-    if (!electionOrg) throw new Error('No election organizer found')
-
+    if (!electionOrg) return
     const passwordMatches = await this.encryptionService.compareAgainstHash(payload.password, electionOrg.password)
-
-    if (!passwordMatches) throw new Error('Password is not matching')
-
+    if (!passwordMatches) return
     return await this.generateTokenFromId(electionOrg.id)
   }
 
@@ -93,15 +89,15 @@ export class AuthenticationService {
    */
   async verifyToken(authorizationSchema: string | undefined): Promise<DecodedTokenValue> {
     if (!authorizationSchema) {
-      throw new Error('No authorization header provided')
+      throw new UnauthorizedError({ message: ServerErrorMessage.noAuthorizationHeader() })
     }
     const token = this.getBearerToken(authorizationSchema)
 
-    if (!token) throw new Error('No token found on given schema')
+    if (!token) throw new UnauthorizedError({ message: ServerErrorMessage.invalidTokenFormat() })
 
     const decoded = verify(token, config.secret!) as DecodedTokenValue
 
-    if (!decoded) throw new Error('Token is invalid. The source can not be trusted')
+    if (!decoded) throw new UnauthorizedError({ message: ServerErrorMessage.invalidToken() })
 
     return decoded
   }

@@ -2,35 +2,28 @@ import { AuthenticationService } from '@/services/AuthenticationService'
 import { Router } from 'express'
 import { ElectionOrganizerService } from '@/services/ElectionOrganizerService'
 import { StatusCodes } from 'http-status-codes'
+import { BadRequestError } from '@/lib/errors/http/BadRequestError'
 
 const authService = new AuthenticationService()
 const electionOrganizerService = new ElectionOrganizerService()
 const router = Router()
 
-router.post('/register', async (request, response) => {
+router.post('/register', async (request, response, next) => {
   try {
     const token = await electionOrganizerService.createAndSaveElectionOrganizer(request.body)
-    response.status(StatusCodes.CREATED)
-    response.json({ token })
-  } catch (e) {
-    if (e instanceof RangeError) {
-      response.status(StatusCodes.BAD_REQUEST)
-      response.send('validation failed')
-    } else {
-      response.status(StatusCodes.BAD_REQUEST)
-      response.send('Something went very wrong...')
-    }
+    response.status(StatusCodes.CREATED).json({ token })
+  } catch (error) {
+    next(error)
   }
 })
 
-router.post('/login', async (request, response) => {
-  console.log('Login')
+router.post('/login', async (request, response, next) => {
   try {
     const token = await authService.login(request.body)
+    if (!token) throw new BadRequestError({ message: 'Invalid email/password' })
     response.json({ token })
-  } catch (e) {
-    console.log('ERROR: ', e)
-    response.sendStatus(StatusCodes.NOT_FOUND)
+  } catch (error) {
+    next(error)
   }
 })
 

@@ -1,3 +1,6 @@
+import { Candidate } from '@/models/Candidate/CandidateEntity'
+import { Election } from '@/models/Election/ElectionEntity'
+import { IsPositive, IsString, Min } from 'class-validator'
 import {
   Column,
   CreateDateColumn,
@@ -7,12 +10,9 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn
 } from 'typeorm'
-import { Election } from '@/models/Election/ElectionEntity'
-import { Candidate } from '@/models/Candidate/CandidateEntity'
-import { BallotType } from './BallotType'
 import { BallotResultDisplay } from './BallotResultDisplay'
 import { BallotStatus } from './BallotStatus'
-
+import { BallotType } from './BallotType'
 /**
  * A ballot a voter can vote on.
  * The ballot can have many candidates which a eligible voter can submit a vote for.
@@ -26,15 +26,16 @@ export class Ballot {
   id!: number
 
   @ManyToOne(() => Election, (election) => election.id)
-  election!: Election
+  election!: Election | number
 
-  @Column({ type: String })
+  @Column({ type: 'varchar' })
+  @IsString()
   title!: string
 
   @Column({ type: 'text', nullable: true })
   description!: string
 
-  @Column({ type: String, nullable: true })
+  @Column({ type: 'varchar', nullable: true })
   image!: string
 
   @Column({ type: 'enum', enum: BallotType })
@@ -46,7 +47,7 @@ export class Ballot {
   })
   resultDisplayType!: BallotResultDisplay
 
-  // append an integer to result display count if display type is runner up for instance
+  // How many results for the given display type to display
   @Column({ type: 'int4', nullable: true })
   resultDisplayTypeCount!: number
 
@@ -55,9 +56,10 @@ export class Ballot {
   displayResultCount!: boolean
 
   @Column({ type: 'int' })
-  order!: boolean
+  @IsPositive()
+  order!: number
 
-  @Column({ type: 'enum', enum: BallotStatus })
+  @Column({ type: 'enum', enum: BallotStatus, default: BallotStatus.IN_QUEUE })
   status!: BallotStatus
 
   @CreateDateColumn()

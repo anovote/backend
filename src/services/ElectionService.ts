@@ -2,6 +2,10 @@ import { Election } from '@/models/Election/ElectionEntity'
 import { Connection, getManager, Repository } from 'typeorm'
 import { IElection } from '@/models/Election/IElection'
 import { EncryptionService } from './EncryptionService'
+import { BadRequestError } from '@/lib/errors/http/BadRequestError'
+import { ServerErrorMessage } from '@/lib/errors/messages/ServerErrorMessages'
+import { validateEntity } from '@/helpers/validateEntity'
+import { NotFoundError } from '@/lib/errors/http/NotFoundError'
 
 export interface ElectionBody {
   title: string
@@ -29,34 +33,23 @@ export class ElectionService {
   }
 
   async getElectionById(id: number): Promise<Election | undefined> {
-    return await this.manager.findOneOrFail(id)
+    return await this.manager.findOne(id)
   }
 
   async createElection(electionDTO: IElection): Promise<Election | undefined> {
-    try {
-      if (electionDTO.password) {
-        await this.hashEntityPassword(electionDTO)
-      }
-
-      if (await this.isDuplicate(electionDTO)) {
-        throw new Error('Entry is duplicate')
-      }
-
-      const election = this.manager.create(electionDTO)
-      election.id = -1
-
-      return await this.manager.save(election)
-    } catch (error) {
-      console.log(error.message)
-      if (error.message === 'Entry is duplicate') {
-        // TODO this should be handled better
-        throw error
-      }
-
-      if (error && error.name === 'QueryFailedError') {
-        throw new Error('Query failed')
-      }
+    if (electionDTO.password) {
+      await this.hashEntityPassword(electionDTO)
     }
+
+    if (await this.isDuplicate(electionDTO)) {
+      throw new BadRequestError({ message: 'Election already exists' })
+    }
+
+    const election = this.manager.create(electionDTO)
+    await validateEntity(election)
+    election.id = -1
+
+    return await this.manager.save(election)
   }
 
   private async hashEntityPassword(electionDTO: IElection) {
@@ -67,6 +60,7 @@ export class ElectionService {
 
   async updateElectionById(id: number, electionDTO: IElection): Promise<Election | undefined> {
     const election = this.manager.create(electionDTO)
+    await validateEntity(election)
     election.id = id
     return await this.manager.save(election)
   }
@@ -74,7 +68,7 @@ export class ElectionService {
   async deleteElectionById(id: number): Promise<Election | undefined> {
     const election = await this.manager.findOne(id)
     if (!election) {
-      throw new Error(`Entity with id: ${id} not found`)
+      throw new NotFoundError({ message: ServerErrorMessage.notFound('Election') })
     }
     return await this.manager.remove(election)
   }

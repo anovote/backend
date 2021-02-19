@@ -1,7 +1,7 @@
+import { validateEntity } from '@/helpers/validateEntity'
 import { ElectionOrganizer } from '@/models/ElectionOrganizer/ElectionOrganizerEntity'
 import { ElectionOrganizerRepository } from '@/models/ElectionOrganizer/ElectionOrganizerRepository'
 import { IElectionOrganizer } from '@/models/ElectionOrganizer/IElectionOrganizer'
-import { validate } from 'class-validator'
 import { getCustomRepository } from 'typeorm'
 import { AuthenticationService } from './AuthenticationService'
 import { EncryptionService } from './EncryptionService'
@@ -9,10 +9,10 @@ import { EncryptionService } from './EncryptionService'
 export class ElectionOrganizerService {
   /**
    * Creates an election organizer entity from a given election organizer model
-   * @param iElectionOrganizer
+   * @param electionOrganizer
    */
-  create(iElectionOrganizer: IElectionOrganizer): ElectionOrganizer {
-    return getCustomRepository(ElectionOrganizerRepository).createElectionOrganizer(iElectionOrganizer)
+  create(electionOrganizer: IElectionOrganizer): ElectionOrganizer {
+    return getCustomRepository(ElectionOrganizerRepository).createElectionOrganizer(electionOrganizer)
   }
 
   /**
@@ -24,34 +24,15 @@ export class ElectionOrganizerService {
     return save.id
   }
 
-  /**
-   * Validates if an election organizer is correct, returns true if it is, or false
-   * if it is not
-   * @param electionOrganizer the election organizer we want to validate.
-   */
-  private async isElectionOrganizerValid(electionOrganizer: ElectionOrganizer): Promise<boolean> {
-    const errors = await validate(electionOrganizer)
-
-    if (errors.length > 0) {
-      return false
-    } else {
-      return true
-    }
-  }
-
-  async createAndSaveElectionOrganizer(iElectionOrganizer: IElectionOrganizer): Promise<string> {
+  async createAndSaveElectionOrganizer(electionOrganizer: IElectionOrganizer): Promise<string> {
     const encryptionService = new EncryptionService()
     const authService = new AuthenticationService()
-    let token
-    const electionOrganizer = this.create(iElectionOrganizer)
+    const organizer = this.create(electionOrganizer)
 
-    if (!(await this.isElectionOrganizerValid(electionOrganizer))) {
-      throw new RangeError('Validation failed')
-    }
+    await validateEntity(organizer)
 
     electionOrganizer.password = await encryptionService.hash(electionOrganizer.password)
-    const id = await this.save(electionOrganizer)
-    token = await authService.generateTokenFromId(id)
-    return token
+    const id = await this.save(organizer)
+    return await authService.generateTokenFromId(id)
   }
 }

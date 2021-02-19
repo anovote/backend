@@ -5,70 +5,73 @@ import { ElectionService } from '@/services/ElectionService'
 import { Router } from 'express'
 import { StatusCodes } from 'http-status-codes'
 import { isObjectEmpty } from '@/helpers/isObjectEmpty'
+import { NotFoundError } from '@/lib/errors/http/NotFoundError'
+import { ServerErrorMessage } from '@/lib/errors/messages/ServerErrorMessages'
+import { BadRequestError } from '@/lib/errors/http/BadRequestError'
 
 const router = Router()
 
-router.post('/', async (request, response) => {
+router.post('/', async (request, response, next) => {
   try {
     const electionService = new ElectionService(database)
     const electionDTO: IElection = request.body
 
     if (!electionDTO || isObjectEmpty(electionDTO)) {
-      throw new Error('No data')
+      throw new BadRequestError({ message: 'Empty request' })
     }
 
     const election: Election | undefined = await electionService.createElection(electionDTO)
     response.status(StatusCodes.CREATED).json(election)
   } catch (error) {
-    response.status(StatusCodes.BAD_REQUEST).send(error.message)
+    next(error)
   }
 })
 
-router.get('/', async (request, response) => {
+router.get('/', async (request, response, next) => {
   try {
     const electionService = new ElectionService(database)
     const elections: Election[] | undefined = await electionService.getAllElections()
     response.json(elections)
-  } catch (err) {
-    response.status(StatusCodes.BAD_REQUEST).send(err.message)
+  } catch (error) {
+    next(error)
   }
 })
 
-router.get('/:id', async (request, response) => {
+router.get('/:id', async (request, response, next) => {
   try {
     const electionService = new ElectionService(database)
     const id: number = Number.parseInt(request.params.id)
     const election = await electionService.getElectionById(id)
-    if (!election) throw new Error(`Could not find election with id ${id}`)
+    if (!election) throw new NotFoundError({ message: ServerErrorMessage.notFound(`Election`) })
     response.status(StatusCodes.OK).json(election)
-  } catch (err) {
-    response.status(StatusCodes.BAD_REQUEST).send(err.message)
+  } catch (error) {
+    next(error)
   }
 })
 
-router.put('/:id', async (request, response) => {
+router.put('/:id', async (request, response, next) => {
   try {
     const electionService = new ElectionService(database)
     const id: number = Number.parseInt(request.params.id)
     const { election } = request.body
     if (!election) {
-      throw new Error('No data')
+      throw new BadRequestError({ message: 'Empty request' })
     }
     const result = await electionService.updateElectionById(id, election)
     response.status(StatusCodes.OK).json(result)
   } catch (err) {
-    response.status(StatusCodes.BAD_REQUEST).send('Update not successful')
+    next(err)
   }
 })
 
-router.delete('/:id', async (request, response) => {
+router.delete('/:id', async (request, response, next) => {
   try {
     const electionService = new ElectionService(database)
     const id: number = Number.parseInt(request.params.id)
     const result = await electionService.deleteElectionById(id)
     response.status(StatusCodes.OK).json(result)
   } catch (err) {
-    response.status(StatusCodes.BAD_REQUEST).send(err.message)
+    next(err)
   }
 })
 

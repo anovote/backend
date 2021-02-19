@@ -2,7 +2,7 @@ import { ElectionOrganizer } from '@/models/ElectionOrganizer/ElectionOrganizerE
 import { EncryptionService } from '@/services/EncryptionService'
 import { Connection } from 'typeorm'
 
-export const createDummyOganizer = async (database: Connection): Promise<ElectionOrganizer> => {
+export const createDummyOrganizer = async (database: Connection): Promise<ElectionOrganizer> => {
   const repository = database.getRepository(ElectionOrganizer)
   const encryptionService = new EncryptionService()
 

@@ -38,7 +38,7 @@ export class Ballot {
   @Column({ type: 'varchar', nullable: true })
   image!: string
 
-  @Column({ type: 'enum', enum: BallotType })
+  @Column({ type: 'enum', enum: BallotType, default: BallotType.SINGLE })
   type!: BallotType
 
   @Column({

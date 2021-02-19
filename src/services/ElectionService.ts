@@ -6,6 +6,7 @@ import { BadRequestError } from '@/lib/errors/http/BadRequestError'
 import { ServerErrorMessage } from '@/lib/errors/messages/ServerErrorMessages'
 import { validateEntity } from '@/helpers/validateEntity'
 import { NotFoundError } from '@/lib/errors/http/NotFoundError'
+import { strip } from '@/helpers/sanitize'
 
 export interface ElectionBody {
   title: string
@@ -54,15 +55,21 @@ export class ElectionService {
 
   private async hashEntityPassword(electionDTO: IElection) {
     const unhashedPassword = electionDTO.password
-    const hashedPassword = await this.encryptionService.hash(unhashedPassword)
+    const hashedPassword = await this.encryptionService.hash(unhashedPassword!)
     electionDTO.password = hashedPassword
   }
 
   async updateElectionById(id: number, electionDTO: IElection): Promise<Election | undefined> {
-    const election = this.manager.create(electionDTO)
-    await validateEntity(election)
-    election.id = id
-    return await this.manager.save(election)
+    const existingElection = await this.manager.findOne({ id })
+    if (!existingElection) throw new NotFoundError({ message: ServerErrorMessage.notFound('Election') })
+
+    const strippedElection = strip(electionDTO, ['id', 'createdAt', 'updatedAt'])
+    if (strippedElection?.password) await this.hashEntityPassword(strippedElection)
+    const updatedElection = this.manager.create(strippedElection!)
+    updatedElection.id = existingElection.id
+    await validateEntity(updatedElection)
+
+    return await this.manager.save(updatedElection)
   }
 
   async deleteElectionById(id: number): Promise<Election | undefined> {

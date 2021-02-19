@@ -28,7 +28,7 @@ export class ElectionOrganizer {
   @Column({ type: 'varchar', length: 255 })
   @IsString()
   @MinLength(6)
-  @MaxLength(20)
+  @MaxLength(225)
   password!: string
 
   @CreateDateColumn()

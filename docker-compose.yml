@@ -25,6 +25,16 @@ services:
       TZ: 'Europe/Oslo'
     env_file:
       - .env.docker
+  postgres_tests:
+    image: postgres:11
+    env_file:
+      - .env.docker
+    environment:
+      POSTGRES_DB: 'TestDB'
+    ports:
+      - 5433:5433
+    command: -p 5433
+
 volumes:
   anovote-data:
 networks:

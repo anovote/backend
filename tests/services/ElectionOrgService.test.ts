@@ -27,7 +27,6 @@ describe('election organizer service', () => {
 
   afterAll(async () => {
     for (const organizer of organizers) {
-      console.log(organizer)
       const org = await service.delete(organizer.id)
     }
     await db.close()

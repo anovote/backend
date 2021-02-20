@@ -20,7 +20,7 @@ describe('authentication service', () => {
     expect(diff).toBeCloseTo(decoded.exp - decoded.iat, 1)
   })
 
-  it('should be decoded to its orginal data', () => {
+  it('should be decoded to its original data', () => {
     const { id, organizer } = decoded
     expect({ id, organizer }).toEqual(tokenData)
   })

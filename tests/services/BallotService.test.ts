@@ -8,11 +8,11 @@ import { ElectionOrganizer } from '@/models/ElectionOrganizer/ElectionOrganizerE
 import { BallotService } from '@/services/BallotService'
 import { ElectionService } from '@/services/ElectionService'
 import { Connection } from 'typeorm'
-import { getTestDatabase } from '../helpers/database'
 import { deepCopy } from '@/helpers/object'
 import { createDummyElection, deleteDummyElections } from '../helpers/seed/election'
 import { createDummyOrganizer, deleteDummyOrganizer } from '../helpers/seed/organizer'
 import { ValidationError } from '@/lib/errors/validation/ValidationError'
+import setupConnection from '@/loaders/setupTestDB'
 
 let db: Connection
 let organizer: ElectionOrganizer
@@ -22,7 +22,7 @@ let ballots: Ballot[] = []
 let seedBallot: Ballot
 
 beforeAll(async () => {
-  db = await getTestDatabase()
+  db = await setupConnection()
   organizer = await createDummyOrganizer(db)
   election = await createDummyElection(db, organizer)
   ballotService = new BallotService(db, new ElectionService(db))

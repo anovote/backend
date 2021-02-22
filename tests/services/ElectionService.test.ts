@@ -1,12 +1,12 @@
 import { deepCopy } from '@/helpers/object'
 import { NotFoundError } from '@/lib/errors/http/NotFoundError'
+import setupConnection from '@/loaders/setupTestDB'
 import { Election } from '@/models/Election/ElectionEntity'
 import { ElectionStatus } from '@/models/Election/ElectionStatus'
 import { IElection } from '@/models/Election/IElection'
 import { ElectionOrganizer } from '@/models/ElectionOrganizer/ElectionOrganizerEntity'
 import { ElectionService } from '@/services/ElectionService'
 import { Connection } from 'typeorm'
-import { getTestDatabase } from '../helpers/database'
 import { createDummyOrganizer, deleteDummyOrganizer } from '../helpers/seed/organizer'
 
 let db: Connection
@@ -16,7 +16,7 @@ let elections: Election[] = []
 let seedElection: Election
 
 beforeAll(async () => {
-  db = await getTestDatabase()
+  db = await setupConnection()
   organizer = await createDummyOrganizer(db)
   electionService = new ElectionService(db)
 

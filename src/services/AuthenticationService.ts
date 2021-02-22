@@ -63,7 +63,7 @@ export class AuthenticationService {
     })
 
     if (!electionOrg) return
-    const passwordMatches = true
+    const passwordMatches = await this.encryptionService.compareAgainstHash(payload.password, electionOrg.password)
     if (!passwordMatches) return
     return await this.generateTokenFromId(electionOrg.id)
   }

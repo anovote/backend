@@ -8,21 +8,15 @@ import { isObjectEmpty } from '@/helpers/isObjectEmpty'
 import { NotFoundError } from '@/lib/errors/http/NotFoundError'
 import { ServerErrorMessage } from '@/lib/errors/messages/ServerErrorMessages'
 import { BadRequestError } from '@/lib/errors/http/BadRequestError'
-import { AuthenticationService } from '@/services/AuthenticationService'
-import { ElectionOrganizerService } from '@/services/ElectionOrganizerService'
 
 const router = Router()
-const authenticationService = new AuthenticationService()
-const electionOrganizerService = new ElectionOrganizerService()
 
 router.post('/', async (request, response, next) => {
   try {
     const electionService = new ElectionService(database)
     const electionDTO: IElection = request.body
 
-    const id = (await authenticationService.verifyToken(request.headers.authorization)).id
-    const electionOrganizer = await electionOrganizerService.getElectionOrganizerById(id)
-    electionDTO.electionOrganizer = electionOrganizer
+    electionDTO.electionOrganizer = request.electionOrganizer
 
     if (!electionDTO || isObjectEmpty(electionDTO)) {
       throw new BadRequestError({ message: 'Empty request' })

@@ -3,6 +3,7 @@ import { ElectionOrganizer } from '../ElectionOrganizer/ElectionOrganizerEntity'
 import { Election } from './ElectionEntity'
 import { ElectionStatus } from './ElectionStatus'
 import setupConnection from '@/loaders/setupTestDB'
+import { clearDatabaseEntityTable } from '@/../tests/Tests.utils'
 
 let repo: Repository<Election>
 let conn: Connection
@@ -18,7 +19,8 @@ beforeAll(async () => {
 
 beforeEach(async () => {
   repo = getConnection('test').getRepository(Election)
-  await clearDatabase(repo)
+  // await clearDatabase(repo)
+  await clearDatabaseEntityTable(repo)
 })
 
 afterAll(async () => {
@@ -67,7 +69,7 @@ test('Election with status set to Started should return with status started', as
   expect(firstElection.status).not.toBe<ElectionStatus>(ElectionStatus.NotStarted)
   expect(firstElection.status).not.toBe<ElectionStatus>(ElectionStatus.Finished)
 })
-async function clearDatabase(repo: Repository<Election>) {
-  const entries = await repo.find()
-  repo.remove(entries)
-}
+// async function clearDatabase(repo: Repository<Election>) {
+//   const entries = await repo.find()
+//   repo.remove(entries)
+// }

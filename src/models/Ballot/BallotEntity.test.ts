@@ -3,6 +3,7 @@ import setupConnection from '@/loaders/setupTestDB'
 import { Ballot } from './BallotEntity'
 import { BallotResultDisplay } from './BallotResultDisplay'
 import { Election } from '../Election/ElectionEntity'
+import { clearDatabaseEntityTable } from '@/../tests/Tests.utils'
 
 let repo: Repository<Ballot>
 
@@ -13,8 +14,7 @@ beforeAll(async () => {
 
 beforeEach(async () => {
   repo = getConnection('test').getRepository(Ballot)
-  const allEntries = await repo.find()
-  repo.remove(allEntries)
+  await clearDatabaseEntityTable(repo)
 })
 
 afterAll(() => {

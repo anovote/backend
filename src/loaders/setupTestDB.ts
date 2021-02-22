@@ -15,7 +15,7 @@ async function setupConnection() {
     name: config.environment,
     type: 'postgres',
     host: database.host,
-    port: Number.parseInt(process.env.DB_TEST_PORT!),
+    port: Number.parseInt(database.port!),
     username: database.user,
     password: database.password,
     database: database.db,

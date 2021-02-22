@@ -1,0 +1,12 @@
+version: '3.9'
+services:
+  postgres_tests:
+    container_name: 'test-db'
+    image: postgres:11
+    environment:
+      POSTGRES_DB: '${DB_TEST_DATABASE}'
+      POSTGRES_USER: '${DB_TEST_USER}'
+      POSTGRES_PASSWORD: '${DB_TEST_PASSWORD}'
+    ports:
+      - ${DB_TEST_PORT}:${DB_TEST_PORT}
+    command: -p ${DB_TEST_PORT}

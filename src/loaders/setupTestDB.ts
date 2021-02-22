@@ -12,13 +12,13 @@ async function setupConnection() {
   }
 
   databaseConnectionPromise = createConnection({
-    name: 'test',
+    name: process.env.DB_TEST_DATABASE,
     type: 'postgres',
-    host: 'localhost',
-    port: 5433,
-    username: config.database.user,
-    password: config.database.password,
-    database: 'TestDB',
+    host: process.env.DB_TEST_HOST,
+    port: Number.parseInt(process.env.DB_TEST_PORT!),
+    username: process.env.DB_TEST_USER,
+    password: process.env.DB_TEST_PASSWORD,
+    database: process.env.DB_TEST_DATABASE,
     entities: [`${config.src}/models/**/*.{ts,js}`],
     synchronize: true,
     dropSchema: true,

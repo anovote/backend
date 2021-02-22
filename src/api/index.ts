@@ -10,7 +10,6 @@ import morgan from 'morgan'
 import { errorHandler } from './middleware/errorHandler'
 import { rateLimits } from './middleware/rateLimits'
 
-
 const publicRoutes = Router()
 publicRoutes.use('/auth/login', rateLimits.loginLimiter)
 publicRoutes.use('/auth', authRoutes)

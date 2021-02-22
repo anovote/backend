@@ -1,3 +1,4 @@
+import { ValidationErrorMessage } from '@/lib/errors/messages/ValidationErrorMessages'
 import {
   registerDecorator,
   ValidationOptions,
@@ -10,7 +11,7 @@ import { ElectionOrganizer } from '../ElectionOrganizerEntity'
 
 @ValidatorConstraint({ async: true })
 export class IsElectionOrganizerUniqueConstraint implements ValidatorConstraintInterface {
-  validate(email: any, args: ValidationArguments) {
+  validate(email: string, args: ValidationArguments) {
     return getRepository(ElectionOrganizer)
       .findOne({ email: email })
       .then((electionOrganizer) => {
@@ -18,11 +19,16 @@ export class IsElectionOrganizerUniqueConstraint implements ValidatorConstraintI
         return true
       })
   }
+
+  defaultMessage() {
+    return ValidationErrorMessage.alreadyExists('Email')
+  }
 }
 
 export function IsElectionOrganizerUnique(validationOptions?: ValidationOptions) {
   return function (object: Object, propertyName: string) {
     registerDecorator({
+      async: true,
       name: 'IsElectionOrganizerAlreadyExists',
       target: object.constructor,
       propertyName: propertyName,

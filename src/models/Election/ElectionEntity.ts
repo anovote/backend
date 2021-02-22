@@ -27,7 +27,7 @@ export class Election implements IElection {
   @PrimaryGeneratedColumn()
   id!: number
 
-  @ManyToOne(() => ElectionOrganizer, (electionOrganizer: ElectionOrganizer) => electionOrganizer.elections)
+  @ManyToOne(() => ElectionOrganizer, (electionOrganizer) => electionOrganizer.elections)
   electionOrganizer!: ElectionOrganizer
 
   @Column({ type: String })

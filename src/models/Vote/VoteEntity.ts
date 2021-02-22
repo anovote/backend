@@ -3,7 +3,7 @@ import { Candidate } from '@/models/Candidate/CandidateEntity'
 
 /**
  * Represents the vote on a candidate for a given ballot.
- * A voter can vote on many canidates
+ * A voter can vote on many candidates
  */
 @Entity()
 export class Vote {

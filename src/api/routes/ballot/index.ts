@@ -24,9 +24,9 @@ router.post('/', async (request, response, next) => {
 router.get('/:id', async (request, response, next) => {
   try {
     // TODO Validate that the user owns/ is allowed to get this ballot
-    const ballotSerivce = new BallotService(database, new ElectionService(database))
+    const ballotService = new BallotService(database, new ElectionService(database))
     const id = Number.parseInt(request.params.id)
-    const ballot = await ballotSerivce.get(id)
+    const ballot = await ballotService.get(id)
 
     if (!ballot) throw new NotFoundError({ message: ServerErrorMessage.notFound('Ballot') })
     return response.send(ballot)
@@ -38,9 +38,9 @@ router.get('/:id', async (request, response, next) => {
 router.delete('/:id', async (request, response, next) => {
   try {
     // TODO Validate that the user owns/ is allowed to delete this ballot
-    const ballotSerivce = new BallotService(database, new ElectionService(database))
+    const ballotService = new BallotService(database, new ElectionService(database))
     const id = Number.parseInt(request.params.id)
-    await ballotSerivce.delete(id)
+    await ballotService.delete(id)
 
     return response.status(StatusCodes.OK).send()
   } catch (error) {
@@ -51,10 +51,10 @@ router.delete('/:id', async (request, response, next) => {
 router.put('/:id', async (request, response, next) => {
   try {
     // TODO Validate that the user owns/ is allowed to update this ballot
-    const ballotSerivce = new BallotService(database, new ElectionService(database))
+    const ballotService = new BallotService(database, new ElectionService(database))
     const id = Number.parseInt(request.params.id)
     const ballot = request.body as IBallot
-    const updatedBallot = await ballotSerivce.update(id, ballot)
+    const updatedBallot = await ballotService.update(id, ballot)
     return response.status(StatusCodes.OK).send(updatedBallot)
   } catch (error) {
     next(error)

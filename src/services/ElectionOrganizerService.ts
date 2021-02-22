@@ -58,6 +58,11 @@ export class ElectionOrganizerService {
     return updatedElectionOrganizer
   }
 
+  /**
+   * Returns the election organizer with the specified id.
+   * Throws an RangeError if the election organizer is not found
+   * @param id The id of the election organizer
+   */
   async getElectionOrganizerById(id: number): Promise<ElectionOrganizer> {
     const repository = getCustomRepository(ElectionOrganizerRepository)
 

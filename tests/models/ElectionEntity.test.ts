@@ -1,10 +1,10 @@
 import { Connection, getConnection, Repository } from 'typeorm'
-import { ElectionOrganizer } from '../ElectionOrganizer/ElectionOrganizerEntity'
-import { Election } from './ElectionEntity'
-import { ElectionStatus } from './ElectionStatus'
 import setupConnection from '@/loaders/setupTestDB'
 import { clearDatabaseEntityTable } from '@/../tests/Tests.utils'
 import config from '@/config'
+import { Election } from '@/models/Election/ElectionEntity'
+import { ElectionOrganizer } from '@/models/ElectionOrganizer/ElectionOrganizerEntity'
+import { ElectionStatus } from '@/models/Election/ElectionStatus'
 
 let repo: Repository<Election>
 let conn: Connection

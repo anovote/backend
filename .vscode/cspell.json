@@ -31,5 +31,6 @@
     "varchar",
     "zwaldowski"
   ],
-  "flagWords": ["hte"]
+  "flagWords": ["hte"],
+  "ignorePaths": ["*.env*"]
 }

@@ -1,4 +1,5 @@
 import { deepCopy } from '@/helpers/object'
+import { validateEntity } from '@/helpers/validateEntity'
 import { NotFoundError } from '@/lib/errors/http/NotFoundError'
 import setupConnection from '@/loaders/setupTestDB'
 import { Election } from '@/models/Election/ElectionEntity'
@@ -128,4 +129,54 @@ it('should throw not found error when deleting a election which do not exist', a
   } catch (error) {
     expect(error).toBeInstanceOf(NotFoundError)
   }
+})
+
+it('should throw error if close date is earlier than open date', async () => {
+  const repo = db.getRepository(Election)
+  const election = repo.create()
+  election.title = 'My Test'
+  election.description = 'This is a dummy'
+  election.isAutomatic = false
+  election.isLocked = false
+  election.electionOrganizer = new ElectionOrganizer()
+  election.eligibleVoters = []
+  election.status = ElectionStatus.Started
+  election.openDate = new Date(2021, 2, 23)
+  election.closeDate = new Date(2020, 1, 21)
+
+  await expect(validateEntity(election)).rejects.toThrowError()
+})
+
+it('should accept object if both dates are the same', async () => {
+  const repo = db.getRepository(Election)
+  const election = repo.create()
+  election.title = 'My Test'
+  election.description = 'This is a dummy'
+  election.isAutomatic = false
+  election.isLocked = false
+  election.electionOrganizer = new ElectionOrganizer()
+  election.eligibleVoters = []
+  election.status = ElectionStatus.Started
+  election.openDate = new Date(2021, 2, 23)
+  election.closeDate = election.openDate
+
+  expect(election.openDate === election.closeDate)
+  await expect(validateEntity(election)).resolves.toBe(undefined)
+})
+
+it('it should resolve when closing date is after opening date', async () => {
+  const repo = db.getRepository(Election)
+  const election = repo.create()
+  election.title = 'My Test'
+  election.description = 'This is a dummy'
+  election.isAutomatic = false
+  election.isLocked = false
+  election.electionOrganizer = new ElectionOrganizer()
+  election.eligibleVoters = []
+  election.status = ElectionStatus.Started
+  election.openDate = new Date(2021, 2, 23)
+  election.closeDate = new Date(2022, 1, 21)
+
+  expect(election.openDate < election.closeDate)
+  await expect(validateEntity(election)).resolves.toBe(undefined)
 })

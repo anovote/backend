@@ -32,12 +32,16 @@ beforeAll(async () => {
 })
 
 afterAll(async () => {
-  for (const election of elections) {
-    await electionService.deleteElectionById(election.id)
+  try {
+    for (const election of elections) {
+      await electionService.deleteElectionById(election.id)
+    }
+    await electionService.deleteElectionById(seedElection.id)
+    await deleteDummyOrganizer(db, organizer)
+    await db.close()
+  } catch (err) {
+    console.log(err)
   }
-  await electionService.deleteElectionById(seedElection.id)
-  await deleteDummyOrganizer(db, organizer)
-  await db.close()
 })
 
 it('should create a election with all data filled out', async () => {

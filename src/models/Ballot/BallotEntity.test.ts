@@ -1,9 +1,8 @@
-import { createConnection, getConnection, Repository } from 'typeorm'
+import { getConnection, Repository } from 'typeorm'
 import setupConnection from '@/loaders/setupTestDB'
 import { Ballot } from './BallotEntity'
 import { BallotResultDisplay } from './BallotResultDisplay'
 import { Election } from '../Election/ElectionEntity'
-import config from '@/config'
 
 let repo: Repository<Ballot>
 
@@ -24,7 +23,6 @@ afterAll(() => {
 })
 
 test('Ballot without result display type set should return entity with display type set to default', async () => {
-  //   await setupConnection()
   repo = getConnection('test').getRepository(Ballot)
   const ballot = repo.create()
   ballot.title = 'My Test'

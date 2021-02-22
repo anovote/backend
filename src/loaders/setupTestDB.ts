@@ -3,14 +3,13 @@ import { Connection, createConnection } from 'typeorm'
 
 let databaseConnectionPromise: Promise<Connection>
 
+/**
+ * Singleton database connection
+ */
 async function setupConnection() {
   if (databaseConnectionPromise) {
-    console.log('here')
-
     return databaseConnectionPromise
   }
-
-  console.log('or here')
 
   databaseConnectionPromise = createConnection({
     name: 'test',

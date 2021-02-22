@@ -10,9 +10,6 @@ let conn: Connection
 beforeAll(async () => {
   try {
     conn = await setupConnection()
-    console.log('waiting for connection')
-
-    conn ? console.log('Connected') : console.log('not connected')
     return conn
   } catch (err) {
     console.log(err)
@@ -28,8 +25,6 @@ beforeEach(async () => {
 
 afterAll(async () => {
   try {
-    console.log('disconnecting')
-
     return await conn.close()
   } catch (err) {
     console.log(err)

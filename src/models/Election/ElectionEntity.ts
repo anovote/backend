@@ -13,6 +13,7 @@ import { ElectionOrganizer } from '@/models/ElectionOrganizer/ElectionOrganizerE
 import { EligibleVoter } from '@/models/EligibleVoter/EligibleVoterEntity'
 import { IElection } from '@/models/Election/IElection'
 import { ElectionStatus } from '@/models/Election/ElectionStatus'
+import { IsEarlierThan } from '@/helpers/isEarlierThan'
 
 /**
  * An entity for storing an election.
@@ -39,6 +40,7 @@ export class Election implements IElection {
   @Column({ type: String, nullable: true })
   image!: string
 
+  @IsEarlierThan('closeDate', { message: 'Opening date must be before closing date' })
   @Column({ type: Date, nullable: true })
   openDate!: Date
 

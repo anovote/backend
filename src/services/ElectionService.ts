@@ -21,7 +21,7 @@ export class ElectionService {
   private readonly encryptionService: EncryptionService
 
   constructor(db: Connection) {
-    this.manager = getManager().getRepository(Election)
+    this.manager = getManager(db.options.name).getRepository(Election)
     this.encryptionService = new EncryptionService()
   }
 

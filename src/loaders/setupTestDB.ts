@@ -2,7 +2,7 @@ import config from '@/config'
 import { Connection, createConnection } from 'typeorm'
 
 let databaseConnectionPromise: Promise<Connection>
-
+let { database } = config
 /**
  * Singleton database connection
  */
@@ -14,11 +14,11 @@ async function setupConnection() {
   databaseConnectionPromise = createConnection({
     name: config.environment,
     type: 'postgres',
-    host: process.env.DB_TEST_HOST,
+    host: database.host,
     port: Number.parseInt(process.env.DB_TEST_PORT!),
-    username: process.env.DB_TEST_USER,
-    password: process.env.DB_TEST_PASSWORD,
-    database: process.env.DB_TEST_DATABASE,
+    username: database.user,
+    password: database.password,
+    database: database.db,
     entities: [`${config.src}/models/**/*.{ts,js}`],
     synchronize: true,
     dropSchema: true,

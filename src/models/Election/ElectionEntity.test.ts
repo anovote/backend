@@ -4,6 +4,7 @@ import { Election } from './ElectionEntity'
 import { ElectionStatus } from './ElectionStatus'
 import setupConnection from '@/loaders/setupTestDB'
 import { clearDatabaseEntityTable } from '@/../tests/Tests.utils'
+import config from '@/config'
 
 let repo: Repository<Election>
 let conn: Connection
@@ -18,7 +19,7 @@ beforeAll(async () => {
 })
 
 beforeEach(async () => {
-  repo = getConnection(process.env.DB_TEST_DATABASE).getRepository(Election)
+  repo = getConnection(config.environment).getRepository(Election)
   // await clearDatabase(repo)
   await clearDatabaseEntityTable(repo)
 })

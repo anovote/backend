@@ -12,7 +12,7 @@ async function setupConnection() {
   }
 
   databaseConnectionPromise = createConnection({
-    name: process.env.DB_TEST_DATABASE,
+    name: config.environment,
     type: 'postgres',
     host: process.env.DB_TEST_HOST,
     port: Number.parseInt(process.env.DB_TEST_PORT!),

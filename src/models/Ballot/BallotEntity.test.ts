@@ -4,26 +4,27 @@ import { Ballot } from './BallotEntity'
 import { BallotResultDisplay } from './BallotResultDisplay'
 import { Election } from '../Election/ElectionEntity'
 import { clearDatabaseEntityTable } from '@/../tests/Tests.utils'
+import config from '@/config'
 
 let repo: Repository<Ballot>
 
 beforeAll(async () => {
   await setupConnection()
-  repo = getConnection(process.env.DB_TEST_DATABASE).getRepository(Ballot)
+  repo = getConnection(config.environment).getRepository(Ballot)
 })
 
 beforeEach(async () => {
-  repo = getConnection(process.env.DB_TEST_DATABASE).getRepository(Ballot)
+  repo = getConnection(config.environment).getRepository(Ballot)
   await clearDatabaseEntityTable(repo)
 })
 
 afterAll(() => {
-  let conn = getConnection(process.env.DB_TEST_DATABASE)
+  let conn = getConnection(config.environment)
   return conn.close()
 })
 
 test('Ballot without result display type set should return entity with display type set to default', async () => {
-  repo = getConnection(process.env.DB_TEST_DATABASE).getRepository(Ballot)
+  repo = getConnection(config.environment).getRepository(Ballot)
   const ballot = repo.create()
   ballot.title = 'My Test'
   ballot.description = 'This is a dummy'

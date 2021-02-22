@@ -28,7 +28,7 @@ export class Election implements IElection {
   @PrimaryGeneratedColumn()
   id!: number
 
-  @ManyToOne(() => ElectionOrganizer, (electionOrganizer: ElectionOrganizer) => electionOrganizer.elections)
+  @ManyToOne(() => ElectionOrganizer, (electionOrganizer) => electionOrganizer.elections)
   electionOrganizer!: ElectionOrganizer
 
   @Column({ type: String })
@@ -50,7 +50,7 @@ export class Election implements IElection {
   @Column({ type: String, nullable: true })
   password!: string
 
-  @Column({ type: 'enum', enum: ElectionStatus })
+  @Column({ type: 'enum', enum: ElectionStatus, default: ElectionStatus.NotStarted })
   status!: ElectionStatus
 
   @Column({ type: 'boolean', default: true })

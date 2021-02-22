@@ -8,12 +8,11 @@ import { ElectionOrganizer } from '@/models/ElectionOrganizer/ElectionOrganizerE
 import { BallotService } from '@/services/BallotService'
 import { ElectionService } from '@/services/ElectionService'
 import { Connection } from 'typeorm'
-import { getTestDatabase } from '../helpers/database'
-import { deepCopy } from '../helpers/object'
+import { deepCopy } from '@/helpers/object'
 import { createDummyElection, deleteDummyElections } from '../helpers/seed/election'
 import { createDummyOrganizer, deleteDummyOrganizer } from '../helpers/seed/organizer'
 import { ValidationError } from '@/lib/errors/validation/ValidationError'
-import { BaseError } from '@/lib/errors/BaseError'
+import setupConnection from '@/loaders/setupTestDB'
 
 let db: Connection
 let organizer: ElectionOrganizer
@@ -23,7 +22,7 @@ let ballots: Ballot[] = []
 let seedBallot: Ballot
 
 beforeAll(async () => {
-  db = await getTestDatabase()
+  db = await setupConnection()
   organizer = await createDummyOrganizer(db)
   election = await createDummyElection(db, organizer)
   ballotService = new BallotService(db, new ElectionService(db))
@@ -43,12 +42,17 @@ beforeAll(async () => {
 })
 
 afterAll(async () => {
+  try {
   for (const ballot of ballots) {
     await ballotService.delete(ballot.id)
   }
   await ballotService.delete(seedBallot.id)
   await deleteDummyElections(db, [election])
   await deleteDummyOrganizer(db, organizer)
+  await db.close()
+  } catch (err) {
+    console.log(err)
+  }
 })
 
 it('should create a ballot with all data filled out', async () => {
@@ -130,6 +134,22 @@ it('should throw error on out of range result display type', async () => {
   } catch (error) {
     expect(error).toBeInstanceOf(Error)
   }
+})
+
+it('should not update if no ballot exists', async () => {
+  try {
+    const updated = await ballotService.update(100, deepCopy<IBallot>(seedBallot))
+  } catch (e) {
+    expect(e).toBeInstanceOf(NotFoundError)
+  }
+})
+
+it('should not change id of updated ballot', async () => {
+  const passedInId = seedBallot.id
+  const data = deepCopy<Ballot>(seedBallot)
+  data.id = 5
+  const ballot = await ballotService.update(passedInId, deepCopy<IBallot>(data))
+  expect(ballot.id).toBe(passedInId)
 })
 
 it('should return the ballot with given id', async () => {

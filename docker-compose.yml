@@ -28,10 +28,10 @@ services:
   postgres_tests:
     container_name: 'test-db'
     image: postgres:11
-    env_file:
-      - .env.docker
     environment:
       POSTGRES_DB: 'TestDB'
+      POSTGRES_USER: '${POSTGRES_USER}'
+      POSTGRES_PASSWORD: '${POSTGRES_PASSWORD}'
     ports:
       - 5433:5433
     command: -p 5433

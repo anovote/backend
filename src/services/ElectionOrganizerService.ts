@@ -57,4 +57,16 @@ export class ElectionOrganizerService {
     const updatedElectionOrganizer = await repository.save(electionOrganizer)
     return updatedElectionOrganizer
   }
+
+  async getElectionOrganizerById(id: number): Promise<ElectionOrganizer> {
+    const repository = getCustomRepository(ElectionOrganizerRepository)
+
+    const electionOrganizer: ElectionOrganizer | undefined = await repository.findOne({ id })
+
+    if (!electionOrganizer) {
+      throw new RangeError('Did not find the election organizer')
+    }
+
+    return electionOrganizer
+  }
 }

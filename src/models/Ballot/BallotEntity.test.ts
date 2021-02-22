@@ -9,21 +9,21 @@ let repo: Repository<Ballot>
 
 beforeAll(async () => {
   await setupConnection()
-  repo = getConnection('test').getRepository(Ballot)
+  repo = getConnection(process.env.DB_TEST_DATABASE).getRepository(Ballot)
 })
 
 beforeEach(async () => {
-  repo = getConnection('test').getRepository(Ballot)
+  repo = getConnection(process.env.DB_TEST_DATABASE).getRepository(Ballot)
   await clearDatabaseEntityTable(repo)
 })
 
 afterAll(() => {
-  let conn = getConnection('test')
+  let conn = getConnection(process.env.DB_TEST_DATABASE)
   return conn.close()
 })
 
 test('Ballot without result display type set should return entity with display type set to default', async () => {
-  repo = getConnection('test').getRepository(Ballot)
+  repo = getConnection(process.env.DB_TEST_DATABASE).getRepository(Ballot)
   const ballot = repo.create()
   ballot.title = 'My Test'
   ballot.description = 'This is a dummy'

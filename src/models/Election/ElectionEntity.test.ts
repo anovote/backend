@@ -18,7 +18,7 @@ beforeAll(async () => {
 })
 
 beforeEach(async () => {
-  repo = getConnection('test').getRepository(Election)
+  repo = getConnection(process.env.DB_TEST_DATABASE).getRepository(Election)
   // await clearDatabase(repo)
   await clearDatabaseEntityTable(repo)
 })

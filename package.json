@@ -11,7 +11,7 @@
     "dev": "ts-node-dev -r tsconfig-paths/register --respawn --inspect=0.0.0.0:9229 ./src/index.ts",
     "build": "NODE_ENV=production tsc --project ./tsconfig.prod.json && tsc-alias",
     "prod": "NODE_ENV=production node dist/index.js",
-    "test": "jest",
+    "test": "docker-compose up -d postgres_tests && jest",
     "check-types": "tsc"
   },
   "devDependencies": {

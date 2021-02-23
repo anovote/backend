@@ -1,5 +1,6 @@
 import { validateEntity } from '@/helpers/validateEntity'
 import { NotFoundError } from '@/lib/errors/http/NotFoundError'
+import { ServerErrorMessage } from '@/lib/errors/messages/ServerErrorMessages'
 import { ElectionOrganizer } from '@/models/ElectionOrganizer/ElectionOrganizerEntity'
 import { ElectionOrganizerRepository } from '@/models/ElectionOrganizer/ElectionOrganizerRepository'
 import { IElectionOrganizer } from '@/models/ElectionOrganizer/IElectionOrganizer'
@@ -51,7 +52,7 @@ export class ElectionOrganizerService {
     })
 
     if (!electionOrganizer) {
-      throw new NotFoundError({ message: 'Did not find the election organizer' })
+      throw new NotFoundError({ message: ServerErrorMessage.notFound('Election organizer') })
     }
 
     electionOrganizer.password = await encryptionService.hash(newPassword)
@@ -70,7 +71,7 @@ export class ElectionOrganizerService {
     const electionOrganizer: ElectionOrganizer | undefined = await repository.findOne({ id })
 
     if (!electionOrganizer) {
-      throw new NotFoundError({ message: 'Did not find the election organizer' })
+      throw new NotFoundError({ message: ServerErrorMessage.notFound('Election organizer') })
     }
 
     return electionOrganizer

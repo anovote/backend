@@ -20,7 +20,6 @@ beforeAll(async () => {
 
 beforeEach(async () => {
   repo = getConnection(config.environment).getRepository(Election)
-  // await clearDatabase(repo)
   await clearDatabaseEntityTable(repo)
 })
 
@@ -70,7 +69,3 @@ test('Election with status set to Started should return with status started', as
   expect(firstElection.status).not.toBe<ElectionStatus>(ElectionStatus.NotStarted)
   expect(firstElection.status).not.toBe<ElectionStatus>(ElectionStatus.Finished)
 })
-// async function clearDatabase(repo: Repository<Election>) {
-//   const entries = await repo.find()
-//   repo.remove(entries)
-// }

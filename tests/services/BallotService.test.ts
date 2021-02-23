@@ -12,7 +12,7 @@ import { deepCopy } from '@/helpers/object'
 import { createDummyElection, deleteDummyElections } from '../helpers/seed/election'
 import { createDummyOrganizer, deleteDummyOrganizer } from '../helpers/seed/organizer'
 import { ValidationError } from '@/lib/errors/validation/ValidationError'
-import setupConnection from '@/loaders/setupTestDB'
+import setupConnection from '../helpers/setupTestDB'
 
 let db: Connection
 let organizer: ElectionOrganizer

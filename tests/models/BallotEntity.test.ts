@@ -1,5 +1,5 @@
 import { getConnection, Repository } from 'typeorm'
-import setupConnection from '@/loaders/setupTestDB'
+import setupConnection from '../helpers/setupTestDB'
 import { clearDatabaseEntityTable } from '@/../tests/Tests.utils'
 import config from '@/config'
 import { Ballot } from '@/models/Ballot/BallotEntity'

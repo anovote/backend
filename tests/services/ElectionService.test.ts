@@ -1,6 +1,6 @@
 import { deepCopy } from '@/helpers/object'
 import { NotFoundError } from '@/lib/errors/http/NotFoundError'
-import setupConnection from '@/loaders/setupTestDB'
+import setupConnection from '../helpers/setupTestDB'
 import { Election } from '@/models/Election/ElectionEntity'
 import { ElectionStatus } from '@/models/Election/ElectionStatus'
 import { IElection } from '@/models/Election/IElection'

@@ -43,13 +43,13 @@ beforeAll(async () => {
 
 afterAll(async () => {
   try {
-  for (const ballot of ballots) {
-    await ballotService.delete(ballot.id)
-  }
-  await ballotService.delete(seedBallot.id)
-  await deleteDummyElections(db, [election])
-  await deleteDummyOrganizer(db, organizer)
-  await db.close()
+    for (const ballot of ballots) {
+      await ballotService.delete(ballot.id)
+    }
+    await ballotService.delete(seedBallot.id)
+    await deleteDummyElections(db, [election])
+    await deleteDummyOrganizer(db, organizer)
+    await db.close()
   } catch (err) {
     console.log(err)
   }

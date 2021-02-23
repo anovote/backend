@@ -180,3 +180,67 @@ it('it should resolve when closing date is after opening date', async () => {
   expect(election.openDate < election.closeDate)
   await expect(validateEntity(election)).resolves.toBe(undefined)
 })
+
+it('should fail if opening date is earlier than today on create', async () => {
+  const repo = db.getRepository(Election)
+  const election = repo.create()
+  election.title = 'My Test'
+  election.description = 'This is a dummy'
+  election.isAutomatic = false
+  election.isLocked = false
+  election.electionOrganizer = new ElectionOrganizer()
+  election.eligibleVoters = []
+  election.status = ElectionStatus.Started
+  election.openDate = new Date(2020, 2, 23)
+
+  await expect(electionService.createElection(election)).rejects.toThrowError()
+})
+
+it('should pass if opening date is later than today on create', async () => {
+  const repo = db.getRepository(Election)
+  const election = repo.create()
+  election.title = 'My Test'
+  election.description = 'This is a dummy'
+  election.isAutomatic = false
+  election.isLocked = false
+  election.electionOrganizer = new ElectionOrganizer()
+  election.eligibleVoters = []
+  election.status = ElectionStatus.Started
+  election.openDate = new Date(2040, 2, 23)
+
+  await expect(electionService.createElection(election)).resolves.toBeDefined()
+})
+
+it('should pass if opening date is same as today on create', async () => {
+  const repo = db.getRepository(Election)
+  const election = repo.create()
+  election.title = 'My Test'
+  election.description = 'This is a dummy'
+  election.isAutomatic = false
+  election.isLocked = false
+  election.electionOrganizer = new ElectionOrganizer()
+  election.eligibleVoters = []
+  election.status = ElectionStatus.Started
+  election.openDate = new Date()
+
+  await expect(electionService.createElection(election)).resolves.toBeDefined()
+})
+
+it('should pass if opening date is earlier than today on entity update', async () => {
+  const repo = db.getRepository(Election)
+  const election = repo.create()
+  election.title = 'My Test'
+  election.description = 'This is a dummy'
+  election.isAutomatic = false
+  election.isLocked = false
+  election.electionOrganizer = new ElectionOrganizer()
+  election.eligibleVoters = []
+  election.status = ElectionStatus.Started
+
+  const oldElection = await electionService.createElection(election)
+  const newElection = oldElection!
+  newElection.openDate = new Date(2020, 2, 23) // earlier than today
+  expect(newElection !== oldElection)
+  expect(newElection.openDate < new Date())
+  await expect(electionService.updateElectionById(newElection.id, newElection)).resolves.toBeDefined()
+})

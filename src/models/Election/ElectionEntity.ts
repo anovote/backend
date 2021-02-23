@@ -14,6 +14,7 @@ import { EligibleVoter } from '@/models/EligibleVoter/EligibleVoterEntity'
 import { IElection } from '@/models/Election/IElection'
 import { ElectionStatus } from '@/models/Election/ElectionStatus'
 import { IsEarlierThan } from '@/helpers/isEarlierThan'
+import { IsOptional, MinDate } from 'class-validator'
 
 /**
  * An entity for storing an election.
@@ -40,7 +41,9 @@ export class Election implements IElection {
   @Column({ type: String, nullable: true })
   image!: string
 
+  @IsOptional()
   @IsEarlierThan('closeDate', { message: 'Opening date must be before closing date' })
+  @MinDate(new Date(), { groups: ['creation'], always: false })
   @Column({ type: Date, nullable: true })
   openDate!: Date
 

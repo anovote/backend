@@ -1,11 +1,18 @@
 import { json, Application } from 'express'
 import cors from 'cors'
+import helmet from 'helmet'
 import routes from '@/api'
 
 /**
  * Responsible for initializing Express
  */
 export default async ({ server }: { server: Application }) => {
+  /**
+   * Set various HTTP headers by enabling helmet. helmet() is
+   * a wrapper around 11 smaller middlewares.
+   * https://helmetjs.github.io/
+   */
+  server.use(helmet())
   /**
    * Enables cors on the server, so we can talk with
    * clients on different domains. Might be needing configuration later

@@ -5,22 +5,39 @@ import { ElectionOrganizer } from '@/models/ElectionOrganizer/ElectionOrganizerE
 import { ElectionOrganizerRepository } from '@/models/ElectionOrganizer/ElectionOrganizerRepository'
 import { IElectionOrganizer } from '@/models/ElectionOrganizer/IElectionOrganizer'
 import { Connection, getCustomRepository } from 'typeorm'
+import BaseEntityService from './BaseEntityService'
 import { EncryptionService } from './EncryptionService'
 
-export class ElectionOrganizerService {
+export class ElectionOrganizerService extends BaseEntityService<ElectionOrganizer> {
   private _database: Connection
   private _organizerRepository: ElectionOrganizerRepository
 
   constructor(db: Connection) {
+    super(db, ElectionOrganizer)
     this._database = db
     this._organizerRepository = this._database.getCustomRepository(ElectionOrganizerRepository)
+  }
+
+  get(): Promise<ElectionOrganizer[] | undefined> {
+    throw new NotFoundError({ message: 'Not found' })
+  }
+
+  getById(id: number): Promise<ElectionOrganizer | undefined> {
+    return this.getElectionOrganizerById(id)
+  }
+
+  post(dto: ElectionOrganizer): Promise<ElectionOrganizer | undefined> {
+    return this.createAndSaveElectionOrganizer(dto)
+  }
+
+  put(id: number, dto: ElectionOrganizer): Promise<ElectionOrganizer | undefined> {
+    return this.updatePassword(dto.password, id)
   }
 
   /**
    * Creates an election organizer entity from a given election organizer model
    * @param electionOrganizer
    */
-
   create(electionOrganizer: IElectionOrganizer): ElectionOrganizer {
     return this._organizerRepository.createElectionOrganizer(electionOrganizer)
   }
@@ -92,6 +109,6 @@ export class ElectionOrganizerService {
   async delete(id: number) {
     const existingOrganizer = await this._organizerRepository.findOne(id)
     if (!existingOrganizer) throw new NotFoundError({ message: ServerErrorMessage.notFound('Election Organizer') })
-    return await this._organizerRepository.remove(existingOrganizer)
+    await this._organizerRepository.remove(existingOrganizer)
   }
 }

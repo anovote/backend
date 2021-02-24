@@ -12,7 +12,11 @@ const router = Router()
 
 router.post('/', async (request, response, next) => {
   try {
-    const ballotService = new BallotService(database, new ElectionService(database, request.electionOrganizer))
+    const ballotService = new BallotService(
+      database,
+      new ElectionService(database, request.electionOrganizer),
+      request.electionOrganizer
+    )
     const newBallot = request.body as IBallot
     const ballot = await ballotService.create(newBallot)
     return response.send(ballot)
@@ -24,9 +28,13 @@ router.post('/', async (request, response, next) => {
 router.get('/:id', async (request, response, next) => {
   try {
     // TODO Validate that the user owns/ is allowed to get this ballot
-    const ballotService = new BallotService(database, new ElectionService(database, request.electionOrganizer))
+    const ballotService = new BallotService(
+      database,
+      new ElectionService(database, request.electionOrganizer),
+      request.electionOrganizer
+    )
     const id = Number.parseInt(request.params.id)
-    const ballot = await ballotService.get(id)
+    const ballot = await ballotService.getById(id)
 
     if (!ballot) throw new NotFoundError({ message: ServerErrorMessage.notFound('Ballot') })
     return response.send(ballot)
@@ -38,7 +46,11 @@ router.get('/:id', async (request, response, next) => {
 router.delete('/:id', async (request, response, next) => {
   try {
     // TODO Validate that the user owns/ is allowed to delete this ballot
-    const ballotService = new BallotService(database, new ElectionService(database, request.electionOrganizer))
+    const ballotService = new BallotService(
+      database,
+      new ElectionService(database, request.electionOrganizer),
+      request.electionOrganizer
+    )
     const id = Number.parseInt(request.params.id)
     await ballotService.delete(id)
 
@@ -51,7 +63,11 @@ router.delete('/:id', async (request, response, next) => {
 router.put('/:id', async (request, response, next) => {
   try {
     // TODO Validate that the user owns/ is allowed to update this ballot
-    const ballotService = new BallotService(database, new ElectionService(database, request.electionOrganizer))
+    const ballotService = new BallotService(
+      database,
+      new ElectionService(database, request.electionOrganizer),
+      request.electionOrganizer
+    )
     const id = Number.parseInt(request.params.id)
     const ballot = request.body as IBallot
     const updatedBallot = await ballotService.update(id, ballot)

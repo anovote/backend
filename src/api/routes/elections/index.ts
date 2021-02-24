@@ -16,11 +16,11 @@ router.post('/', async (request, response, next) => {
     const electionService = new ElectionService(database)
     const electionDTO: IElection = request.body
 
-    electionDTO.electionOrganizer = request.electionOrganizer
-
     if (!electionDTO || isObjectEmpty(electionDTO)) {
       throw new BadRequestError({ message: 'Empty request' })
     }
+
+    electionDTO.electionOrganizer = request.electionOrganizer
 
     const election: Election | undefined = await electionService.createElection(electionDTO)
     response.status(StatusCodes.CREATED).json(election)

@@ -4,7 +4,7 @@ import { ServerErrorMessage } from '@/lib/errors/messages/ServerErrorMessages'
 import { ElectionOrganizer } from '@/models/ElectionOrganizer/ElectionOrganizerEntity'
 import { ElectionOrganizerRepository } from '@/models/ElectionOrganizer/ElectionOrganizerRepository'
 import { IElectionOrganizer } from '@/models/ElectionOrganizer/IElectionOrganizer'
-import { Connection } from 'typeorm'
+import { Connection, getCustomRepository } from 'typeorm'
 import { EncryptionService } from './EncryptionService'
 
 export class ElectionOrganizerService {
@@ -58,13 +58,31 @@ export class ElectionOrganizerService {
     })
 
     if (!electionOrganizer) {
-      throw new RangeError('Did not find the election organizer')
+      throw new NotFoundError({ message: ServerErrorMessage.notFound('Election organizer') })
     }
 
     electionOrganizer.password = await encryptionService.hash(newPassword)
     const updatedElectionOrganizer = await this._organizerRepository.save(electionOrganizer)
     return updatedElectionOrganizer
   }
+
+  /**
+   * Returns the election organizer with the specified id.
+   * Throws an RangeError if the election organizer is not found
+   * @param id The id of the election organizer
+   */
+  async getElectionOrganizerById(id: number): Promise<ElectionOrganizer> {
+    const repository = getCustomRepository(ElectionOrganizerRepository)
+
+    const electionOrganizer: ElectionOrganizer | undefined = await repository.findOne({ id })
+
+    if (!electionOrganizer) {
+      throw new NotFoundError({ message: ServerErrorMessage.notFound('Election organizer') })
+    }
+
+    return electionOrganizer
+  }
+
   /**
    * Deletes a organizer by the given ID, if it exists,
    * Throws error if database, or query fails

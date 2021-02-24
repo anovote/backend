@@ -8,6 +8,7 @@ import { validateEntity } from '@/helpers/validateEntity'
 import { NotFoundError } from '@/lib/errors/http/NotFoundError'
 import { strip } from '@/helpers/sanitize'
 import BaseEntityService from './BaseEntityService'
+import { ElectionOrganizer } from '@/models/ElectionOrganizer/ElectionOrganizerEntity'
 
 export interface ElectionBody {
   title: string
@@ -20,9 +21,11 @@ export interface ElectionBody {
 export class ElectionService extends BaseEntityService<Election> {
   private manager: Repository<Election>
   private readonly encryptionService: EncryptionService
+  private readonly owner: ElectionOrganizer
 
-  constructor(db: Connection) {
+  constructor(db: Connection, owner: ElectionOrganizer) {
     super(db, Election)
+    this.owner = owner
     this.manager = getManager().getRepository(Election)
     this.encryptionService = new EncryptionService()
   }
@@ -52,14 +55,22 @@ export class ElectionService extends BaseEntityService<Election> {
 
   async getAllElections(): Promise<Election[] | undefined> {
     try {
-      return await this.manager.find()
+      return await this.manager.find({
+        where: {
+          electionOrganizer: this.owner
+        }
+      })
     } catch (err) {
       console.log(err)
     }
   }
 
   async getElectionById(id: number): Promise<Election | undefined> {
-    return await this.manager.findOne(id)
+    return await this.manager.findOne(id, {
+      where: {
+        electionOrganizer: this.owner
+      }
+    })
   }
 
   async createElection(electionDTO: IElection): Promise<Election | undefined> {
@@ -85,7 +96,11 @@ export class ElectionService extends BaseEntityService<Election> {
   }
 
   async updateElectionById(id: number, electionDTO: IElection): Promise<Election | undefined> {
-    const existingElection = await this.manager.findOne({ id })
+    const existingElection = await this.manager.findOne(id, {
+      where: {
+        electionOrganizer: this.owner
+      }
+    })
     if (!existingElection) throw new NotFoundError({ message: ServerErrorMessage.notFound('Election') })
 
     const strippedElection = strip(electionDTO, ['id', 'createdAt', 'updatedAt'])
@@ -98,7 +113,7 @@ export class ElectionService extends BaseEntityService<Election> {
   }
 
   async deleteElectionById(id: number): Promise<void> {
-    const election = await this.manager.findOne(id)
+    const election = await this.manager.findOne(id, { where: { electionOrganizer: this.owner } })
     if (!election) {
       throw new NotFoundError({ message: ServerErrorMessage.notFound('Election') })
     }

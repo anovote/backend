@@ -121,7 +121,7 @@ export class ElectionService extends BaseEntityService<Election> {
   }
 
   async isDuplicate(election: IElection): Promise<boolean> {
-    const { title, description, image, openDate, closeDate, password, status, isLocked, isAutomatic } = election
+    const { title, description, image, openDate, closeDate, status, isLocked, isAutomatic } = election
     const duplicate = await this.manager.find({
       where: {
         title,
@@ -129,7 +129,6 @@ export class ElectionService extends BaseEntityService<Election> {
         image,
         openDate,
         closeDate,
-        password,
         status,
         isLocked,
         isAutomatic

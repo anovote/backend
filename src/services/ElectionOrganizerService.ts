@@ -4,7 +4,7 @@ import { ServerErrorMessage } from '@/lib/errors/messages/ServerErrorMessages'
 import { ElectionOrganizer } from '@/models/ElectionOrganizer/ElectionOrganizerEntity'
 import { ElectionOrganizerRepository } from '@/models/ElectionOrganizer/ElectionOrganizerRepository'
 import { IElectionOrganizer } from '@/models/ElectionOrganizer/IElectionOrganizer'
-import { Connection } from 'typeorm'
+import { Connection, getCustomRepository } from 'typeorm'
 import { EncryptionService } from './EncryptionService'
 
 export class ElectionOrganizerService {
@@ -81,6 +81,8 @@ export class ElectionOrganizerService {
     }
 
     return electionOrganizer
+  }
+
   /**
    * Deletes a organizer by the given ID, if it exists,
    * Throws error if database, or query fails

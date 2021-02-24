@@ -23,7 +23,7 @@ organizerRoutes.use(enforceContentTypeJson)
 organizerRoutes.use(checkAuth)
 organizerRoutes.use('/elections', electionRoutes)
 organizerRoutes.use('/electionOrganizer', electionOrganizerRoutes)
-organizerRoutes.use('/ballots', ballotRoutes)
+organizerRoutes.use('/elections/:electionId/ballots', ballotRoutes)
 
 export default Router()
   .use(morgan('dev'))

@@ -8,7 +8,7 @@ import { ElectionService } from '@/services/ElectionService'
 import { Router } from 'express'
 import { StatusCodes } from 'http-status-codes'
 
-const router = Router()
+const router = Router({ mergeParams: true })
 
 router.post('/', async (request, response, next) => {
   try {
@@ -18,7 +18,9 @@ router.post('/', async (request, response, next) => {
       request.electionOrganizer
     )
     const newBallot = request.body as IBallot
-    const ballot = await ballotService.create(newBallot)
+    const electionId = Number.parseInt(request.params.electionId)
+
+    const ballot = await ballotService.post(newBallot, { parentId: electionId })
     return response.send(ballot)
   } catch (error) {
     next(error)

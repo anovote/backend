@@ -27,6 +27,20 @@ export class ElectionService extends BaseService<Election> {
     this.encryptionService = new EncryptionService()
   }
 
+  getById(id: number): Promise<Election | undefined> {
+    return this.getElectionById(id)
+  }
+
+  post(dto: Election): Promise<Election | undefined> {
+    return this.createElection(dto)
+  }
+  put(id: number, dto: Election): Promise<Election | undefined> {
+    return this.updateElectionById(id, dto)
+  }
+  delete(id: number): Promise<void> {
+    return this.deleteElectionById(id)
+  }
+
   async get(): Promise<Election[] | undefined> {
     try {
       const allElections = this.getAllElections()
@@ -83,12 +97,12 @@ export class ElectionService extends BaseService<Election> {
     return await this.manager.save(updatedElection)
   }
 
-  async deleteElectionById(id: number): Promise<Election | undefined> {
+  async deleteElectionById(id: number): Promise<void> {
     const election = await this.manager.findOne(id)
     if (!election) {
       throw new NotFoundError({ message: ServerErrorMessage.notFound('Election') })
     }
-    return await this.manager.remove(election)
+    await this.manager.remove(election)
   }
 
   async isDuplicate(election: IElection): Promise<boolean> {

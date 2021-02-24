@@ -8,4 +8,12 @@ export default abstract class BaseService<T> {
   }
 
   abstract get(): Promise<T[] | undefined>
+
+  abstract getById(id: number): Promise<T | undefined>
+
+  abstract post(dto: T): Promise<T | undefined>
+
+  abstract put(id: number, dto: T): Promise<T | undefined>
+
+  abstract delete(id: number): Promise<void>
 }

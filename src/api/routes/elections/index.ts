@@ -43,7 +43,7 @@ router.get('/:id', async (request, response, next) => {
   try {
     const electionService = new ElectionService(database)
     const id: number = Number.parseInt(request.params.id)
-    const election = await electionService.getElectionById(id)
+    const election = await electionService.getById(id)
     if (!election) throw new NotFoundError({ message: ServerErrorMessage.notFound(`Election`) })
     response.status(StatusCodes.OK).json(election)
   } catch (error) {
@@ -59,7 +59,7 @@ router.put('/:id', async (request, response, next) => {
     if (!election) {
       throw new BadRequestError({ message: 'Empty request' })
     }
-    const result = await electionService.updateElectionById(id, election)
+    const result = await electionService.put(id, election)
     response.status(StatusCodes.OK).json(result)
   } catch (err) {
     next(err)
@@ -70,7 +70,7 @@ router.delete('/:id', async (request, response, next) => {
   try {
     const electionService = new ElectionService(database)
     const id: number = Number.parseInt(request.params.id)
-    const result = await electionService.deleteElectionById(id)
+    const result = await electionService.delete(id)
     response.status(StatusCodes.OK).json(result)
   } catch (err) {
     next(err)

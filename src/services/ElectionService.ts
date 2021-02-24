@@ -7,6 +7,7 @@ import { ServerErrorMessage } from '@/lib/errors/messages/ServerErrorMessages'
 import { validateEntity } from '@/helpers/validateEntity'
 import { NotFoundError } from '@/lib/errors/http/NotFoundError'
 import { strip } from '@/helpers/sanitize'
+import BaseService from './BaseService'
 
 export interface ElectionBody {
   title: string
@@ -16,13 +17,23 @@ export interface ElectionBody {
 /**
  * Responsible for handling elections
  */
-export class ElectionService {
+export class ElectionService extends BaseService<Election> {
   private manager: Repository<Election>
   private readonly encryptionService: EncryptionService
 
   constructor(db: Connection) {
+    super(db, Election)
     this.manager = getManager().getRepository(Election)
     this.encryptionService = new EncryptionService()
+  }
+
+  async get(): Promise<Election[] | undefined> {
+    try {
+      const allElections = this.getAllElections()
+      return allElections as Promise<Election[] | undefined>
+    } catch (error) {
+      console.log(error)
+    }
   }
 
   async getAllElections(): Promise<Election[] | undefined> {

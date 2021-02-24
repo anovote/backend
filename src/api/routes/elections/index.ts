@@ -32,7 +32,7 @@ router.post('/', async (request, response, next) => {
 router.get('/', async (request, response, next) => {
   try {
     const electionService = new ElectionService(database)
-    const elections: Election[] | undefined = await electionService.getAllElections()
+    const elections: Election[] | undefined = await electionService.get()
     response.json(elections)
   } catch (error) {
     next(error)

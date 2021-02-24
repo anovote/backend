@@ -7,7 +7,7 @@ import { ServerErrorMessage } from '@/lib/errors/messages/ServerErrorMessages'
 import { validateEntity } from '@/helpers/validateEntity'
 import { NotFoundError } from '@/lib/errors/http/NotFoundError'
 import { strip } from '@/helpers/sanitize'
-import BaseService from './BaseService'
+import BaseEntityService from './BaseEntityService'
 
 export interface ElectionBody {
   title: string
@@ -17,7 +17,7 @@ export interface ElectionBody {
 /**
  * Responsible for handling elections
  */
-export class ElectionService extends BaseService<Election> {
+export class ElectionService extends BaseEntityService<Election> {
   private manager: Repository<Election>
   private readonly encryptionService: EncryptionService
 

@@ -1,6 +1,6 @@
 import { Connection, EntityTarget, Repository } from 'typeorm'
 
-export default abstract class BaseService<T> {
+export default abstract class BaseEntityService<T> {
   protected repository: Repository<T>
 
   constructor(db: Connection, target: EntityTarget<T>) {

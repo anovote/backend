@@ -9,7 +9,7 @@ import { IBallot } from '@/models/Ballot/IBallot'
 import { Election } from '@/models/Election/ElectionEntity'
 import { ElectionOrganizer } from '@/models/ElectionOrganizer/ElectionOrganizerEntity'
 import { Connection, Repository } from 'typeorm'
-import BaseEntityService from './BaseEntityService'
+import BaseEntityService, { CrudOptions } from './BaseEntityService'
 import { ElectionService } from './ElectionService'
 
 /**
@@ -40,8 +40,8 @@ export class BallotService extends BaseEntityService<Ballot> implements IHasOwne
     return this._ballotRepository.find({ where: { election } })
   }
 
-  post(dto: Ballot): Promise<Ballot | undefined> {
-    return this.create(dto)
+  post(dto: IBallot, options?: CrudOptions): Promise<Ballot | undefined> {
+    return this.create(dto, options?.parentId!)
   }
 
   put(id: number, dto: Ballot): Promise<Ballot | undefined> {
@@ -53,8 +53,8 @@ export class BallotService extends BaseEntityService<Ballot> implements IHasOwne
    * Throws error if database, or query fails
    * @param newBallot the ballot to create
    */
-  async create(newBallot: IBallot): Promise<Ballot | undefined> {
-    const election = await this._electionService.getElectionById(newBallot.election.id)
+  async create(newBallot: IBallot, electionId: number): Promise<Ballot | undefined> {
+    const election = await this._electionService.getElectionById(electionId)
     if (!election) throw new NotFoundError({ message: ServerErrorMessage.notFound('Election') })
 
     const ballotEntity = this._ballotRepository.create(newBallot)
@@ -71,7 +71,7 @@ export class BallotService extends BaseEntityService<Ballot> implements IHasOwne
    * @param id the id of the ballot to update
    * @param updatedBallot the updated ballot details
    */
-  async update(id: number, updatedBallot: IBallot) {
+  async update(id: number, updatedBallot: Ballot) {
     const existingBallot = await this._ballotRepository.findOne(id, { where: { election: updatedBallot.election } })
     if (!existingBallot) throw new NotFoundError({ message: ServerErrorMessage.notFound('Ballot') })
 

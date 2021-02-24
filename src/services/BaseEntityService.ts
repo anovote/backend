@@ -28,7 +28,7 @@ export default abstract class BaseEntityService<T> {
    * Creates a new entity in the database
    * @param dto The Data transfer object of an entity containing all necessary dat
    */
-  abstract post(dto: T): Promise<T | undefined>
+  abstract post(dto: T, options?: CrudOptions): Promise<T | undefined>
 
   /**
    * Updates an entity in the database
@@ -44,4 +44,8 @@ export default abstract class BaseEntityService<T> {
    * @returns nothing
    */
   abstract delete(id: number): Promise<void>
+}
+
+export interface CrudOptions {
+  parentId?: number
 }

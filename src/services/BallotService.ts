@@ -1,25 +1,51 @@
 import { strip } from '@/helpers/sanitize'
 import { validateEntity } from '@/helpers/validateEntity'
+import { IHasOwner } from '@/interfaces/IHasOwner'
+import { ForbiddenError } from '@/lib/errors/http/ForbiddenError'
 import { NotFoundError } from '@/lib/errors/http/NotFoundError'
 import { ServerErrorMessage } from '@/lib/errors/messages/ServerErrorMessages'
 import { Ballot } from '@/models/Ballot/BallotEntity'
 import { IBallot } from '@/models/Ballot/IBallot'
+import { Election } from '@/models/Election/ElectionEntity'
+import { ElectionOrganizer } from '@/models/ElectionOrganizer/ElectionOrganizerEntity'
 import { Connection, Repository } from 'typeorm'
+import BaseEntityService from './BaseEntityService'
 import { ElectionService } from './ElectionService'
 
 /**
  * Responsible for providing services for handling ballots.
  * It provides methods for creating, updating, deleting and getting ballot(s)
  */
-export class BallotService {
+export class BallotService extends BaseEntityService<Ballot> implements IHasOwner<Ballot> {
   private _database: Connection
   private _ballotRepository: Repository<Ballot>
   private _electionService: ElectionService
+  owner: ElectionOrganizer
 
-  constructor(database: Connection, electionService: ElectionService) {
+  constructor(database: Connection, electionService: ElectionService, owner: ElectionOrganizer) {
+    super(database, Ballot)
+    this.owner = owner
     this._database = database
     this._ballotRepository = this._database.getRepository(Ballot)
     this._electionService = electionService
+  }
+
+  get(): Promise<Ballot[] | undefined> {
+    // const {election}
+    // return this._ballotRepository.find({ where: { election: this._election } })
+    throw new NotFoundError({ message: 'No ballots found' })
+  }
+
+  getByElection(election: Election) {
+    return this._ballotRepository.find({ where: { election } })
+  }
+
+  post(dto: Ballot): Promise<Ballot | undefined> {
+    return this.create(dto)
+  }
+
+  put(id: number, dto: Ballot): Promise<Ballot | undefined> {
+    return this.update(id, dto)
   }
 
   /**
@@ -28,7 +54,7 @@ export class BallotService {
    * @param newBallot the ballot to create
    */
   async create(newBallot: IBallot): Promise<Ballot | undefined> {
-    const election = await this._electionService.getElectionById(newBallot.election)
+    const election = await this._electionService.getElectionById(newBallot.election.id)
     if (!election) throw new NotFoundError({ message: ServerErrorMessage.notFound('Election') })
 
     const ballotEntity = this._ballotRepository.create(newBallot)
@@ -46,7 +72,7 @@ export class BallotService {
    * @param updatedBallot the updated ballot details
    */
   async update(id: number, updatedBallot: IBallot) {
-    const existingBallot = await this._ballotRepository.findOne({ id })
+    const existingBallot = await this._ballotRepository.findOne(id, { where: { election: updatedBallot.election } })
     if (!existingBallot) throw new NotFoundError({ message: ServerErrorMessage.notFound('Ballot') })
 
     const strippedBallot = strip(updatedBallot, ['id', 'createdAt', 'updatedAt'])
@@ -55,6 +81,7 @@ export class BallotService {
 
     return await this._ballotRepository.save(mergedBallot)
   }
+
   /**
    * Deletes a ballot by the given ID, if it exists,
    * the ballot is returned, else undefined.
@@ -64,15 +91,28 @@ export class BallotService {
   async delete(id: number) {
     const existingBallot = await this._ballotRepository.findOne(id)
     if (!existingBallot) throw new NotFoundError({ message: ServerErrorMessage.notFound('Ballot') })
-    return await this._ballotRepository.remove(existingBallot)
+
+    await this.verifyOwner(existingBallot)
+
+    await this._ballotRepository.remove(existingBallot)
   }
+
+  async verifyOwner(entity: Ballot) {
+    const election = await this._electionService.getById(entity!.election.id)
+    if (!election || election.electionOrganizer !== this.owner) {
+      throw new ForbiddenError()
+    }
+  }
+
   /**
    * Tries to get a ballot with the given ID, if the ballot exists return it,
    * else return undefined.
    * Throws error if database, or query fails
    * @param id the id of the ballot to get
    */
-  async get(id: number) {
-    return await this._ballotRepository.findOne({ id })
+  async getById(id: number) {
+    const ballot = await this._ballotRepository.findOne(id)
+    this.verifyOwner(ballot!)
+    return ballot
   }
 }

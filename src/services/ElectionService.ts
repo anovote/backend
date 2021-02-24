@@ -9,6 +9,8 @@ import { NotFoundError } from '@/lib/errors/http/NotFoundError'
 import { strip } from '@/helpers/sanitize'
 import BaseEntityService from './BaseEntityService'
 import { ElectionOrganizer } from '@/models/ElectionOrganizer/ElectionOrganizerEntity'
+import { IHasOwner } from '@/interfaces/IHasOwner'
+import { ForbiddenError } from '@/lib/errors/http/ForbiddenError'
 
 export interface ElectionBody {
   title: string
@@ -18,12 +20,14 @@ export interface ElectionBody {
 /**
  * Responsible for handling elections
  */
-export class ElectionService extends BaseEntityService<Election> {
+export class ElectionService extends BaseEntityService<Election> implements IHasOwner<Election> {
   private manager: Repository<Election>
   private readonly encryptionService: EncryptionService
+  owner: ElectionOrganizer
 
   constructor(db: Connection, owner: ElectionOrganizer) {
-    super(db, Election, owner)
+    super(db, Election)
+    this.owner = owner
     this.manager = getManager().getRepository(Election)
     this.encryptionService = new EncryptionService()
   }
@@ -133,5 +137,11 @@ export class ElectionService extends BaseEntityService<Election> {
       }
     })
     return duplicate.length > 0
+  }
+
+  async verifyOwner(entity: Election) {
+    if (entity.electionOrganizer !== this.owner) {
+      throw new ForbiddenError()
+    }
   }
 }

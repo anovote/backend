@@ -2,12 +2,13 @@ import { Router } from 'express'
 import { ElectionOrganizerService } from '@/services/ElectionOrganizerService'
 import { StatusCodes } from 'http-status-codes'
 import { AuthenticationService } from '@/services/AuthenticationService'
+import { database } from '@/loaders'
 
 const router = Router()
-const electionOrganizerService = new ElectionOrganizerService()
 const authenticationService = new AuthenticationService()
 
 router.put('/changePassword', async (request, response) => {
+  const electionOrganizerService = new ElectionOrganizerService(database)
   try {
     const token = request.headers.authorization
     const id = (await authenticationService.verifyToken(token)).id

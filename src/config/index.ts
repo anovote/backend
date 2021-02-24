@@ -21,7 +21,7 @@ if (!Object.values(environments).find((val) => environment === val)) {
 // The src folder where the project will be when in dev / production
 const src = environment === environments.development || environment === environments.test ? 'src' : 'dist'
 
-if (environment === 'test') {
+if (environment === environments.test) {
   dotenv.config({ path: cwd() + '/.env.test' })
 } else {
   dotenv.config()

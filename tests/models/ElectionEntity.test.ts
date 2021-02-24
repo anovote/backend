@@ -1,47 +1,47 @@
 import { Connection, getConnection, Repository } from 'typeorm'
-import setupConnection from '@/loaders/setupTestDB'
+import setupConnection from '../helpers/setupTestDB'
 import { clearDatabaseEntityTable } from '@/../tests/Tests.utils'
 import config from '@/config'
 import { Election } from '@/models/Election/ElectionEntity'
 import { ElectionOrganizer } from '@/models/ElectionOrganizer/ElectionOrganizerEntity'
 import { ElectionStatus } from '@/models/Election/ElectionStatus'
 
-let repo: Repository<Election>
-let conn: Connection
+let electionRepository: Repository<Election>
+let connection: Connection
 
 beforeAll(async () => {
   try {
-    conn = await setupConnection()
-    return conn
+    connection = await setupConnection()
+    return connection
   } catch (err) {
     console.log(err)
   }
 })
 
 beforeEach(async () => {
-  repo = getConnection(config.environment).getRepository(Election)
-  await clearDatabaseEntityTable(repo)
+  electionRepository = getConnection(config.environment).getRepository(Election)
+  await clearDatabaseEntityTable(electionRepository)
 })
 
 afterAll(async () => {
   try {
-    return await conn.close()
+    return await connection.close()
   } catch (err) {
     console.log(err)
   }
 })
 
 test('Election without status set should return entity with status set to default', async () => {
-  repo = conn.getRepository(Election)
-  const election = repo.create()
+  electionRepository = connection.getRepository(Election)
+  const election = electionRepository.create()
   election.title = 'My Test'
   election.description = 'This is a dummy'
   election.isAutomatic = false
   election.isLocked = false
   election.electionOrganizer = new ElectionOrganizer()
   election.eligibleVoters = []
-  await repo.save(election)
-  const el = await repo.find({
+  await electionRepository.save(election)
+  const el = await electionRepository.find({
     where: {
       id: 1
     }
@@ -53,8 +53,8 @@ test('Election without status set should return entity with status set to defaul
 })
 
 test('Election with status set to Started should return with status started', async () => {
-  repo = conn.getRepository(Election)
-  const election = repo.create()
+  electionRepository = connection.getRepository(Election)
+  const election = electionRepository.create()
   election.title = 'My Test'
   election.description = 'This is a dummy'
   election.isAutomatic = false
@@ -62,8 +62,8 @@ test('Election with status set to Started should return with status started', as
   election.electionOrganizer = new ElectionOrganizer()
   election.eligibleVoters = []
   election.status = ElectionStatus.Started
-  await repo.save(election)
-  const el = await repo.find()
+  await electionRepository.save(election)
+  const el = await electionRepository.find()
   let firstElection = el[0]
   expect(firstElection.status).toBe<ElectionStatus>(ElectionStatus.Started)
   expect(firstElection.status).not.toBe<ElectionStatus>(ElectionStatus.NotStarted)

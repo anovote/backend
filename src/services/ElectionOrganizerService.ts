@@ -1,39 +1,48 @@
 import { validateEntity } from '@/helpers/validateEntity'
+import { NotFoundError } from '@/lib/errors/http/NotFoundError'
+import { ServerErrorMessage } from '@/lib/errors/messages/ServerErrorMessages'
 import { ElectionOrganizer } from '@/models/ElectionOrganizer/ElectionOrganizerEntity'
 import { ElectionOrganizerRepository } from '@/models/ElectionOrganizer/ElectionOrganizerRepository'
 import { IElectionOrganizer } from '@/models/ElectionOrganizer/IElectionOrganizer'
-import { getCustomRepository } from 'typeorm'
-import { AuthenticationService } from './AuthenticationService'
+import { Connection, getCustomRepository } from 'typeorm'
 import { EncryptionService } from './EncryptionService'
 
 export class ElectionOrganizerService {
+  private _database: Connection
+  private _organizerRepository: ElectionOrganizerRepository
+
+  constructor(db: Connection) {
+    this._database = db
+    this._organizerRepository = this._database.getCustomRepository(ElectionOrganizerRepository)
+  }
+
   /**
    * Creates an election organizer entity from a given election organizer model
    * @param electionOrganizer
    */
+
   create(electionOrganizer: IElectionOrganizer): ElectionOrganizer {
-    return getCustomRepository(ElectionOrganizerRepository).createElectionOrganizer(electionOrganizer)
+    return this._organizerRepository.createElectionOrganizer(electionOrganizer)
   }
 
   /**
-   * Saves an given election organizer to the database and returns the id of it.
+   * Saves an given election organizer to the database and returns it
    * @param electionOrganizer the election organizer we want to save
    */
-  async save(electionOrganizer: ElectionOrganizer): Promise<number> {
-    const save = await getCustomRepository(ElectionOrganizerRepository).save(electionOrganizer)
-    return save.id
+  async save(electionOrganizer: ElectionOrganizer): Promise<ElectionOrganizer> {
+    const saved = await this._organizerRepository.save(electionOrganizer)
+    return saved
   }
 
-  async createAndSaveElectionOrganizer(electionOrganizer: IElectionOrganizer): Promise<string> {
+  async createAndSaveElectionOrganizer(electionOrganizer: IElectionOrganizer): Promise<ElectionOrganizer> {
     const encryptionService = new EncryptionService()
-    const authService = new AuthenticationService()
+
     const organizer = this.create(electionOrganizer)
 
     await validateEntity(organizer)
+    organizer.password = await encryptionService.hash(organizer.password)
 
-    electionOrganizer.password = await encryptionService.hash(electionOrganizer.password)
-    const id = await this.save(organizer)
-    return await authService.generateTokenFromId(id)
+    return await this.save(organizer)
   }
 
   /**
@@ -43,18 +52,46 @@ export class ElectionOrganizerService {
    */
   async updatePassword(newPassword: string, id: number) {
     const encryptionService = new EncryptionService()
-    const repository = getCustomRepository(ElectionOrganizerRepository)
 
-    const electionOrganizer: ElectionOrganizer | undefined = await repository.findOne({
-      id: id
+    const electionOrganizer: ElectionOrganizer | undefined = await this._organizerRepository.findOne({
+      id
     })
 
     if (!electionOrganizer) {
-      throw new RangeError('Did not find the election organizer')
+      throw new NotFoundError({ message: ServerErrorMessage.notFound('Election organizer') })
     }
 
     electionOrganizer.password = await encryptionService.hash(newPassword)
-    const updatedElectionOrganizer = await repository.save(electionOrganizer)
+    const updatedElectionOrganizer = await this._organizerRepository.save(electionOrganizer)
     return updatedElectionOrganizer
+  }
+
+  /**
+   * Returns the election organizer with the specified id.
+   * Throws an RangeError if the election organizer is not found
+   * @param id The id of the election organizer
+   */
+  async getElectionOrganizerById(id: number): Promise<ElectionOrganizer> {
+    const repository = getCustomRepository(ElectionOrganizerRepository)
+
+    const electionOrganizer: ElectionOrganizer | undefined = await repository.findOne({ id })
+
+    if (!electionOrganizer) {
+      throw new NotFoundError({ message: ServerErrorMessage.notFound('Election organizer') })
+    }
+
+    return electionOrganizer
+  }
+
+  /**
+   * Deletes a organizer by the given ID, if it exists,
+   * Throws error if database, or query fails
+   * @param id the id of the ballot to delete
+   * @return the organizer or if it does not exist, undefined
+   */
+  async delete(id: number) {
+    const existingOrganizer = await this._organizerRepository.findOne(id)
+    if (!existingOrganizer) throw new NotFoundError({ message: ServerErrorMessage.notFound('Election Organizer') })
+    return await this._organizerRepository.remove(existingOrganizer)
   }
 }

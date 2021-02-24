@@ -20,6 +20,8 @@ router.post('/', async (request, response, next) => {
       throw new BadRequestError({ message: 'Empty request' })
     }
 
+    electionDTO.electionOrganizer = request.electionOrganizer
+
     const election: Election | undefined = await electionService.createElection(electionDTO)
     response.status(StatusCodes.CREATED).json(election)
   } catch (error) {

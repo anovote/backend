@@ -21,11 +21,9 @@ export interface ElectionBody {
 export class ElectionService extends BaseEntityService<Election> {
   private manager: Repository<Election>
   private readonly encryptionService: EncryptionService
-  private readonly owner: ElectionOrganizer
 
   constructor(db: Connection, owner: ElectionOrganizer) {
-    super(db, Election)
-    this.owner = owner
+    super(db, Election, owner)
     this.manager = getManager().getRepository(Election)
     this.encryptionService = new EncryptionService()
   }

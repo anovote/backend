@@ -1,3 +1,4 @@
+import { ElectionOrganizer } from '@/models/ElectionOrganizer/ElectionOrganizerEntity'
 import { Connection, EntityTarget, Repository } from 'typeorm'
 
 /**
@@ -6,9 +7,11 @@ import { Connection, EntityTarget, Repository } from 'typeorm'
  */
 export default abstract class BaseEntityService<T> {
   protected repository: Repository<T>
+  protected readonly owner: ElectionOrganizer
 
-  constructor(db: Connection, target: EntityTarget<T>) {
+  constructor(db: Connection, target: EntityTarget<T>, owner: ElectionOrganizer) {
     this.repository = db.getRepository(target)
+    this.owner = owner
   }
 
   /**

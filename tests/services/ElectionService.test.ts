@@ -18,7 +18,7 @@ let seedElection: Election
 beforeAll(async () => {
   db = await getTestDatabase()
   organizer = await createDummyOrganizer(db)
-  electionService = new ElectionService(db)
+  electionService = new ElectionService(db, organizer)
 
   seedElection = await (electionService.createElection({
     electionOrganizer: organizer,
@@ -114,8 +114,7 @@ it('should delete a election which exists', async () => {
     isLocked: false,
     isAutomatic: false
   })
-  const deleted = await electionService.deleteElectionById(election!.id)
-  expect(deleted!.title).toBe(election!.title)
+  await expect(electionService.deleteElectionById(election!.id)).resolves.toBeUndefined()
 })
 
 it('should throw not found error when deleting a election which do not exist', async () => {

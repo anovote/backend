@@ -28,7 +28,7 @@ export default abstract class BaseEntityService<T> {
    * Creates a new entity in the database
    * @param dto The Data transfer object of an entity containing all necessary dat
    */
-  abstract post(dto: T, options?: CrudOptions): Promise<T | undefined>
+  abstract create(dto: T, options?: CrudOptions): Promise<T | undefined>
 
   /**
    * Updates an entity in the database
@@ -36,7 +36,7 @@ export default abstract class BaseEntityService<T> {
    * @param dto the data transfer object contain the data to be updated
    * @returns the updated entity if the entity existed
    */
-  abstract put(id: number, dto: T): Promise<T | undefined>
+  abstract update(id: number, dto: T): Promise<T | undefined>
 
   /**
    * Deletes the entity if it exists in the database

@@ -40,12 +40,12 @@ export class BallotService extends BaseEntityService<Ballot> implements IHasOwne
     return this._ballotRepository.find({ where: { election } })
   }
 
-  post(dto: IBallot, options?: CrudOptions): Promise<Ballot | undefined> {
-    return this.create(dto, options?.parentId!)
+  create(dto: IBallot, options?: CrudOptions): Promise<Ballot | undefined> {
+    return this.createBallot(dto, options?.parentId!)
   }
 
-  put(id: number, dto: Ballot): Promise<Ballot | undefined> {
-    return this.update(id, dto)
+  update(id: number, dto: Ballot): Promise<Ballot | undefined> {
+    return this.updateBallot(id, dto)
   }
 
   /**
@@ -53,7 +53,7 @@ export class BallotService extends BaseEntityService<Ballot> implements IHasOwne
    * Throws error if database, or query fails
    * @param newBallot the ballot to create
    */
-  async create(newBallot: IBallot, electionId: number): Promise<Ballot | undefined> {
+  private async createBallot(newBallot: IBallot, electionId: number): Promise<Ballot | undefined> {
     const election = await this._electionService.getElectionById(electionId)
     if (!election) throw new NotFoundError({ message: ServerErrorMessage.notFound('Election') })
 
@@ -71,7 +71,7 @@ export class BallotService extends BaseEntityService<Ballot> implements IHasOwne
    * @param id the id of the ballot to update
    * @param updatedBallot the updated ballot details
    */
-  async update(id: number, updatedBallot: Ballot) {
+  private async updateBallot(id: number, updatedBallot: Ballot) {
     const existingBallot = await this._ballotRepository.findOne(id, { where: { election: updatedBallot.election } })
     if (!existingBallot) throw new NotFoundError({ message: ServerErrorMessage.notFound('Ballot') })
 

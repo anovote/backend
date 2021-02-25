@@ -1,7 +1,7 @@
-import { BadRequestError } from '@/lib/errors/http/BadRequestError'
 import { NotFoundError } from '@/lib/errors/http/NotFoundError'
 import { ServerErrorMessage } from '@/lib/errors/messages/ServerErrorMessages'
 import { database } from '@/loaders'
+import { Ballot } from '@/models/Ballot/BallotEntity'
 import { IBallot } from '@/models/Ballot/IBallot'
 import { BallotService } from '@/services/BallotService'
 import { ElectionService } from '@/services/ElectionService'
@@ -20,7 +20,7 @@ router.post('/', async (request, response, next) => {
     const newBallot = request.body as IBallot
     const electionId = Number.parseInt(request.params.electionId)
 
-    const ballot = await ballotService.post(newBallot, { parentId: electionId })
+    const ballot = await ballotService.create(newBallot, { parentId: electionId })
     return response.send(ballot)
   } catch (error) {
     next(error)
@@ -71,7 +71,7 @@ router.put('/:id', async (request, response, next) => {
       request.electionOrganizer
     )
     const id = Number.parseInt(request.params.id)
-    const ballot = request.body as IBallot
+    const ballot = request.body as Ballot
     const updatedBallot = await ballotService.update(id, ballot)
     return response.status(StatusCodes.OK).send(updatedBallot)
   } catch (error) {

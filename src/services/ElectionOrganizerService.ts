@@ -26,11 +26,11 @@ export class ElectionOrganizerService extends BaseEntityService<ElectionOrganize
     return this.getElectionOrganizerById(id)
   }
 
-  post(dto: ElectionOrganizer): Promise<ElectionOrganizer | undefined> {
+  create(dto: ElectionOrganizer): Promise<ElectionOrganizer | undefined> {
     return this.createAndSaveElectionOrganizer(dto)
   }
 
-  put(id: number, dto: ElectionOrganizer): Promise<ElectionOrganizer | undefined> {
+  update(id: number, dto: ElectionOrganizer): Promise<ElectionOrganizer | undefined> {
     return this.updatePassword(dto.password, id)
   }
 
@@ -38,7 +38,7 @@ export class ElectionOrganizerService extends BaseEntityService<ElectionOrganize
    * Creates an election organizer entity from a given election organizer model
    * @param electionOrganizer
    */
-  create(electionOrganizer: IElectionOrganizer): ElectionOrganizer {
+  createElectionOrganizer(electionOrganizer: IElectionOrganizer): ElectionOrganizer {
     return this._organizerRepository.createElectionOrganizer(electionOrganizer)
   }
 
@@ -54,7 +54,7 @@ export class ElectionOrganizerService extends BaseEntityService<ElectionOrganize
   async createAndSaveElectionOrganizer(electionOrganizer: IElectionOrganizer): Promise<ElectionOrganizer> {
     const encryptionService = new EncryptionService()
 
-    const organizer = this.create(electionOrganizer)
+    const organizer = this.createElectionOrganizer(electionOrganizer)
 
     await validateEntity(organizer)
     organizer.password = await encryptionService.hash(organizer.password)

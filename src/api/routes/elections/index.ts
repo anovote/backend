@@ -59,7 +59,7 @@ router.put('/:id', async (request, response, next) => {
     if (!election) {
       throw new BadRequestError({ message: 'Empty request' })
     }
-    const result = await electionService.put(id, election)
+    const result = await electionService.update(id, election)
     response.status(StatusCodes.OK).json(result)
   } catch (err) {
     next(err)

@@ -9,12 +9,11 @@ import {
   UpdateDateColumn
 } from 'typeorm'
 import { ElectionOrganizer } from '@/models/ElectionOrganizer/ElectionOrganizerEntity'
-
 import { EligibleVoter } from '@/models/EligibleVoter/EligibleVoterEntity'
 import { IElection } from '@/models/Election/IElection'
 import { ElectionStatus } from '@/models/Election/ElectionStatus'
-import { IsEarlierThan } from '@/helpers/isEarlierThan'
 import { IsOptional, MinDate } from 'class-validator'
+import { IsEarlierThan } from '../constraints/isEarlierThan'
 
 /**
  * An entity for storing an election.
@@ -23,7 +22,6 @@ import { IsOptional, MinDate } from 'class-validator'
  * an election can have many eligible voters.
  * The purpose of an election entity is to hold ballots, which an election can have many of.
  */
-
 @Entity()
 export class Election implements IElection {
   @PrimaryGeneratedColumn()
@@ -41,14 +39,17 @@ export class Election implements IElection {
   @Column({ type: String, nullable: true })
   image!: string
 
-  @IsOptional()
   @IsEarlierThan('closeDate', { message: 'Opening date must be before closing date' })
-  @MinDate(new Date(), { groups: ['creation'], always: false })
+  @IsOptional({ always: true })
+  @MinDate(new Date(), {
+    groups: ['creation'],
+    always: false
+  })
   @Column({ type: Date, nullable: true })
-  openDate!: Date
+  openDate?: Date
 
   @Column({ type: Date, nullable: true })
-  closeDate!: Date
+  closeDate?: Date
 
   @Column({ type: String, nullable: true })
   password!: string

@@ -11,8 +11,9 @@
     "esnext",
     "Holanger",
     "Hurlen",
-    "middlewares",
+    "isready",
     "map",
+    "middlewares",
     "Nilsen",
     "postgres",
     "postgresql",
@@ -25,12 +26,13 @@
     "Tr",
     "Træen",
     "tscpaths",
-    "typechecking",
     "tslib",
+    "typechecking",
     "typeorm",
     "unhashed",
     "varchar",
     "zwaldowski"
   ],
-  "flagWords": ["hte"]
+  "flagWords": ["hte"],
+  "ignorePaths": ["*.env*"]
 }

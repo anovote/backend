@@ -39,12 +39,13 @@ export class Ballot implements IBallot {
   @Column({ type: 'varchar', nullable: true })
   image!: string
 
-  @Column({ type: 'enum', enum: BallotType })
+  @Column({ type: 'enum', enum: BallotType, default: BallotType.SINGLE })
   type!: BallotType
 
   @Column({
     type: 'enum',
-    enum: BallotResultDisplay
+    enum: BallotResultDisplay,
+    default: BallotResultDisplay.SINGLE
   })
   resultDisplayType!: BallotResultDisplay
 

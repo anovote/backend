@@ -230,7 +230,7 @@ it('should pass if opening date is earlier than today on entity update', async (
   const repo = db.getRepository(Election)
   const election = repo.create()
   election.title = 'My Test'
-  election.description = 'This is a dummy'
+  election.description = 'This has a wrong date and needs to be updated'
   election.isAutomatic = false
   election.isLocked = false
   election.electionOrganizer = new ElectionOrganizer()
@@ -240,7 +240,10 @@ it('should pass if opening date is earlier than today on entity update', async (
   const oldElection = await electionService.createElection(election)
   const newElection = oldElection!
   newElection.openDate = new Date(2020, 2, 23) // earlier than today
+  newElection.closeDate = undefined
+
   expect(newElection !== oldElection)
+  expect(newElection.openDate !== oldElection!.openDate)
   expect(newElection.openDate < new Date())
   await expect(electionService.updateElectionById(newElection.id, newElection)).resolves.toBeDefined()
 })

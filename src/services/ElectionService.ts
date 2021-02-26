@@ -85,7 +85,7 @@ export class ElectionService extends BaseEntityService<Election> implements IHas
     }
 
     const election = this.manager.create(electionDTO)
-    await validateEntity(election)
+    await validateEntity(election, { groups: ['creation'] })
     election.id = -1
 
     return await this.manager.save(election)

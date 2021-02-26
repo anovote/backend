@@ -120,7 +120,7 @@ export class BallotService extends BaseEntityService<Ballot> implements IHasOwne
     const ballot = await this._ballotRepository.findOne(id, { relations: ['election', 'election.electionOrganizer'] })
     if (!ballot) return undefined
 
-    this.verifyOwner(ballot!)
+    await this.verifyOwner(ballot!)
     return ballot
   }
 }

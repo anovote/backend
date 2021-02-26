@@ -78,7 +78,7 @@ export class BallotService extends BaseEntityService<Ballot> implements IHasOwne
    * @param updatedBallot the updated ballot details
    */
   private async updateBallot(id: number, updatedBallot: Ballot) {
-    const existingBallot = await this._ballotRepository.findOne(id, { where: { election: updatedBallot.election } })
+    const existingBallot = await this._ballotRepository.findOne(id)
     if (!existingBallot) throw new NotFoundError({ message: ServerErrorMessage.notFound('Ballot') })
 
     const strippedBallot = strip(updatedBallot, ['id', 'createdAt', 'updatedAt'])

@@ -13,6 +13,7 @@ import { ElectionOrganizer } from '@/models/ElectionOrganizer/ElectionOrganizerE
 import { EligibleVoter } from '@/models/EligibleVoter/EligibleVoterEntity'
 import { IElection } from '@/models/Election/IElection'
 import { ElectionStatus } from '@/models/Election/ElectionStatus'
+import { IsPositive } from 'class-validator'
 
 /**
  * An entity for storing an election.
@@ -25,6 +26,7 @@ import { ElectionStatus } from '@/models/Election/ElectionStatus'
 @Entity()
 export class Election implements IElection {
   @PrimaryGeneratedColumn()
+  @IsPositive()
   id!: number
 
   @ManyToOne(() => ElectionOrganizer, (electionOrganizer) => electionOrganizer.elections)

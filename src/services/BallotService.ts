@@ -31,8 +31,6 @@ export class BallotService extends BaseEntityService<Ballot> implements IHasOwne
   }
 
   get(): Promise<Ballot[] | undefined> {
-    // const {election}
-    // return this._ballotRepository.find({ where: { election: this._election } })
     throw new NotFoundError({ message: 'No ballots found' })
   }
 

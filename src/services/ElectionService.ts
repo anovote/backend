@@ -28,7 +28,7 @@ export class ElectionService extends BaseEntityService<Election> implements IHas
   constructor(db: Connection, owner: ElectionOrganizer) {
     super(db, Election)
     this.owner = owner
-    this.manager = getManager().getRepository(Election)
+    this.manager = db.getRepository(Election)
     this.encryptionService = new EncryptionService()
   }
 

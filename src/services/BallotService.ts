@@ -40,8 +40,12 @@ export class BallotService extends BaseEntityService<Ballot> implements IHasOwne
     return this._ballotRepository.find({ where: { election } })
   }
 
-  create(dto: IBallot, options?: CrudOptions): Promise<Ballot | undefined> {
-    return this.createBallot(dto, options?.parentId!)
+  create(dto: IBallot, { parentId: electionId }: CrudOptions): Promise<Ballot | undefined> {
+    try {
+      return this.createBallot(dto, electionId!)
+    } catch (error) {
+      throw error
+    }
   }
 
   update(id: number, dto: Ballot): Promise<Ballot | undefined> {

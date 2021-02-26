@@ -52,7 +52,8 @@ beforeAll(async () => {
 
 beforeEach(async () => {
   try {
-    // console.log(election)
+    const repo = db.getRepository(Ballot)
+    await clearDatabaseEntityTable<Ballot>(repo)
   } catch (err) {
     console.log(err)
   }
@@ -60,8 +61,6 @@ beforeEach(async () => {
 
 afterEach(async () => {
   try {
-    const repo = db.getRepository(Ballot)
-    await clearDatabaseEntityTable<Ballot>(repo)
   } catch (err) {
     console.log(err)
   }
@@ -119,7 +118,6 @@ it('should create a ballot without image and description', async () => {
       { parentId: election.id }
     )
     expect(ballot).toBeInstanceOf(Ballot)
-    ballots.push(ballot!)
   } catch (err) {
     console.log(err)
   }
@@ -138,8 +136,7 @@ it('should not create a ballot if election does not exist with not found excepti
       type: BallotType.MULTIPLE
     }
 
-    await expect(ballotService.create(ballotDTO, options)).rejects.toThrow()
-    // await expect(ballotService.create(ballotDTO, options)).rejects.toThrowError(NotFoundError)
+    await expect(ballotService.create(ballotDTO, options)).rejects.toThrowError(NotFoundError)
   } catch (err) {
     console.log(err)
   }
@@ -147,18 +144,11 @@ it('should not create a ballot if election does not exist with not found excepti
 
 it('should throw create error on negative order', async () => {
   try {
-    console.log(election.id)
-
     const ballot = deepCopy<IBallot>(seedBallot)
     ballot.order = -1
     await expect(ballotService.create(ballot, { parentId: election.id })).rejects.toThrowError(ValidationError)
-    // await expect(ballotService.create(ballot, { parentId: election.id })).rejects.toContain(
-    //   'order must be a positive number'
-    // )
   } catch (error) {
-    // expect(error).toBeInstanceOf(ValidationError)
-    // const err = error as ValidationError
-    // expect(err.toResponse().validationMessages).toContain('order must be a positive number')
+    console.log(error)
   }
 })
 
@@ -223,31 +213,37 @@ it('should return the ballot with given id', async () => {
   expect(ballot!.id).toBe(originalBallot.id)
 })
 
-// it('should return undefined if ballot does not exist', async () => {
-//   const ballot = await ballotService.getById(999999)
-//   expect(ballot).toBeUndefined()
-// })
+it('should return undefined if ballot does not exist', async () => {
+  const ballot = await ballotService.getById(999999)
+  expect(ballot).toBeUndefined()
+})
 
-// it('should delete a ballot which exists', async () => {
-//   const ballot = await ballotService.create({
-//     candidates: [],
-//     election: election.id,
-//     order: 1,
-//     displayResultCount: true,
-//     resultDisplayType: BallotResultDisplay.ALL,
-//     resultDisplayTypeCount: 2,
-//     title: 'Test ballot',
-//     type: BallotType.MULTIPLE,
-//     description: 'Description',
-//     image: 'img.png'
-//   })
-//   const deleted = await ballotService.delete(ballot!.id)
-//   expect(deleted!.title).toBe(ballot!.title)
-// })
+it('should fail if trying to delete ballot that does not exist', async () => {
+  const missingId = 9999
+  await expect(ballotService.delete(missingId)).rejects.toThrow(NotFoundError)
+})
 
-xit('should throw not found error when deleting a ballot which do not exist', async () => {
+it('should delete a ballot which exists', async () => {
+  const ballotDTO = {
+    candidates: [],
+    order: 1,
+    displayResultCount: true,
+    resultDisplayType: BallotResultDisplay.ALL,
+    resultDisplayTypeCount: 2,
+    title: 'Test ballot',
+    type: BallotType.MULTIPLE,
+    description: 'Description',
+    image: 'img.png'
+  }
+  const ballot = await ballotService.create(ballotDTO, { parentId: election.id })
+  const id = ballot!.id
+
+  await expect(ballotService.delete(id)).resolves.toBeUndefined()
+})
+
+it('should throw not found error when deleting a ballot which do not exist', async () => {
   try {
-    const deleted = await ballotService.delete(99999999)
+    await expect(ballotService.delete(99999999)).rejects.toThrowError(NotFoundError)
   } catch (error) {
     expect(error).toBeInstanceOf(NotFoundError)
   }

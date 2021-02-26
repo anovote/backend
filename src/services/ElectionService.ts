@@ -36,7 +36,7 @@ export class ElectionService extends BaseEntityService<Election> implements IHas
     return this.getElectionById(id)
   }
 
-  create(dto: Election): Promise<Election | undefined> {
+  create(dto: IElection): Promise<Election | undefined> {
     return this.createElection(dto)
   }
   update(id: number, dto: Election): Promise<Election | undefined> {

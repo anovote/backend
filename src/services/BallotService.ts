@@ -104,8 +104,9 @@ export class BallotService extends BaseEntityService<Ballot> implements IHasOwne
   }
 
   async verifyOwner(ballot: Ballot) {
-    const election = await this._electionService.getById(ballot.election.id)
-    if (!election || election.electionOrganizer !== this.owner) {
+    const electionOrganizer: ElectionOrganizer = ballot.election.electionOrganizer
+
+    if (!ballot.election || electionOrganizer.id != this.owner.id) {
       throw new ForbiddenError()
     }
   }

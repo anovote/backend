@@ -103,8 +103,8 @@ export class BallotService extends BaseEntityService<Ballot> implements IHasOwne
     await this._ballotRepository.remove(existingBallot)
   }
 
-  async verifyOwner(entity: Ballot) {
-    const election = await this._electionService.getById(entity!.election.id)
+  async verifyOwner(ballot: Ballot) {
+    const election = await this._electionService.getById(ballot.election.id)
     if (!election || election.electionOrganizer !== this.owner) {
       throw new ForbiddenError()
     }
@@ -118,6 +118,8 @@ export class BallotService extends BaseEntityService<Ballot> implements IHasOwne
    */
   async getById(id: number) {
     const ballot = await this._ballotRepository.findOne(id)
+    if (!ballot) return undefined
+
     this.verifyOwner(ballot!)
     return ballot
   }

@@ -63,6 +63,8 @@ export class BallotService extends BaseEntityService<Ballot> implements IHasOwne
 
     const ballotEntity = this._ballotRepository.create(newBallot)
     ballotEntity.id = -1
+
+    ballotEntity.election = election
     await validateEntity(ballotEntity)
 
     return await this._ballotRepository.save(ballotEntity)

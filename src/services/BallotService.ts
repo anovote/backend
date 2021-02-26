@@ -54,7 +54,7 @@ export class BallotService extends BaseEntityService<Ballot> implements IHasOwne
    * @param newBallot the ballot to create
    */
   private async createBallot(newBallot: IBallot, electionId: number): Promise<Ballot | undefined> {
-    const election = await this._electionService.getElectionById(electionId)
+    const election = await this._electionService.getById(electionId)
     if (!election) throw new NotFoundError({ message: ServerErrorMessage.notFound('Election') })
 
     const ballotEntity = this._ballotRepository.create(newBallot)

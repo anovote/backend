@@ -1,6 +1,6 @@
 import { Candidate } from '@/models/Candidate/CandidateEntity'
 import { Election } from '@/models/Election/ElectionEntity'
-import { IsNotEmptyObject, IsPositive, IsString } from 'class-validator'
+import { IsNotEmptyObject, IsPositive, IsString, ValidateNested } from 'class-validator'
 import {
   Column,
   CreateDateColumn,
@@ -28,6 +28,7 @@ export class Ballot implements IBallot {
 
   @ManyToOne(() => Election, (election) => election.id)
   @IsNotEmptyObject()
+  @ValidateNested()
   election!: Election
 
   @Column({ type: 'varchar' })

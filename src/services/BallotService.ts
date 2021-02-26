@@ -95,7 +95,7 @@ export class BallotService extends BaseEntityService<Ballot> implements IHasOwne
    * @param id the id of the ballot to delete
    */
   async delete(id: number) {
-    const existingBallot = await this._ballotRepository.findOne(id)
+    const existingBallot = await this.getById(id)
     if (!existingBallot) throw new NotFoundError({ message: ServerErrorMessage.notFound('Ballot') })
 
     await this.verifyOwner(existingBallot)

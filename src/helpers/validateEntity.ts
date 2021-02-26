@@ -1,4 +1,4 @@
-import { validate, ValidationOptions, ValidatorOptions } from 'class-validator'
+import { validate, ValidatorOptions } from 'class-validator'
 import { ValidationError } from '@/lib/errors/validation/ValidationError'
 /**
  * Validates an entity according to its entity constraints or throws an validation error

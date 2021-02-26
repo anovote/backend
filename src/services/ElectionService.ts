@@ -1,5 +1,5 @@
 import { Election } from '@/models/Election/ElectionEntity'
-import { Connection, getManager, Repository } from 'typeorm'
+import { Connection, Repository } from 'typeorm'
 import { IElection } from '@/models/Election/IElection'
 import { EncryptionService } from './EncryptionService'
 import { BadRequestError } from '@/lib/errors/http/BadRequestError'
@@ -67,7 +67,7 @@ export class ElectionService extends BaseEntityService<Election> implements IHas
     }
   }
 
-  async getElectionById(id: number): Promise<Election | undefined> {
+  private async getElectionById(id: number): Promise<Election | undefined> {
     return await this.manager.findOne(id, {
       where: {
         electionOrganizer: this.owner

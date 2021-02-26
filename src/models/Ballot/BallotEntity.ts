@@ -1,6 +1,6 @@
 import { Candidate } from '@/models/Candidate/CandidateEntity'
 import { Election } from '@/models/Election/ElectionEntity'
-import { IsPositive, IsString, Min } from 'class-validator'
+import { IsNotEmptyObject, IsPositive, IsString, ValidateNested } from 'class-validator'
 import {
   Column,
   CreateDateColumn,
@@ -13,6 +13,7 @@ import {
 import { BallotResultDisplay } from './BallotResultDisplay'
 import { BallotStatus } from './BallotStatus'
 import { BallotType } from './BallotType'
+import { IBallot } from './IBallot'
 /**
  * A ballot a voter can vote on.
  * The ballot can have many candidates which a eligible voter can submit a vote for.
@@ -21,12 +22,14 @@ import { BallotType } from './BallotType'
  */
 
 @Entity()
-export class Ballot {
+export class Ballot implements IBallot {
   @PrimaryGeneratedColumn()
   id!: number
 
   @ManyToOne(() => Election, (election) => election.id)
-  election!: Election | number
+  @IsNotEmptyObject()
+  @ValidateNested()
+  election!: Election
 
   @Column({ type: 'varchar' })
   @IsString()

@@ -5,6 +5,8 @@ import config from '@/config'
 import { Ballot } from '@/models/Ballot/BallotEntity'
 import { BallotResultDisplay } from '@/models/Ballot/BallotResultDisplay'
 import { Election } from '@/models/Election/ElectionEntity'
+import { validateEntity } from '@/helpers/validateEntity'
+import { ValidationError } from '@/lib/errors/validation/ValidationError'
 
 let repo: Repository<Ballot>
 
@@ -52,4 +54,35 @@ test('Ballot with display type set to Runner up should return with status runner
   expect(firstBallot.resultDisplayType).not.toBe<BallotResultDisplay>(BallotResultDisplay.NONE)
   expect(firstBallot.resultDisplayType).not.toBe<BallotResultDisplay>(BallotResultDisplay.ALL)
   expect(firstBallot.resultDisplayType).not.toBe<BallotResultDisplay>(BallotResultDisplay.SINGLE)
+})
+
+it('should not validate if election is missing', async () => {
+  const ballot = repo.create()
+  ballot.title = 'Election is missing'
+  ballot.description = 'Election should never be missing'
+  ballot.order = 1
+
+  await expect(validateEntity(ballot)).rejects.toThrowError(ValidationError)
+})
+
+it('should not validate if election is empty', async () => {
+  const ballot = repo.create()
+  ballot.title = 'Election is missing'
+  ballot.description = 'Election should never be missing'
+  ballot.order = 1
+  ballot.election = new Election()
+
+  await expect(validateEntity(ballot)).rejects.toThrowError(ValidationError)
+})
+
+it('should not validate if election is missing id', async () => {
+  const ballot = repo.create()
+  ballot.title = 'Election is missing'
+  ballot.description = 'Election should never be missing'
+  ballot.order = 1
+  const election = new Election()
+  election.title = 'I am missing an id'
+  ballot.election = election
+
+  await expect(validateEntity(ballot)).rejects.toThrowError(ValidationError)
 })

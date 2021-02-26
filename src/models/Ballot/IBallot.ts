@@ -3,7 +3,6 @@ import { BallotResultDisplay } from './BallotResultDisplay'
 import { BallotType } from './BallotType'
 
 export interface IBallot {
-  election: number
   title: string
   description?: string
   image?: string

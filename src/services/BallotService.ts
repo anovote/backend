@@ -117,7 +117,7 @@ export class BallotService extends BaseEntityService<Ballot> implements IHasOwne
    * @param id the id of the ballot to get
    */
   async getById(id: number) {
-    const ballot = await this._ballotRepository.findOne(id)
+    const ballot = await this._ballotRepository.findOne(id, { relations: ['election', 'election.electionOrganizer'] })
     if (!ballot) return undefined
 
     this.verifyOwner(ballot!)

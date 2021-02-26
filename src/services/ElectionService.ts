@@ -69,6 +69,7 @@ export class ElectionService extends BaseEntityService<Election> implements IHas
 
   private async getElectionById(id: number): Promise<Election | undefined> {
     return await this.manager.findOne(id, {
+      relations: ['electionOrganizer'],
       where: {
         electionOrganizer: this.owner
       }

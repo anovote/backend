@@ -79,7 +79,7 @@ it('should throw error when status is out of range', async () => {
   const election = deepCopy<IElection>(seedElection)
   election.status = 99 // Out of range of ENUM
   try {
-    expect(electionService.createElection(election)).rejects.toThrowError()
+    await expect(electionService.createElection(election)).rejects.toThrowError()
   } catch (error) {
     console.log(error)
   }

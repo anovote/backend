@@ -48,8 +48,8 @@ export class ElectionService extends BaseEntityService<Election> implements IHas
 
   async get(): Promise<Election[] | undefined> {
     try {
-      const allElections = this.getAllElections()
-      return allElections as Promise<Election[] | undefined>
+      const allElections = await this.getAllElections()
+      return allElections
     } catch (error) {
       console.log(error)
     }
@@ -140,7 +140,7 @@ export class ElectionService extends BaseEntityService<Election> implements IHas
     return duplicate.length > 0
   }
 
-  async verifyOwner(entity: Election) {
+  verifyOwner(entity: Election): void {
     if (entity.electionOrganizer !== this.owner) {
       throw new ForbiddenError()
     }

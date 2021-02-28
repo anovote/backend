@@ -7,5 +7,5 @@ export interface IHasOwner<T> {
    * @param entity the entity to check owner of
    * @returns nothing if verified, throws error if not
    */
-  verifyOwner(entity: T): Promise<void>
+  verifyOwner(entity: T): void
 }

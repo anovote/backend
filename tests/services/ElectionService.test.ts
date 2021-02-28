@@ -43,7 +43,7 @@ afterAll(async () => {
     await deleteDummyOrganizer(db, organizer)
     await db.close()
   } catch (err) {
-    console.log(err)
+    console.error(err)
   }
 })
 
@@ -81,7 +81,7 @@ it('should throw error when status is out of range', async () => {
   try {
     await expect(electionService.createElection(election)).rejects.toThrowError()
   } catch (error) {
-    console.log(error)
+    console.error(error)
   }
 })
 
@@ -91,7 +91,7 @@ it('should not update if no election exists', async () => {
       NotFoundError
     )
   } catch (error) {
-    console.log(error)
+    console.error(error)
   }
 })
 
@@ -132,6 +132,6 @@ it('should throw not found error when deleting a election which do not exist', a
   try {
     await expect(electionService.deleteElectionById(99999999)).rejects.toThrowError(NotFoundError)
   } catch (error) {
-    console.log(error)
+    console.error(error)
   }
 })

@@ -45,7 +45,7 @@ beforeAll(async () => {
       { parentId: election.id }
     ) as Promise<Ballot>)!
   } catch (err) {
-    console.log(err)
+    console.error(err)
   }
 })
 
@@ -54,7 +54,7 @@ beforeEach(async () => {
     const repo = db.getRepository(Ballot)
     await clearDatabaseEntityTable<Ballot>(repo)
   } catch (err) {
-    console.log(err)
+    console.error(err)
   }
 })
 
@@ -62,7 +62,7 @@ afterAll(async () => {
   try {
     await db.close()
   } catch (err) {
-    console.log(err)
+    console.error(err)
   }
 })
 
@@ -83,9 +83,8 @@ it('should create a ballot with all data filled out', async () => {
 
     const ballot = await ballotService.create(ballotDTO, crudOptions)
     expect(ballot).toBeInstanceOf(Ballot)
-    // ballots.push(ballot!)
   } catch (err) {
-    console.log(err)
+    console.error(err)
   }
 })
 
@@ -105,7 +104,7 @@ it('should create a ballot without image and description', async () => {
     )
     expect(ballot).toBeInstanceOf(Ballot)
   } catch (err) {
-    console.log(err)
+    console.error(err)
   }
 })
 
@@ -124,7 +123,7 @@ it('should not create a ballot if election does not exist with not found excepti
 
     await expect(ballotService.create(ballotDTO, options)).rejects.toThrowError(NotFoundError)
   } catch (err) {
-    console.log(err)
+    console.error(err)
   }
 })
 
@@ -134,7 +133,7 @@ it('should throw create error on negative order', async () => {
     ballot.order = -1
     await expect(ballotService.create(ballot, { parentId: election.id })).rejects.toThrowError(ValidationError)
   } catch (error) {
-    console.log(error)
+    console.error(error)
   }
 })
 

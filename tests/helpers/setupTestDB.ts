@@ -2,7 +2,7 @@ import config from '@/config'
 import { Connection, createConnection } from 'typeorm'
 
 let databaseConnectionPromise: Promise<Connection>
-let { database } = config
+const { database } = config
 /**
  * Singleton database connection
  */

@@ -4,7 +4,7 @@ describe('authentication service', () => {
   let token: string, decoded: DecodedTokenValue, createBearerSchema: string, tokenData: AuthTokenOptions
 
   beforeAll(async () => {
-    let authenticationService = new AuthenticationService()
+    const authenticationService = new AuthenticationService()
     tokenData = { id: 1, organizer: true }
     token = await authenticationService.generateToken(tokenData)
     createBearerSchema = `Bearer ${token}`

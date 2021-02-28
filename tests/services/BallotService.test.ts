@@ -20,7 +20,7 @@ let db: Connection
 let organizer: ElectionOrganizer
 let election: Election
 let ballotService: BallotService
-let ballots: Ballot[] = []
+const ballots: Ballot[] = []
 let seedBallot: Ballot
 
 beforeAll(async () => {

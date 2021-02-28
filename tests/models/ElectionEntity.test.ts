@@ -47,7 +47,7 @@ test('Election without status set should return entity with status set to defaul
       id: 1
     }
   })
-  let firstElection = el[0]
+  const firstElection = el[0]
   expect(firstElection.status).toBe<ElectionStatus>(ElectionStatus.NotStarted)
   expect(firstElection.status).not.toBe<ElectionStatus>(ElectionStatus.Started)
   expect(firstElection.status).not.toBe<ElectionStatus>(ElectionStatus.Finished)
@@ -65,7 +65,7 @@ test('Election with status set to Started should return with status started', as
   election.status = ElectionStatus.Started
   await electionRepository.save(election)
   const el = await electionRepository.find()
-  let firstElection = el[0]
+  const firstElection = el[0]
   expect(firstElection.status).toBe<ElectionStatus>(ElectionStatus.Started)
   expect(firstElection.status).not.toBe<ElectionStatus>(ElectionStatus.NotStarted)
   expect(firstElection.status).not.toBe<ElectionStatus>(ElectionStatus.Finished)

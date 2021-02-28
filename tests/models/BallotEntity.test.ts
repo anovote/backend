@@ -21,7 +21,7 @@ beforeEach(async () => {
 })
 
 afterAll(() => {
-  let conn = getConnection(config.environment)
+  const conn = getConnection(config.environment)
   return conn.close()
 })
 

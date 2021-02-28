@@ -8,7 +8,7 @@ describe('election organizer service', () => {
   let db: Connection
   let service: ElectionOrganizerService
   let seedOrganizer: ElectionOrganizer
-  let organizers: ElectionOrganizer[] = []
+  const organizers: ElectionOrganizer[] = []
 
   const passwordPassedIn = '@passwordIsSecret1099'
   const rand = Math.random() * 10

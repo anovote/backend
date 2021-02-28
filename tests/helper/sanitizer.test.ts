@@ -18,7 +18,7 @@ beforeEach(() => {
 
 it('should strip keys from object', async () => {
   const stripKeys = ['a', 'b']
-  let stripped = strip(targetObject, stripKeys)
+  const stripped = strip(targetObject, stripKeys)
   for (const key of stripKeys) {
     expect((stripped as any)[key]).toBeUndefined()
   }
@@ -26,13 +26,13 @@ it('should strip keys from object', async () => {
 
 it('should not alter the original object', async () => {
   const stripKeys = ['a', 'b']
-  let stripped = strip(targetObject, stripKeys)
+  const stripped = strip(targetObject, stripKeys)
   expect(stripped).not.toEqual(targetObject)
 })
 
 it('should not change object if keys do not exist', async () => {
   const stripKeys = ['x', 'y']
-  let stripped = strip(targetObject, stripKeys)
+  const stripped = strip(targetObject, stripKeys)
   expect(stripped).toEqual(targetObject)
 })
 

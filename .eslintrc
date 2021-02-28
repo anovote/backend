@@ -1,6 +1,7 @@
 {
   "root": true,
   "parser": "@typescript-eslint/parser",
+  "parserOptions": { "project": "./tsconfig.json" },
   "plugins": ["@typescript-eslint", "prettier"],
   "extends": [
     "eslint:recommended",
@@ -8,5 +9,12 @@
     "plugin:@typescript-eslint/recommended",
     "prettier"
   ],
-  "rules": { "no-floating-promises": 2, "require-await": 2, "prettier/prettier": 2 }
+  "rules": {
+    // "no-floating-promises": 2,
+    "require-await": 2,
+    "prettier/prettier": 2,
+    "@typescript-eslint/no-floating-promises": ["error"],
+    "@typescript-eslint/require-await": ["error"],
+    "@typescript-eslint/no-non-null-assertion": "off"
+  }
 }

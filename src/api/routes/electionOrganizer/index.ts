@@ -11,9 +11,9 @@ router.put('/changePassword', async (request, response) => {
   const electionOrganizerService = new ElectionOrganizerService(database)
   try {
     const token = request.headers.authorization
-    const id = (await authenticationService.verifyToken(token)).id
+    const id = authenticationService.verifyToken(token).id
     const newPassword = request.body.newPassword
-    electionOrganizerService.updatePassword(newPassword, id)
+    await electionOrganizerService.updatePassword(newPassword, id)
     response.status(StatusCodes.OK)
     response.send('Password was updated')
   } catch (e) {

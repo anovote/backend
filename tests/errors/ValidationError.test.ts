@@ -1,11 +1,11 @@
 import { ValidationError } from '@/lib/errors/validation/ValidationError'
 
-it('should have default http status code of 400', async () => {
+it('should have default http status code of 400', () => {
   const error = new ValidationError()
   expect(error.httpStatus).toBe(400)
 })
 
-it('should return validation error messages in response', async () => {
+it('should return validation error messages in response', () => {
   const missing = 'missing'
   const required = 'required'
   const validationMessages = [required, missing]

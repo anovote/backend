@@ -1,4 +1,3 @@
-import { ElectionOrganizer } from '@/models/ElectionOrganizer/ElectionOrganizerEntity'
 import { Connection, EntityTarget, Repository } from 'typeorm'
 
 /**

@@ -72,7 +72,7 @@ export class AuthenticationService {
    * Generates a token based on a payload and secret key.
    * @param options Authentication token options to generate a token from.
    */
-  async generateToken(options: AuthTokenOptions): Promise<string> {
+  generateToken(options: AuthTokenOptions): string {
     return sign(
       {
         ...options
@@ -87,7 +87,7 @@ export class AuthenticationService {
    * @param authorizationSchema the authorization header provided along with request. Default schema is 'Bearer <token>'
    * @returns the payload object or string from the request
    */
-  async verifyToken(authorizationSchema: string | undefined): Promise<DecodedTokenValue> {
+  verifyToken(authorizationSchema: string | undefined): DecodedTokenValue {
     if (!authorizationSchema) {
       throw new UnauthorizedError({ message: ServerErrorMessage.noAuthorizationHeader() })
     }

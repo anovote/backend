@@ -39,11 +39,7 @@ export class BallotService extends BaseEntityService<Ballot> implements IHasOwne
   }
 
   create(dto: IBallot, { parentId: electionId }: CrudOptions): Promise<Ballot | undefined> {
-    try {
-      return this.createBallot(dto, electionId!)
-    } catch (error) {
-      throw error
-    }
+    return this.createBallot(dto, electionId!)
   }
 
   update(id: number, dto: Ballot): Promise<Ballot | undefined> {
@@ -101,7 +97,7 @@ export class BallotService extends BaseEntityService<Ballot> implements IHasOwne
     await this._ballotRepository.remove(existingBallot)
   }
 
-  async verifyOwner(ballot: Ballot) {
+  verifyOwner(ballot: Ballot) {
     const electionOrganizer: ElectionOrganizer = ballot.election.electionOrganizer
 
     if (!ballot.election || electionOrganizer.id != this.owner.id) {
@@ -119,7 +115,7 @@ export class BallotService extends BaseEntityService<Ballot> implements IHasOwne
     const ballot = await this._ballotRepository.findOne(id, { relations: ['election', 'election.electionOrganizer'] })
     if (!ballot) return undefined
 
-    await this.verifyOwner(ballot!)
+    this.verifyOwner(ballot!)
     return ballot
   }
 }

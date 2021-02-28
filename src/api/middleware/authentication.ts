@@ -1,4 +1,3 @@
-import express from '@/loaders/express'
 import { ElectionOrganizer } from '@/models/ElectionOrganizer/ElectionOrganizerEntity'
 import { AuthenticationService } from '@/services/AuthenticationService'
 import { ElectionOrganizerService } from '@/services/ElectionOrganizerService'
@@ -27,6 +26,7 @@ export const checkAuth = async (req: Request, res: Response, next: NextFunction)
 }
 
 declare global {
+  // eslint-disable-next-line @typescript-eslint/no-namespace
   namespace Express {
     interface Request {
       electionOrganizer: ElectionOrganizer

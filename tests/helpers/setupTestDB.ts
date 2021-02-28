@@ -6,9 +6,9 @@ const { database } = config
 /**
  * Singleton database connection
  */
-async function setupConnection() {
+async function setupConnection(): Promise<Connection> {
   if (databaseConnectionPromise) {
-    return databaseConnectionPromise
+    return await databaseConnectionPromise
   }
 
   databaseConnectionPromise = createConnection({

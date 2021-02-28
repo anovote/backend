@@ -41,4 +41,4 @@ async function boot() {
   }
 }
 
-boot() // Anovote is starting here
+void boot() // Anovote is starting here

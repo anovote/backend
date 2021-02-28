@@ -20,7 +20,6 @@ let db: Connection
 let organizer: ElectionOrganizer
 let election: Election
 let ballotService: BallotService
-const ballots: Ballot[] = []
 let seedBallot: Ballot
 
 beforeAll(async () => {
@@ -59,21 +58,8 @@ beforeEach(async () => {
   }
 })
 
-afterEach(async () => {
-  try {
-  } catch (err) {
-    console.log(err)
-  }
-})
-
 afterAll(async () => {
   try {
-    //   for (const ballot of ballots) {
-    //     await ballotService.delete(ballot.id)
-    //   }
-    // await ballotService.delete(seedBallot.id)
-    // await deleteDummyElections(db, [election])
-    // await deleteDummyOrganizer(db, organizer)
     await db.close()
   } catch (err) {
     console.log(err)

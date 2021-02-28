@@ -3,21 +3,17 @@ import {
   registerDecorator,
   ValidationOptions,
   ValidatorConstraint,
-  ValidatorConstraintInterface,
-  ValidationArguments
+  ValidatorConstraintInterface
 } from 'class-validator'
 import { getRepository } from 'typeorm'
 import { ElectionOrganizer } from '../ElectionOrganizerEntity'
 
 @ValidatorConstraint({ async: true })
 export class IsElectionOrganizerUniqueConstraint implements ValidatorConstraintInterface {
-  validate(email: string, args: ValidationArguments) {
-    return getRepository(ElectionOrganizer)
-      .findOne({ email: email })
-      .then((electionOrganizer) => {
-        if (electionOrganizer) return false
-        return true
-      })
+  async validate(email: string) {
+    const electionOrganizer = await getRepository(ElectionOrganizer).findOne({ email: email })
+    if (electionOrganizer) return false
+    return true
   }
 
   defaultMessage() {
@@ -26,7 +22,7 @@ export class IsElectionOrganizerUniqueConstraint implements ValidatorConstraintI
 }
 
 export function IsElectionOrganizerUnique(validationOptions?: ValidationOptions) {
-  return function (object: Object, propertyName: string) {
+  return function (object: Record<string, unknown>, propertyName: string) {
     registerDecorator({
       async: true,
       name: 'IsElectionOrganizerAlreadyExists',

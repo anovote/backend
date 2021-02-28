@@ -1,4 +1,3 @@
-import { Election } from '@/models/Election/ElectionEntity'
 import { ElectionOrganizer } from '@/models/ElectionOrganizer/ElectionOrganizerEntity'
 import { ElectionOrganizerService } from '@/services/ElectionOrganizerService'
 import { Connection } from 'typeorm'
@@ -26,17 +25,14 @@ describe('election organizer service', () => {
   })
 
   afterAll(async () => {
-    for (const organizer of organizers) {
-      const org = await service.delete(organizer.id)
-    }
     await db.close()
   })
 
-  it('should create a election organizer', async () => {
+  it('should create a election organizer', () => {
     expect(seedOrganizer).toBeInstanceOf(ElectionOrganizer)
   })
 
-  it('should generate a hash for the password', async () => {
+  it('should generate a hash for the password', () => {
     expect(seedOrganizer.password).not.toBe(passwordPassedIn)
   })
 })

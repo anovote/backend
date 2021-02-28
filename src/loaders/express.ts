@@ -6,7 +6,7 @@ import routes from '@/api'
 /**
  * Responsible for initializing Express
  */
-export default async ({ server }: { server: Application }) => {
+export default ({ server }: { server: Application }) => {
   /**
    * Set various HTTP headers by enabling helmet. helmet() is
    * a wrapper around 11 smaller middlewares.

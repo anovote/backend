@@ -4,6 +4,6 @@
  * @param el the object to test
  * @return true if empty, false if not
  */
-export function isObjectEmpty(el: object): boolean {
+export function isObjectEmpty(el: Record<string, unknown>): boolean {
   return Object.keys(el).length === 0
 }

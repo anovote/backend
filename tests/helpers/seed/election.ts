@@ -4,7 +4,7 @@ import { ElectionOrganizer } from '@/models/ElectionOrganizer/ElectionOrganizerE
 import { EncryptionService } from '@/services/EncryptionService'
 import { Connection } from 'typeorm'
 
-export const createDummyElection = async (connection: Connection, organizer: ElectionOrganizer) => {
+export const createDummyElection = async (connection: Connection, organizer: ElectionOrganizer): Promise<Election> => {
   const repository = connection.getRepository(Election)
   const encryptionService = new EncryptionService()
 
@@ -24,7 +24,7 @@ export const createDummyElection = async (connection: Connection, organizer: Ele
   return await repository.save(election)
 }
 
-export const deleteDummyElections = async (connection: Connection, elections: Array<Election>) => {
+export const deleteDummyElections = async (connection: Connection, elections: Array<Election>): Promise<void> => {
   const repository = connection.getRepository(Election)
   await repository.remove(elections)
 }

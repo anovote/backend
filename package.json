@@ -13,7 +13,8 @@
     "prod": "NODE_ENV=production node dist/index.js",
     "test": "jest",
     "test:locally": "docker-compose -f docker-compose-test-db.yml up -d && jest",
-    "check-types": "tsc"
+    "check-types": "tsc",
+    "lint": "eslint . --ext .ts --fix"
   },
   "devDependencies": {
     "@types/bcrypt": "^3.0.0",

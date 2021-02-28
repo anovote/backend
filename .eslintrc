@@ -1,11 +1,12 @@
 {
   "root": true,
   "parser": "@typescript-eslint/parser",
-  "plugins": ["@typescript-eslint"],
+  "plugins": ["@typescript-eslint", "prettier"],
   "extends": [
     "eslint:recommended",
     "plugin:@typescript-eslint/eslint-recommended",
-    "plugin:@typescript-eslint/recommended"
+    "plugin:@typescript-eslint/recommended",
+    "prettier"
   ],
-  "rules": { "no-floating-promises": 2, "require-await": 2 }
+  "rules": { "no-floating-promises": 2, "require-await": 2, "prettier/prettier": 2 }
 }

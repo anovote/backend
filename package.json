@@ -14,7 +14,8 @@
     "test": "jest",
     "test:locally": "docker-compose -f docker-compose-test-db.yml up -d && jest",
     "check-types": "tsc",
-    "lint": "eslint . --ext .ts --fix"
+    "lint": "eslint . --ext .ts --fix",
+    "prettier-format": "prettier --config .prettierrc 'src/**/*.ts' --write"
   },
   "devDependencies": {
     "@types/bcrypt": "^3.0.0",
@@ -29,6 +30,8 @@
     "@typescript-eslint/eslint-plugin": "^4.15.2",
     "@typescript-eslint/parser": "^4.15.2",
     "eslint": "^7.21.0",
+    "eslint-config-prettier": "^8.1.0",
+    "eslint-plugin-prettier": "^3.3.1",
     "jest": "^26.6.3",
     "module-alias": "^2.2.2",
     "prettier": "^2.2.1",

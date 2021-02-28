@@ -1,6 +1,9 @@
 {
   //EDITOR
   "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll": true
+  },
   "editor.autoIndent": "full",
   "files.eol": "\n",
   "files.exclude": {
@@ -13,5 +16,6 @@
   },
   "[typescript]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
-  }
+  },
+  "eslint.packageManager": "yarn"
 }

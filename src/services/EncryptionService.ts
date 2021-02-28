@@ -19,10 +19,10 @@ export class EncryptionService {
   }
 
   /**
-   * Compares the provided plaintext string against a hashed value to check if 
+   * Compares the provided plaintext string against a hashed value to check if
    * the plaintext is equal to the content of the hashed value.
    * Returns true if equal, else false.
-   * 
+   *
    * @param plaintext password in plain text
    * @param hashed password in hashed form to compare against
    */

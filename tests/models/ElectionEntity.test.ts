@@ -74,6 +74,7 @@ test('Election with status set to Started should return with status started', as
 
 it('should pass if openDate is not given', async () => {
   const entity = new Election()
+  entity.id = 1
   entity.description = 'no open date'
   entity.title = 'No open date'
   entity.status = ElectionStatus.NotStarted
@@ -134,9 +135,9 @@ it('should pass if openDate is set to undefined and group is creation', async ()
 
 it('should pass if openDate is set to undefined and group is not set', async () => {
   const entity = new Election()
+  entity.id = 1
   entity.openDate = undefined
   const options: ValidatorOptions = { groups: [] }
-  // console.log(await validate(entity, options))
 
   expect((await validate(entity, options)).length).toBe(0)
   await expect(validateEntity(entity, options)).resolves.toBe(undefined)

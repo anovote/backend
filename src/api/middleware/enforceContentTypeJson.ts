@@ -13,13 +13,13 @@ import { ServerErrorMessage } from '@/lib/errors/messages/ServerErrorMessages'
  * @param next
  */
 export function enforceContentTypeJson(request: Request, response: Response, next: NextFunction) {
-  try {
-    if (!request.is('json') && request.method != 'GET' && request.method != 'DELETE') {
-      throw new NotAcceptableError({ message: ServerErrorMessage.wrongContentType('application/json') })
+    try {
+        if (!request.is('json') && request.method != 'GET' && request.method != 'DELETE') {
+            throw new NotAcceptableError({ message: ServerErrorMessage.wrongContentType('application/json') })
+        }
+    } catch (error) {
+        next(error)
     }
-  } catch (error) {
-    next(error)
-  }
 
-  next()
+    next()
 }

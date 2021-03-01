@@ -1,4 +1,3 @@
-import express from '@/loaders/express'
 import { ElectionOrganizer } from '@/models/ElectionOrganizer/ElectionOrganizerEntity'
 import { AuthenticationService } from '@/services/AuthenticationService'
 import { ElectionOrganizerService } from '@/services/ElectionOrganizerService'
@@ -12,24 +11,25 @@ import { getConnection } from 'typeorm'
  * @param next call next middleware/route
  */
 export const checkAuth = async (req: Request, res: Response, next: NextFunction) => {
-  const db = getConnection()
-  const authenticationService = new AuthenticationService()
-  const electionOrganizerService = new ElectionOrganizerService(db)
-  try {
-    const id = (await authenticationService.verifyToken(req.headers.authorization)).id
-    const electionOrganizer = await electionOrganizerService.getElectionOrganizerById(id)
-    req.electionOrganizer = electionOrganizer
-  } catch (e) {
-    next(e)
-  }
+    const db = getConnection()
+    const authenticationService = new AuthenticationService()
+    const electionOrganizerService = new ElectionOrganizerService(db)
+    try {
+        const id = (await authenticationService.verifyToken(req.headers.authorization)).id
+        const electionOrganizer = await electionOrganizerService.getElectionOrganizerById(id)
+        req.electionOrganizer = electionOrganizer
+    } catch (e) {
+        next(e)
+    }
 
-  next()
+    next()
 }
 
 declare global {
-  namespace Express {
-    interface Request {
-      electionOrganizer: ElectionOrganizer
+    // eslint-disable-next-line @typescript-eslint/no-namespace
+    namespace Express {
+        interface Request {
+            electionOrganizer: ElectionOrganizer
+        }
     }
-  }
 }

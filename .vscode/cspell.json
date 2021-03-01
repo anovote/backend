@@ -34,5 +34,5 @@
     "zwaldowski"
   ],
   "flagWords": ["hte"],
-  "ignorePaths": ["*.env*"]
+  "ignorePaths": ["*.env*", ".prettier*", "package.json", "yarn.lock", ".eslint*", ".vscode/*"]
 }

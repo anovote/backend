@@ -6,7 +6,7 @@ import { BaseError } from '../BaseError'
  * Not found error has default http status code of 404
  */
 export class NotFoundError extends BaseError {
-  constructor({ message }: { message: string }) {
-    super({ message: message, httpStatus: StatusCodes.NOT_FOUND })
-  }
+    constructor({ message }: { message: string }) {
+        super({ message: message, httpStatus: StatusCodes.NOT_FOUND })
+    }
 }

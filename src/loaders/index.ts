@@ -16,22 +16,22 @@ let database!: Connection
 
 let loaded = false
 export const load = async ({ server }: { server: Application }) => {
-  if (loaded) throw new Error('Application already loaded...')
-  logger.info(`env > ${config.environment}\n`)
+    if (loaded) throw new Error('Application already loaded...')
+    logger.info(`env > ${config.environment}\n`)
 
-  logger.info('-- loading express 🧬')
-  const loadedExpress = await expressLoader({ server })
-  logger.info('------- express loaded ✅\n')
+    logger.info('-- loading express 🧬')
+    const loadedExpress = await expressLoader({ server })
+    logger.info('------- express loaded ✅\n')
 
-  logger.info('-- loading typeORM 🧬')
-  const loadedTypeOrm = await typeormLoader()
-  logger.info('------ typeORM loaded ✅')
+    logger.info('-- loading typeORM 🧬')
+    const loadedTypeOrm = await typeormLoader()
+    logger.info('------ typeORM loaded ✅')
 
-  database = loadedTypeOrm
+    database = loadedTypeOrm
 
-  loaded = true
+    loaded = true
 
-  return { loadedExpress, loadedTypeOrm }
+    return { loadedExpress, loadedTypeOrm }
 }
 
 export { database }

@@ -5,5 +5,5 @@
  * @return date in numeric format
  */
 export function getNumericDate(validTime: number): number {
-  return Math.floor(Date.now() / 1000) + validTime
+    return Math.floor(Date.now() / 1000) + validTime
 }

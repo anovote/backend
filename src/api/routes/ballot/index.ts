@@ -11,72 +11,72 @@ import { StatusCodes } from 'http-status-codes'
 const router = Router({ mergeParams: true })
 
 router.post('/', async (request, response, next) => {
-  try {
-    const ballotService = new BallotService(
-      database,
-      new ElectionService(database, request.electionOrganizer),
-      request.electionOrganizer
-    )
-    const newBallot = request.body as IBallot
-    const electionId = Number.parseInt(request.params.electionId)
+    try {
+        const ballotService = new BallotService(
+            database,
+            new ElectionService(database, request.electionOrganizer),
+            request.electionOrganizer
+        )
+        const newBallot = request.body as IBallot
+        const electionId = Number.parseInt(request.params.electionId)
 
-    const ballot = await ballotService.create(newBallot, { parentId: electionId })
-    return response.send(ballot)
-  } catch (error) {
-    next(error)
-  }
+        const ballot = await ballotService.create(newBallot, { parentId: electionId })
+        return response.send(ballot)
+    } catch (error) {
+        next(error)
+    }
 })
 
 router.get('/:id', async (request, response, next) => {
-  try {
-    // TODO Validate that the user owns/ is allowed to get this ballot
-    const ballotService = new BallotService(
-      database,
-      new ElectionService(database, request.electionOrganizer),
-      request.electionOrganizer
-    )
-    const id = Number.parseInt(request.params.id)
-    const ballot = await ballotService.getById(id)
+    try {
+        // TODO Validate that the user owns/ is allowed to get this ballot
+        const ballotService = new BallotService(
+            database,
+            new ElectionService(database, request.electionOrganizer),
+            request.electionOrganizer
+        )
+        const id = Number.parseInt(request.params.id)
+        const ballot = await ballotService.getById(id)
 
-    if (!ballot) throw new NotFoundError({ message: ServerErrorMessage.notFound('Ballot') })
-    return response.send(ballot)
-  } catch (error) {
-    next(error)
-  }
+        if (!ballot) throw new NotFoundError({ message: ServerErrorMessage.notFound('Ballot') })
+        return response.send(ballot)
+    } catch (error) {
+        next(error)
+    }
 })
 
 router.delete('/:id', async (request, response, next) => {
-  try {
-    // TODO Validate that the user owns/ is allowed to delete this ballot
-    const ballotService = new BallotService(
-      database,
-      new ElectionService(database, request.electionOrganizer),
-      request.electionOrganizer
-    )
-    const id = Number.parseInt(request.params.id)
-    await ballotService.delete(id)
+    try {
+        // TODO Validate that the user owns/ is allowed to delete this ballot
+        const ballotService = new BallotService(
+            database,
+            new ElectionService(database, request.electionOrganizer),
+            request.electionOrganizer
+        )
+        const id = Number.parseInt(request.params.id)
+        await ballotService.delete(id)
 
-    return response.status(StatusCodes.OK).send()
-  } catch (error) {
-    next(error)
-  }
+        return response.status(StatusCodes.OK).send()
+    } catch (error) {
+        next(error)
+    }
 })
 
 router.put('/:id', async (request, response, next) => {
-  try {
-    // TODO Validate that the user owns/ is allowed to update this ballot
-    const ballotService = new BallotService(
-      database,
-      new ElectionService(database, request.electionOrganizer),
-      request.electionOrganizer
-    )
-    const id = Number.parseInt(request.params.id)
-    const ballot = request.body as Ballot
-    const updatedBallot = await ballotService.update(id, ballot)
-    return response.status(StatusCodes.OK).send(updatedBallot)
-  } catch (error) {
-    next(error)
-  }
+    try {
+        // TODO Validate that the user owns/ is allowed to update this ballot
+        const ballotService = new BallotService(
+            database,
+            new ElectionService(database, request.electionOrganizer),
+            request.electionOrganizer
+        )
+        const id = Number.parseInt(request.params.id)
+        const ballot = request.body as Ballot
+        const updatedBallot = await ballotService.update(id, ballot)
+        return response.status(StatusCodes.OK).send(updatedBallot)
+    } catch (error) {
+        next(error)
+    }
 })
 
 export default router

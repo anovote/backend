@@ -4,14 +4,14 @@ import { ElectionOrganizer } from '@/models/ElectionOrganizer/ElectionOrganizerE
 import { EligibleVoter } from '@/models/EligibleVoter/EligibleVoterEntity'
 import { IsOptional, IsPositive, MinDate } from 'class-validator'
 import {
-  Column,
-  CreateDateColumn,
-  Entity,
-  JoinTable,
-  ManyToMany,
-  ManyToOne,
-  PrimaryGeneratedColumn,
-  UpdateDateColumn
+    Column,
+    CreateDateColumn,
+    Entity,
+    JoinTable,
+    ManyToMany,
+    ManyToOne,
+    PrimaryGeneratedColumn,
+    UpdateDateColumn
 } from 'typeorm'
 import { IsEarlierThan } from '../constraints/isEarlierThan'
 
@@ -24,53 +24,53 @@ import { IsEarlierThan } from '../constraints/isEarlierThan'
  */
 @Entity()
 export class Election implements IElection {
-  @PrimaryGeneratedColumn()
-  @IsPositive()
-  id!: number
+    @PrimaryGeneratedColumn()
+    @IsPositive()
+    id!: number
 
-  @ManyToOne(() => ElectionOrganizer, (electionOrganizer) => electionOrganizer.elections)
-  electionOrganizer!: ElectionOrganizer
+    @ManyToOne(() => ElectionOrganizer, (electionOrganizer) => electionOrganizer.elections)
+    electionOrganizer!: ElectionOrganizer
 
-  @Column({ type: String })
-  title!: string
+    @Column({ type: String })
+    title!: string
 
-  @Column({ type: 'text' })
-  description!: string
+    @Column({ type: 'text' })
+    description!: string
 
-  @Column({ type: String, nullable: true })
-  image!: string
+    @Column({ type: String, nullable: true })
+    image!: string
 
-  @IsEarlierThan('closeDate', { message: 'Opening date must be before closing date' })
-  @IsOptional({ always: true })
-  @MinDate(new Date(), {
-    groups: ['creation'],
-    always: false
-  })
-  @Column({ type: Date, nullable: true })
-  openDate?: Date
+    @IsEarlierThan('closeDate', { message: 'Opening date must be before closing date' })
+    @IsOptional({ always: true })
+    @MinDate(new Date(), {
+        groups: ['creation'],
+        always: false
+    })
+    @Column({ type: Date, nullable: true })
+    openDate?: Date
 
-  @Column({ type: Date, nullable: true })
-  closeDate?: Date
+    @Column({ type: Date, nullable: true })
+    closeDate?: Date
 
-  @Column({ type: String, nullable: true })
-  password!: string
+    @Column({ type: String, nullable: true })
+    password!: string
 
-  @Column({ type: 'enum', enum: ElectionStatus, default: ElectionStatus.NotStarted })
-  status!: ElectionStatus
+    @Column({ type: 'enum', enum: ElectionStatus, default: ElectionStatus.NotStarted })
+    status!: ElectionStatus
 
-  @Column({ type: 'boolean', default: true })
-  isLocked!: boolean
+    @Column({ type: 'boolean', default: true })
+    isLocked!: boolean
 
-  @Column({ type: 'boolean', default: false })
-  isAutomatic!: boolean
+    @Column({ type: 'boolean', default: false })
+    isAutomatic!: boolean
 
-  @CreateDateColumn()
-  createdAt!: Date
+    @CreateDateColumn()
+    createdAt!: Date
 
-  @UpdateDateColumn()
-  updatedAt!: Date
+    @UpdateDateColumn()
+    updatedAt!: Date
 
-  @ManyToMany(() => EligibleVoter)
-  @JoinTable()
-  eligibleVoters!: EligibleVoter[]
+    @ManyToMany(() => EligibleVoter)
+    @JoinTable()
+    eligibleVoters!: EligibleVoter[]
 }

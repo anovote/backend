@@ -9,12 +9,13 @@ import { deepCopy } from '@/helpers/object'
  * @param target target object to strip key values from
  * @param keysToStrip array of keys to strip from target
  */
-export const strip = <T extends Object>(target: T, keysToStrip: Array<string>): T | undefined => {
-  if (target instanceof Object && !Array.isArray(target)) {
-    const newTarget = deepCopy(target)
-    for (const key of keysToStrip) {
-      delete (newTarget as any)[key]
+// eslint-disable-next-line @typescript-eslint/ban-types
+export const strip = <T extends object>(target: T, keysToStrip: Array<string>): T | undefined => {
+    if (target instanceof Object && !Array.isArray(target)) {
+        const newTarget = deepCopy(target) as { [key: string]: unknown }
+        for (const key of keysToStrip) {
+            delete newTarget[key]
+        }
+        return newTarget as T
     }
-    return newTarget as T
-  }
 }

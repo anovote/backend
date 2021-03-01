@@ -84,6 +84,7 @@ export class AuthenticationService {
 
     /**
      * Verifies the token to authenticate user.
+     * Returns the decoded token when validated.
      * @param authorizationSchema the authorization header provided along with request. Default schema is 'Bearer <token>'
      * @returns the payload object or string from the request
      */

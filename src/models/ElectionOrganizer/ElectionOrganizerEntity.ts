@@ -10,37 +10,37 @@ import { IsElectionOrganizerUnique } from './constraints/IsElectionOrganizerUniq
  */
 @Entity()
 export class ElectionOrganizer {
-  @PrimaryGeneratedColumn()
-  id!: number
+    @PrimaryGeneratedColumn()
+    id!: number
 
-  @Column({ type: 'varchar' })
-  @IsString()
-  firstName!: string
+    @Column({ type: 'varchar' })
+    @IsString()
+    firstName!: string
 
-  @Column({ type: 'varchar' })
-  @IsString()
-  lastName!: string
+    @Column({ type: 'varchar' })
+    @IsString()
+    lastName!: string
 
-  @Column({ type: 'varchar', length: 255 })
-  @IsEmail()
-  @IsElectionOrganizerUnique()
-  email!: string
+    @Column({ type: 'varchar', length: 255 })
+    @IsEmail()
+    @IsElectionOrganizerUnique()
+    email!: string
 
-  @Column({ type: 'varchar', length: 255 })
-  @Exclude()
-  @IsString()
-  @MinLength(6)
-  @MaxLength(225)
-  password!: string
+    @Column({ type: 'varchar', length: 255 })
+    @Exclude()
+    @IsString()
+    @MinLength(6)
+    @MaxLength(225)
+    password!: string
 
-  @Exclude()
-  @CreateDateColumn()
-  createdAt!: Date
+    @Exclude()
+    @CreateDateColumn()
+    createdAt!: Date
 
-  @Exclude()
-  @UpdateDateColumn()
-  updatedAt!: Date
+    @Exclude()
+    @UpdateDateColumn()
+    updatedAt!: Date
 
-  @OneToMany(() => Election, (election) => election.electionOrganizer)
-  elections!: Election[]
+    @OneToMany(() => Election, (election) => election.electionOrganizer)
+    elections!: Election[]
 }

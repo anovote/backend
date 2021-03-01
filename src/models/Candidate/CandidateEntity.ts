@@ -8,12 +8,12 @@ import { Ballot } from '@/models/Ballot/BallotEntity'
  */
 @Entity()
 export class Candidate {
-  @PrimaryGeneratedColumn()
-  id!: number
+    @PrimaryGeneratedColumn()
+    id!: number
 
-  @Column({ type: String })
-  candidate!: string
+    @Column({ type: String })
+    candidate!: string
 
-  @ManyToOne(() => Ballot, (ballot: Ballot) => ballot.candidates)
-  ballot!: Ballot
+    @ManyToOne(() => Ballot, (ballot: Ballot) => ballot.candidates)
+    ballot!: Ballot
 }

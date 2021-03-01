@@ -7,18 +7,18 @@ import { Candidate } from '@/models/Candidate/CandidateEntity'
  */
 @Entity()
 export class Vote {
-  @PrimaryGeneratedColumn()
-  id!: number
+    @PrimaryGeneratedColumn()
+    id!: number
 
-  @ManyToOne(() => Candidate, (candidate) => candidate.id)
-  candidate!: number
+    @ManyToOne(() => Candidate, (candidate) => candidate.id)
+    candidate!: number
 
-  @CreateDateColumn()
-  submitted!: Date
+    @CreateDateColumn()
+    submitted!: Date
 
-  @Column({ type: String })
-  voterId!: string
+    @Column({ type: String })
+    voterId!: string
 
-  @Column({ type: String })
-  ballotId!: string
+    @Column({ type: String })
+    ballotId!: string
 }

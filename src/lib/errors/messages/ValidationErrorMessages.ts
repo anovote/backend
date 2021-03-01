@@ -1,9 +1,9 @@
 import { IErrorMessage } from './IErrorMessage'
 
 interface ValidationErrorMessages extends IErrorMessage {
-  alreadyExists: (entity: string) => string
+    alreadyExists: (entity: string) => string
 }
 
 export const ValidationErrorMessage: ValidationErrorMessages = {
-  alreadyExists: (entity: string) => `${entity} already exists`
+    alreadyExists: (entity: string) => `${entity} already exists`
 }

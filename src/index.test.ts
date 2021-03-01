@@ -1,3 +1,3 @@
-it('should run', ()=>{
+it('should run', () => {
     expect('anovote').toBe('anovote')
 })

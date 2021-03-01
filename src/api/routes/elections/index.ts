@@ -12,69 +12,69 @@ import { BadRequestError } from '@/lib/errors/http/BadRequestError'
 const router = Router()
 
 router.post('/', async (request, response, next) => {
-  try {
-    const electionService = new ElectionService(database, request.electionOrganizer)
-    const electionDTO: IElection = request.body
+    try {
+        const electionService = new ElectionService(database, request.electionOrganizer)
+        const electionDTO: IElection = request.body
 
-    if (!electionDTO || isObjectEmpty(electionDTO)) {
-      throw new BadRequestError({ message: 'Empty request' })
+        if (!electionDTO || isObjectEmpty(electionDTO)) {
+            throw new BadRequestError({ message: 'Empty request' })
+        }
+
+        electionDTO.electionOrganizer = request.electionOrganizer
+
+        const election: Election | undefined = await electionService.createElection(electionDTO)
+        response.status(StatusCodes.CREATED).json(election)
+    } catch (error) {
+        next(error)
     }
-
-    electionDTO.electionOrganizer = request.electionOrganizer
-
-    const election: Election | undefined = await electionService.create(electionDTO)
-    response.status(StatusCodes.CREATED).json(election)
-  } catch (error) {
-    next(error)
-  }
 })
 
 router.get('/', async (request, response, next) => {
-  try {
-    const electionService = new ElectionService(database, request.electionOrganizer)
-    const elections: Election[] | undefined = await electionService.get()
-    response.json(elections)
-  } catch (error) {
-    next(error)
-  }
+    try {
+        const electionService = new ElectionService(database, request.electionOrganizer)
+        const elections: Election[] | undefined = await electionService.get()
+        response.json(elections)
+    } catch (error) {
+        next(error)
+    }
 })
 
 router.get('/:id', async (request, response, next) => {
-  try {
-    const electionService = new ElectionService(database, request.electionOrganizer)
-    const id: number = Number.parseInt(request.params.id)
-    const election = await electionService.getById(id)
-    if (!election) throw new NotFoundError({ message: ServerErrorMessage.notFound(`Election`) })
-    response.status(StatusCodes.OK).json(election)
-  } catch (error) {
-    next(error)
-  }
+    try {
+        const electionService = new ElectionService(database, request.electionOrganizer)
+        const id: number = Number.parseInt(request.params.id)
+        const election = await electionService.getById(id)
+        if (!election) throw new NotFoundError({ message: ServerErrorMessage.notFound(`Election`) })
+        response.status(StatusCodes.OK).json(election)
+    } catch (error) {
+        next(error)
+    }
 })
 
 router.put('/:id', async (request, response, next) => {
-  try {
-    const electionService = new ElectionService(database, request.electionOrganizer)
-    const id: number = Number.parseInt(request.params.id)
-    const { election } = request.body
-    if (!election) {
-      throw new BadRequestError({ message: 'Empty request' })
+    try {
+        const electionService = new ElectionService(database, request.electionOrganizer)
+        const id: number = Number.parseInt(request.params.id)
+        const { election } = request.body
+        if (!election) {
+            throw new BadRequestError({ message: 'Empty request' })
+        }
+        const result = await electionService.update(id, election)
+        response.status(StatusCodes.OK).json(result)
+    } catch (err) {
+        next(err)
     }
-    const result = await electionService.update(id, election)
-    response.status(StatusCodes.OK).json(result)
-  } catch (err) {
-    next(err)
-  }
 })
 
 router.delete('/:id', async (request, response, next) => {
-  try {
-    const electionService = new ElectionService(database, request.electionOrganizer)
-    const id: number = Number.parseInt(request.params.id)
-    const result = await electionService.delete(id)
-    response.status(StatusCodes.OK).json(result)
-  } catch (err) {
-    next(err)
-  }
+    try {
+        const electionService = new ElectionService(database, request.electionOrganizer)
+        const id: number = Number.parseInt(request.params.id)
+        const result = await electionService.delete(id)
+        response.status(StatusCodes.OK).json(result)
+    } catch (err) {
+        next(err)
+    }
 })
 
 export default router

@@ -1,6 +1,4 @@
-
-
 export interface IErrorResponse {
-  message: string
-  status: string
+    message: string
+    status: string
 }

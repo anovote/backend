@@ -51,7 +51,7 @@ export class ElectionService extends BaseEntityService<Election> implements IHas
             const allElections = await this.getAllElections()
             return allElections
         } catch (error) {
-            console.log(error)
+            console.error(error)
         }
     }
 
@@ -63,7 +63,7 @@ export class ElectionService extends BaseEntityService<Election> implements IHas
                 }
             })
         } catch (err) {
-            console.log(err)
+            console.error(err)
         }
     }
 
@@ -90,12 +90,6 @@ export class ElectionService extends BaseEntityService<Election> implements IHas
         election.id = -1
 
         return await this.manager.save(election)
-    }
-
-    private async hashEntityPassword(electionDTO: IElection) {
-        const unhashedPassword = electionDTO.password
-        const hashedPassword = await this.encryptionService.hash(unhashedPassword!)
-        electionDTO.password = hashedPassword
     }
 
     async updateElectionById(id: number, electionDTO: IElection): Promise<Election | undefined> {
@@ -138,6 +132,12 @@ export class ElectionService extends BaseEntityService<Election> implements IHas
             }
         })
         return duplicate.length > 0
+    }
+
+    private async hashEntityPassword(electionDTO: IElection) {
+        const unhashedPassword = electionDTO.password
+        const hashedPassword = await this.encryptionService.hash(unhashedPassword!)
+        electionDTO.password = hashedPassword
     }
 
     verifyOwner(entity: Election): void {

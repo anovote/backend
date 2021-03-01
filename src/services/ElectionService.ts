@@ -11,6 +11,7 @@ import BaseEntityService from './BaseEntityService'
 import { ElectionOrganizer } from '@/models/ElectionOrganizer/ElectionOrganizerEntity'
 import { IHasOwner } from '@/interfaces/IHasOwner'
 import { ForbiddenError } from '@/lib/errors/http/ForbiddenError'
+import { classToClass, classToPlain } from 'class-transformer'
 
 export interface ElectionBody {
   title: string
@@ -32,30 +33,29 @@ export class ElectionService extends BaseEntityService<Election> implements IHas
     this.encryptionService = new EncryptionService()
   }
 
-  getById(id: number): Promise<Election | undefined> {
-    return this.getElectionById(id)
+  async getById(id: number): Promise<Election | undefined> {
+    return classToClass(await this.getElectionById(id))
   }
 
-  create(dto: IElection): Promise<Election | undefined> {
-    return this.createElection(dto)
+  async create(dto: IElection): Promise<Election | undefined> {
+    return classToClass(await this.createElection(dto))
   }
-  update(id: number, dto: Election): Promise<Election | undefined> {
-    return this.updateElectionById(id, dto)
+  async update(id: number, dto: Election): Promise<Election | undefined> {
+    return classToClass(await this.updateElectionById(id, dto))
   }
-  delete(id: number): Promise<void> {
-    return this.deleteElectionById(id)
+  async delete(id: number): Promise<void> {
+    return classToClass(await this.deleteElectionById(id))
   }
 
   async get(): Promise<Election[] | undefined> {
     try {
-      const allElections = this.getAllElections()
-      return allElections as Promise<Election[] | undefined>
+      return classToClass(await this.getAllElections())
     } catch (error) {
       console.log(error)
     }
   }
 
-  async getAllElections(): Promise<Election[] | undefined> {
+  private async getAllElections(): Promise<Election[] | undefined> {
     try {
       return await this.manager.find({
         where: {

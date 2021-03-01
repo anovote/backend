@@ -1,3 +1,4 @@
+import { validateConnection } from '@/lib/errors/websocket/middleware/ValidateConnection'
 import { Application } from 'express'
 import http from 'http'
 import { Server } from 'socket.io'
@@ -14,7 +15,9 @@ export default (expressApp: Application) => {
     const publishBallot = 'publishBallot'
     const confirmVote = 'confirmVote'
 
+    socket.use(validateConnection)
     /**
+     *
      * ID on election is room name
      */
     socket.on('connection', (socket) => {

@@ -22,7 +22,8 @@ export class IsElectionOrganizerUniqueConstraint implements ValidatorConstraintI
 }
 
 export function IsElectionOrganizerUnique(validationOptions?: ValidationOptions) {
-    return function (object: Record<string, unknown>, propertyName: string) {
+    // eslint-disable-next-line @typescript-eslint/ban-types
+    return function (object: object, propertyName: string) {
         registerDecorator({
             async: true,
             name: 'IsElectionOrganizerAlreadyExists',

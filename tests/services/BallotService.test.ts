@@ -23,15 +23,142 @@ let ballotService: BallotService
 let seedBallot: Ballot
 
 beforeAll(async () => {
-  try {
-    db = await setupConnection()
-    organizer = await createDummyOrganizer(db)
-    // election = await createDummyElection(db, organizer)
-    ballotService = new BallotService(db, new ElectionService(db, organizer), organizer)
-    election = await createDummyElection(db, organizer)
+    try {
+        db = await setupConnection()
+        organizer = await createDummyOrganizer(db)
+        // election = await createDummyElection(db, organizer)
+        ballotService = new BallotService(db, new ElectionService(db, organizer), organizer)
+        election = await createDummyElection(db, organizer)
 
-    seedBallot = await (ballotService.create(
-      {
+        seedBallot = await (ballotService.create(
+            {
+                candidates: [],
+                order: 1,
+                displayResultCount: true,
+                resultDisplayType: BallotResultDisplay.ALL,
+                resultDisplayTypeCount: 2,
+                title: 'Test ballot',
+                type: BallotType.MULTIPLE,
+                description: 'Description',
+                image: 'img.png'
+            },
+            { parentId: election.id }
+        ) as Promise<Ballot>)!
+    } catch (err) {
+        console.error(err)
+    }
+})
+
+beforeEach(async () => {
+    try {
+        const repo = db.getRepository(Ballot)
+        await clearDatabaseEntityTable<Ballot>(repo)
+    } catch (err) {
+        console.error(err)
+    }
+})
+
+afterAll(async () => {
+    try {
+        await db.close()
+    } catch (err) {
+        console.error(err)
+    }
+})
+
+it('should create a ballot with all data filled out', async () => {
+    try {
+        const ballotDTO = {
+            candidates: [],
+            order: 1,
+            displayResultCount: true,
+            resultDisplayType: BallotResultDisplay.ALL,
+            resultDisplayTypeCount: 2,
+            title: 'Test ballot',
+            type: BallotType.MULTIPLE,
+            description: 'Description',
+            image: 'img.png'
+        }
+        const crudOptions = { parentId: election.id }
+
+        const ballot = await ballotService.create(ballotDTO, crudOptions)
+        expect(ballot).toBeInstanceOf(Ballot)
+    } catch (err) {
+        console.error(err)
+    }
+})
+
+it('should create a ballot without image and description', async () => {
+    try {
+        const ballot = await ballotService.create(
+            {
+                candidates: [],
+                order: 1,
+                displayResultCount: true,
+                resultDisplayType: BallotResultDisplay.ALL,
+                resultDisplayTypeCount: 2,
+                title: 'Test ballot',
+                type: BallotType.MULTIPLE
+            },
+            { parentId: election.id }
+        )
+        expect(ballot).toBeInstanceOf(Ballot)
+    } catch (err) {
+        console.error(err)
+    }
+})
+
+it('should not create a ballot if election does not exist with not found exception', async () => {
+    try {
+        const options: CrudOptions = { parentId: 999 } // election id
+        const ballotDTO: IBallot = {
+            candidates: [],
+            order: 1,
+            displayResultCount: true,
+            resultDisplayType: BallotResultDisplay.ALL,
+            resultDisplayTypeCount: 2,
+            title: 'Test ballot',
+            type: BallotType.MULTIPLE
+        }
+
+        await expect(ballotService.create(ballotDTO, options)).rejects.toThrowError(NotFoundError)
+    } catch (err) {
+        console.error(err)
+    }
+})
+
+it('should throw create error on negative order', async () => {
+    try {
+        const ballot = deepCopy<IBallot>(seedBallot)
+        ballot.order = -1
+        await expect(ballotService.create(ballot, { parentId: election.id })).rejects.toThrowError(ValidationError)
+    } catch (error) {
+        console.error(error)
+    }
+})
+
+it('should throw error on out of range ballot type', async () => {
+    const ballot = deepCopy<IBallot>(seedBallot)
+    ballot.type = 99 // Out of range of ENUM
+    try {
+        await ballotService.create(ballot, { parentId: election.id })
+    } catch (error) {
+        expect(error).toBeInstanceOf(Error)
+    }
+})
+
+it('should throw error on out of range result display type', async () => {
+    const ballot = deepCopy<IBallot>(seedBallot)
+    ballot.resultDisplayType = 99 // Out of range of ENUM
+    await expect(ballotService.create(ballot, { parentId: election.id })).rejects.toThrowError()
+})
+
+it('should not update if no ballot exists', async () => {
+    await expect(ballotService.update(100, deepCopy<Ballot>(seedBallot))).rejects.toThrowError(NotFoundError)
+})
+
+it('should not change id of updated ballot', async () => {
+    const ballotDTO: IBallot = {
         candidates: [],
         order: 1,
         displayResultCount: true,
@@ -41,195 +168,68 @@ beforeAll(async () => {
         type: BallotType.MULTIPLE,
         description: 'Description',
         image: 'img.png'
-      },
-      { parentId: election.id }
-    ) as Promise<Ballot>)!
-  } catch (err) {
-    console.error(err)
-  }
-})
-
-beforeEach(async () => {
-  try {
-    const repo = db.getRepository(Ballot)
-    await clearDatabaseEntityTable<Ballot>(repo)
-  } catch (err) {
-    console.error(err)
-  }
-})
-
-afterAll(async () => {
-  try {
-    await db.close()
-  } catch (err) {
-    console.error(err)
-  }
-})
-
-it('should create a ballot with all data filled out', async () => {
-  try {
-    const ballotDTO = {
-      candidates: [],
-      order: 1,
-      displayResultCount: true,
-      resultDisplayType: BallotResultDisplay.ALL,
-      resultDisplayTypeCount: 2,
-      title: 'Test ballot',
-      type: BallotType.MULTIPLE,
-      description: 'Description',
-      image: 'img.png'
     }
-    const crudOptions = { parentId: election.id }
 
-    const ballot = await ballotService.create(ballotDTO, crudOptions)
-    expect(ballot).toBeInstanceOf(Ballot)
-  } catch (err) {
-    console.error(err)
-  }
+    const originalBallot = (await ballotService.create(ballotDTO, { parentId: election.id })) as Ballot
+
+    const passedInId = originalBallot.id
+    const ballotCopy = deepCopy<Ballot>(seedBallot)
+    ballotCopy.id = 5
+    const updatedBallot = await ballotService.update(passedInId, deepCopy<Ballot>(ballotCopy))
+    expect(updatedBallot!.id).toBe(passedInId)
 })
 
-it('should create a ballot without image and description', async () => {
-  try {
-    const ballot = await ballotService.create(
-      {
+it('should return the ballot with given id', async () => {
+    const ballotDTO: IBallot = {
         candidates: [],
         order: 1,
         displayResultCount: true,
         resultDisplayType: BallotResultDisplay.ALL,
         resultDisplayTypeCount: 2,
         title: 'Test ballot',
-        type: BallotType.MULTIPLE
-      },
-      { parentId: election.id }
-    )
-    expect(ballot).toBeInstanceOf(Ballot)
-  } catch (err) {
-    console.error(err)
-  }
-})
-
-it('should not create a ballot if election does not exist with not found exception', async () => {
-  try {
-    const options: CrudOptions = { parentId: 999 } // election id
-    const ballotDTO: IBallot = {
-      candidates: [],
-      order: 1,
-      displayResultCount: true,
-      resultDisplayType: BallotResultDisplay.ALL,
-      resultDisplayTypeCount: 2,
-      title: 'Test ballot',
-      type: BallotType.MULTIPLE
+        type: BallotType.MULTIPLE,
+        description: 'Description',
+        image: 'img.png'
     }
 
-    await expect(ballotService.create(ballotDTO, options)).rejects.toThrowError(NotFoundError)
-  } catch (err) {
-    console.error(err)
-  }
-})
+    const originalBallot = (await ballotService.create(ballotDTO, { parentId: election.id })) as Ballot
 
-it('should throw create error on negative order', async () => {
-  try {
-    const ballot = deepCopy<IBallot>(seedBallot)
-    ballot.order = -1
-    await expect(ballotService.create(ballot, { parentId: election.id })).rejects.toThrowError(ValidationError)
-  } catch (error) {
-    console.error(error)
-  }
-})
-
-it('should throw error on out of range ballot type', async () => {
-  const ballot = deepCopy<IBallot>(seedBallot)
-  ballot.type = 99 // Out of range of ENUM
-  try {
-    await ballotService.create(ballot, { parentId: election.id })
-  } catch (error) {
-    expect(error).toBeInstanceOf(Error)
-  }
-})
-
-it('should throw error on out of range result display type', async () => {
-  const ballot = deepCopy<IBallot>(seedBallot)
-  ballot.resultDisplayType = 99 // Out of range of ENUM
-  await expect(ballotService.create(ballot, { parentId: election.id })).rejects.toThrowError()
-})
-
-it('should not update if no ballot exists', async () => {
-  await expect(ballotService.update(100, deepCopy<Ballot>(seedBallot))).rejects.toThrowError(NotFoundError)
-})
-
-it('should not change id of updated ballot', async () => {
-  const ballotDTO: IBallot = {
-    candidates: [],
-    order: 1,
-    displayResultCount: true,
-    resultDisplayType: BallotResultDisplay.ALL,
-    resultDisplayTypeCount: 2,
-    title: 'Test ballot',
-    type: BallotType.MULTIPLE,
-    description: 'Description',
-    image: 'img.png'
-  }
-
-  const originalBallot = (await ballotService.create(ballotDTO, { parentId: election.id })) as Ballot
-
-  const passedInId = originalBallot.id
-  const ballotCopy = deepCopy<Ballot>(seedBallot)
-  ballotCopy.id = 5
-  const updatedBallot = await ballotService.update(passedInId, deepCopy<Ballot>(ballotCopy))
-  expect(updatedBallot!.id).toBe(passedInId)
-})
-
-it('should return the ballot with given id', async () => {
-  const ballotDTO: IBallot = {
-    candidates: [],
-    order: 1,
-    displayResultCount: true,
-    resultDisplayType: BallotResultDisplay.ALL,
-    resultDisplayTypeCount: 2,
-    title: 'Test ballot',
-    type: BallotType.MULTIPLE,
-    description: 'Description',
-    image: 'img.png'
-  }
-
-  const originalBallot = (await ballotService.create(ballotDTO, { parentId: election.id })) as Ballot
-
-  const ballot = await ballotService.getById(originalBallot.id)
-  expect(ballot!.id).toBe(originalBallot.id)
+    const ballot = await ballotService.getById(originalBallot.id)
+    expect(ballot!.id).toBe(originalBallot.id)
 })
 
 it('should return undefined if ballot does not exist', async () => {
-  const ballot = await ballotService.getById(999999)
-  expect(ballot).toBeUndefined()
+    const ballot = await ballotService.getById(999999)
+    expect(ballot).toBeUndefined()
 })
 
 it('should fail if trying to delete ballot that does not exist', async () => {
-  const missingId = 9999
-  await expect(ballotService.delete(missingId)).rejects.toThrow(NotFoundError)
+    const missingId = 9999
+    await expect(ballotService.delete(missingId)).rejects.toThrow(NotFoundError)
 })
 
 it('should delete a ballot which exists', async () => {
-  const ballotDTO = {
-    candidates: [],
-    order: 1,
-    displayResultCount: true,
-    resultDisplayType: BallotResultDisplay.ALL,
-    resultDisplayTypeCount: 2,
-    title: 'Test ballot',
-    type: BallotType.MULTIPLE,
-    description: 'Description',
-    image: 'img.png'
-  }
-  const ballot = await ballotService.create(ballotDTO, { parentId: election.id })
-  const id = ballot!.id
+    const ballotDTO = {
+        candidates: [],
+        order: 1,
+        displayResultCount: true,
+        resultDisplayType: BallotResultDisplay.ALL,
+        resultDisplayTypeCount: 2,
+        title: 'Test ballot',
+        type: BallotType.MULTIPLE,
+        description: 'Description',
+        image: 'img.png'
+    }
+    const ballot = await ballotService.create(ballotDTO, { parentId: election.id })
+    const id = ballot!.id
 
-  await expect(ballotService.delete(id)).resolves.toBeUndefined()
+    await expect(ballotService.delete(id)).resolves.toBeUndefined()
 })
 
 it('should throw not found error when deleting a ballot which do not exist', async () => {
-  try {
-    await expect(ballotService.delete(99999999)).rejects.toThrowError(NotFoundError)
-  } catch (error) {
-    expect(error).toBeInstanceOf(NotFoundError)
-  }
+    try {
+        await expect(ballotService.delete(99999999)).rejects.toThrowError(NotFoundError)
+    } catch (error) {
+        expect(error).toBeInstanceOf(NotFoundError)
+    }
 })

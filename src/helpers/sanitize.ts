@@ -10,11 +10,11 @@ import { deepCopy } from '@/helpers/object'
  * @param keysToStrip array of keys to strip from target
  */
 export const strip = <T extends Object>(target: T, keysToStrip: Array<string>): T | undefined => {
-  if (target instanceof Object && !Array.isArray(target)) {
-    const newTarget = deepCopy(target)
-    for (const key of keysToStrip) {
-      delete (newTarget as any)[key]
+    if (target instanceof Object && !Array.isArray(target)) {
+        const newTarget = deepCopy(target)
+        for (const key of keysToStrip) {
+            delete (newTarget as any)[key]
+        }
+        return newTarget as T
     }
-    return newTarget as T
-  }
 }

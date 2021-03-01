@@ -5,5 +5,5 @@
  * @return true if empty, false if not
  */
 export function isObjectEmpty(el: object): boolean {
-  return Object.keys(el).length === 0
+    return Object.keys(el).length === 0
 }

@@ -1,12 +1,12 @@
 import {
-  Column,
-  CreateDateColumn,
-  Entity,
-  JoinTable,
-  ManyToMany,
-  ManyToOne,
-  PrimaryGeneratedColumn,
-  UpdateDateColumn
+    Column,
+    CreateDateColumn,
+    Entity,
+    JoinTable,
+    ManyToMany,
+    ManyToOne,
+    PrimaryGeneratedColumn,
+    UpdateDateColumn
 } from 'typeorm'
 import { ElectionOrganizer } from '@/models/ElectionOrganizer/ElectionOrganizerEntity'
 
@@ -25,47 +25,47 @@ import { IsPositive } from 'class-validator'
 
 @Entity()
 export class Election implements IElection {
-  @PrimaryGeneratedColumn()
-  @IsPositive()
-  id!: number
+    @PrimaryGeneratedColumn()
+    @IsPositive()
+    id!: number
 
-  @ManyToOne(() => ElectionOrganizer, (electionOrganizer) => electionOrganizer.elections)
-  electionOrganizer!: ElectionOrganizer
+    @ManyToOne(() => ElectionOrganizer, (electionOrganizer) => electionOrganizer.elections)
+    electionOrganizer!: ElectionOrganizer
 
-  @Column({ type: String })
-  title!: string
+    @Column({ type: String })
+    title!: string
 
-  @Column({ type: 'text' })
-  description!: string
+    @Column({ type: 'text' })
+    description!: string
 
-  @Column({ type: String, nullable: true })
-  image!: string
+    @Column({ type: String, nullable: true })
+    image!: string
 
-  @Column({ type: Date, nullable: true })
-  openDate!: Date
+    @Column({ type: Date, nullable: true })
+    openDate!: Date
 
-  @Column({ type: Date, nullable: true })
-  closeDate!: Date
+    @Column({ type: Date, nullable: true })
+    closeDate!: Date
 
-  @Column({ type: String, nullable: true })
-  password!: string
+    @Column({ type: String, nullable: true })
+    password!: string
 
-  @Column({ type: 'enum', enum: ElectionStatus, default: ElectionStatus.NotStarted })
-  status!: ElectionStatus
+    @Column({ type: 'enum', enum: ElectionStatus, default: ElectionStatus.NotStarted })
+    status!: ElectionStatus
 
-  @Column({ type: 'boolean', default: true })
-  isLocked!: boolean
+    @Column({ type: 'boolean', default: true })
+    isLocked!: boolean
 
-  @Column({ type: 'boolean', default: false })
-  isAutomatic!: boolean
+    @Column({ type: 'boolean', default: false })
+    isAutomatic!: boolean
 
-  @CreateDateColumn()
-  createdAt!: Date
+    @CreateDateColumn()
+    createdAt!: Date
 
-  @UpdateDateColumn()
-  updatedAt!: Date
+    @UpdateDateColumn()
+    updatedAt!: Date
 
-  @ManyToMany(() => EligibleVoter)
-  @JoinTable()
-  eligibleVoters!: EligibleVoter[]
+    @ManyToMany(() => EligibleVoter)
+    @JoinTable()
+    eligibleVoters!: EligibleVoter[]
 }

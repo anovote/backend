@@ -4,5 +4,5 @@
  * length of arguments
  */
 export interface IErrorMessage {
-  [key: string]: (...args: any[]) => string
+    [key: string]: (...args: any[]) => string
 }

@@ -5,11 +5,11 @@ import { ValidationError } from '@/lib/errors/validation/ValidationError'
  * @param entity a entity to validate on
  */
 export const validateEntity = async (entity: object, validatorOptions?: ValidatorOptions) => {
-  const validation = await validate(entity, validatorOptions)
-  const isValid = validation.length === 0
+    const validation = await validate(entity, validatorOptions)
+    const isValid = validation.length === 0
 
-  if (!isValid) {
-    const name = validation[0].target?.constructor.name
-    throw new ValidationError({ message: `Validation failed for ${name}`, validation: validation })
-  }
+    if (!isValid) {
+        const name = validation[0].target?.constructor.name
+        throw new ValidationError({ message: `Validation failed for ${name}`, validation: validation })
+    }
 }

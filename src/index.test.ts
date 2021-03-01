@@ -1,3 +1,3 @@
 it('should run', () => {
-  expect('anovote').toBe('anovote')
+    expect('anovote').toBe('anovote')
 })

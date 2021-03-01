@@ -1,5 +1,5 @@
 export enum BallotType {
-  SINGLE,
-  MULTIPLE,
-  RANKED
+    SINGLE,
+    MULTIPLE,
+    RANKED
 }

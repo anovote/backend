@@ -22,23 +22,23 @@ console.log('\n========== ⚡ BOOTING UP ⚡ =========== \n')
  * Initial boot function... this is where magic starts
  */
 async function boot() {
-  try {
-    const server = express()
+    try {
+        const server = express()
 
-    const app = await load({ server })
+        const app = await load({ server })
 
-    server.listen(config.http.port, () => {
-      console.log(`
+        server.listen(config.http.port, () => {
+            console.log(`
             LISTENING ON 
                ${config.http.port}
               
 =========  SERVER STARTED  =========
 \n\n`)
-    })
-  } catch (error) {
-    console.log('\n\n=========== 💥  TERROR 💥  ============\n\n')
-    logger.error(error)
-  }
+        })
+    } catch (error) {
+        console.log('\n\n=========== 💥  TERROR 💥  ============\n\n')
+        logger.error(error)
+    }
 }
 
 void boot() // Anovote is starting here

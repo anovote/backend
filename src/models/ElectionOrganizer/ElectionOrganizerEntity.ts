@@ -1,4 +1,5 @@
 import { Election } from '@/models/Election/ElectionEntity'
+import { Exclude } from 'class-transformer'
 import { IsEmail, IsString, MaxLength, MinLength } from 'class-validator'
 import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm'
 import { IsElectionOrganizerUnique } from './constraints/IsElectionOrganizerUniqueConstraint'
@@ -26,14 +27,17 @@ export class ElectionOrganizer {
     email!: string
 
     @Column({ type: 'varchar', length: 255 })
+    @Exclude()
     @IsString()
     @MinLength(6)
     @MaxLength(225)
     password!: string
 
+    @Exclude()
     @CreateDateColumn()
     createdAt!: Date
 
+    @Exclude()
     @UpdateDateColumn()
     updatedAt!: Date
 

@@ -1,3 +1,4 @@
+import { Exclude } from 'class-transformer'
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm'
 
 /**
@@ -12,5 +13,6 @@ export class EligibleVoter {
     id!: number
 
     @Column({ type: 'varchar', length: 255 })
+    @Exclude()
     identification!: string
 }

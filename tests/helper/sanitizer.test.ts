@@ -18,9 +18,9 @@ beforeEach(() => {
 
 it('should strip keys from object', () => {
     const stripKeys = ['a', 'b']
-    const stripped = strip(targetObject, stripKeys)
+    const stripped = strip(targetObject, stripKeys)!
     for (const key of stripKeys) {
-        expect((stripped as any)[key]).toBeUndefined()
+        expect(stripped[key]).toBeUndefined()
     }
 })
 
@@ -38,7 +38,8 @@ it('should not change object if keys do not exist', () => {
 
 it('should return undefined if target is not of type object', () => {
     const stripKeys = ['x', 'y']
-    const strippedList = [strip('', stripKeys), strip(34, stripKeys), strip([''], stripKeys)]
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const strippedList = [strip('' as any, stripKeys), strip(34 as any, stripKeys), strip([''], stripKeys)]
     for (const stripped of strippedList) {
         expect(stripped).toBeUndefined()
     }

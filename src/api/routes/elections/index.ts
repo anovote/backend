@@ -13,7 +13,7 @@ const router = Router()
 
 router.post('/', async (request, response, next) => {
   try {
-    const electionService = new ElectionService(database)
+    const electionService = new ElectionService(database, request.electionOrganizer)
     const electionDTO: IElection = request.body
 
     if (!electionDTO || isObjectEmpty(electionDTO)) {
@@ -31,8 +31,8 @@ router.post('/', async (request, response, next) => {
 
 router.get('/', async (request, response, next) => {
   try {
-    const electionService = new ElectionService(database)
-    const elections: Election[] | undefined = await electionService.getAllElections()
+    const electionService = new ElectionService(database, request.electionOrganizer)
+    const elections: Election[] | undefined = await electionService.get()
     response.json(elections)
   } catch (error) {
     next(error)
@@ -41,9 +41,9 @@ router.get('/', async (request, response, next) => {
 
 router.get('/:id', async (request, response, next) => {
   try {
-    const electionService = new ElectionService(database)
+    const electionService = new ElectionService(database, request.electionOrganizer)
     const id: number = Number.parseInt(request.params.id)
-    const election = await electionService.getElectionById(id)
+    const election = await electionService.getById(id)
     if (!election) throw new NotFoundError({ message: ServerErrorMessage.notFound(`Election`) })
     response.status(StatusCodes.OK).json(election)
   } catch (error) {
@@ -53,13 +53,13 @@ router.get('/:id', async (request, response, next) => {
 
 router.put('/:id', async (request, response, next) => {
   try {
-    const electionService = new ElectionService(database)
+    const electionService = new ElectionService(database, request.electionOrganizer)
     const id: number = Number.parseInt(request.params.id)
     const { election } = request.body
     if (!election) {
       throw new BadRequestError({ message: 'Empty request' })
     }
-    const result = await electionService.updateElectionById(id, election)
+    const result = await electionService.update(id, election)
     response.status(StatusCodes.OK).json(result)
   } catch (err) {
     next(err)
@@ -68,9 +68,9 @@ router.put('/:id', async (request, response, next) => {
 
 router.delete('/:id', async (request, response, next) => {
   try {
-    const electionService = new ElectionService(database)
+    const electionService = new ElectionService(database, request.electionOrganizer)
     const id: number = Number.parseInt(request.params.id)
-    const result = await electionService.deleteElectionById(id)
+    const result = await electionService.delete(id)
     response.status(StatusCodes.OK).json(result)
   } catch (err) {
     next(err)

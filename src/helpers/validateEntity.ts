@@ -4,8 +4,8 @@ import { ValidationError } from '@/lib/errors/validation/ValidationError'
  * Validates an entity according to its entity constraints or throws an validation error
  * @param entity a entity to validate on
  */
-export const validateEntity = async (entity: object, options?: ValidatorOptions) => {
-  const validation = await validate(entity, options)
+export const validateEntity = async (entity: object, validatorOptions?: ValidatorOptions) => {
+  const validation = await validate(entity, validatorOptions)
   const isValid = validation.length === 0
 
   if (!isValid) {

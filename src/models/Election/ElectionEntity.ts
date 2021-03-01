@@ -1,3 +1,8 @@
+import { ElectionStatus } from '@/models/Election/ElectionStatus'
+import { IElection } from '@/models/Election/IElection'
+import { ElectionOrganizer } from '@/models/ElectionOrganizer/ElectionOrganizerEntity'
+import { EligibleVoter } from '@/models/EligibleVoter/EligibleVoterEntity'
+import { IsOptional, IsPositive, MinDate } from 'class-validator'
 import {
   Column,
   CreateDateColumn,
@@ -8,11 +13,6 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn
 } from 'typeorm'
-import { ElectionOrganizer } from '@/models/ElectionOrganizer/ElectionOrganizerEntity'
-import { EligibleVoter } from '@/models/EligibleVoter/EligibleVoterEntity'
-import { IElection } from '@/models/Election/IElection'
-import { ElectionStatus } from '@/models/Election/ElectionStatus'
-import { IsOptional, MinDate } from 'class-validator'
 import { IsEarlierThan } from '../constraints/isEarlierThan'
 
 /**
@@ -25,6 +25,7 @@ import { IsEarlierThan } from '../constraints/isEarlierThan'
 @Entity()
 export class Election implements IElection {
   @PrimaryGeneratedColumn()
+  @IsPositive()
   id!: number
 
   @ManyToOne(() => ElectionOrganizer, (electionOrganizer) => electionOrganizer.elections)

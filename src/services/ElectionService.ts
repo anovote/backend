@@ -104,7 +104,7 @@ export class ElectionService extends BaseEntityService<Election> implements IHas
         if (strippedElection?.password) await this.hashEntityPassword(strippedElection)
         const updatedElection = this.manager.create(strippedElection!)
         updatedElection.id = existingElection.id
-        await validateEntity(updatedElection)
+        await validateEntity(updatedElection, { strictGroups: true })
 
         return await this.manager.save(updatedElection)
     }

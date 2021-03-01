@@ -1,4 +1,5 @@
 import { deepCopy } from '@/helpers/object'
+import { validateEntity } from '@/helpers/validateEntity'
 import { NotFoundError } from '@/lib/errors/http/NotFoundError'
 import setupConnection from '../helpers/setupTestDB'
 import { Election } from '@/models/Election/ElectionEntity'
@@ -40,6 +41,8 @@ beforeEach(async () => {
 
 afterAll(async () => {
   try {
+    const repo = db.getRepository(Election)
+    await clearDatabaseEntityTable(repo)
     await deleteDummyOrganizer(db, organizer)
     await db.close()
   } catch (err) {
@@ -48,7 +51,7 @@ afterAll(async () => {
 })
 
 it('should create a election with all data filled out', async () => {
-  const election = await electionService.createElection({
+  const election = await electionService.create({
     electionOrganizer: organizer,
     title: 'Test election',
     description: 'Description',
@@ -63,7 +66,7 @@ it('should create a election with all data filled out', async () => {
 })
 
 it('should create a election without image, openDate and closeDate', async () => {
-  const election = await electionService.createElection({
+  const election = await electionService.create({
     electionOrganizer: organizer,
     title: 'Test election',
     description: 'Description',
@@ -79,7 +82,7 @@ it('should throw error when status is out of range', async () => {
   const election = deepCopy<IElection>(seedElection)
   election.status = 99 // Out of range of ENUM
   try {
-    await expect(electionService.createElection(election)).rejects.toThrowError()
+    await expect(electionService.create(election)).rejects.toThrowError()
   } catch (error) {
     console.log(error)
   }
@@ -87,9 +90,7 @@ it('should throw error when status is out of range', async () => {
 
 it('should not update if no election exists', async () => {
   try {
-    await expect(electionService.updateElectionById(100, deepCopy<IElection>(seedElection))).rejects.toThrowError(
-      NotFoundError
-    )
+    await expect(electionService.update(100, deepCopy<Election>(seedElection))).rejects.toThrowError(NotFoundError)
   } catch (error) {
     console.log(error)
   }
@@ -101,7 +102,7 @@ it('should not change id of updated election', async () => {
   const electionCopy = deepCopy<Election>(election)
 
   electionCopy.id = 5
-  const updatedElection = await electionService.updateElectionById(passedInId, deepCopy<IElection>(electionCopy))
+  const updatedElection = await electionService.update(passedInId, deepCopy<Election>(electionCopy))
   expect(updatedElection!.id).toBe(passedInId)
 })
 
@@ -117,7 +118,7 @@ it('should return undefined if election does not exist', async () => {
 })
 
 it('should delete a election which exists', async () => {
-  const election = await electionService.createElection({
+  const election = await electionService.create({
     electionOrganizer: organizer,
     title: 'Test election',
     description: 'Description',
@@ -134,4 +135,124 @@ it('should throw not found error when deleting a election which do not exist', a
   } catch (error) {
     console.log(error)
   }
+})
+
+it('should throw error if close date is earlier than open date', async () => {
+  const repo = db.getRepository(Election)
+  const election = repo.create()
+  election.title = 'My Test'
+  election.description = 'This is a dummy'
+  election.isAutomatic = false
+  election.isLocked = false
+  election.electionOrganizer = new ElectionOrganizer()
+  election.eligibleVoters = []
+  election.status = ElectionStatus.Started
+  election.openDate = new Date(2021, 2, 23)
+  election.closeDate = new Date(2020, 1, 21)
+
+  await expect(validateEntity(election)).rejects.toThrowError()
+})
+
+it('should accept object if both dates are the same', async () => {
+  const repo = db.getRepository(Election)
+  const election = repo.create()
+  election.id = 1
+  election.title = 'My Test'
+  election.description = 'This is a dummy'
+  election.isAutomatic = false
+  election.isLocked = false
+  election.electionOrganizer = new ElectionOrganizer()
+  election.eligibleVoters = []
+  election.status = ElectionStatus.Started
+  election.openDate = new Date(2021, 2, 23)
+  election.closeDate = election.openDate
+
+  expect(election.openDate === election.closeDate)
+  await expect(validateEntity(election)).resolves.toBe(undefined)
+})
+
+it('it should resolve when closing date is after opening date', async () => {
+  const repo = db.getRepository(Election)
+  const election = repo.create()
+  election.id = 1
+  election.title = 'My Test'
+  election.description = 'This is a dummy'
+  election.isAutomatic = false
+  election.isLocked = false
+  election.electionOrganizer = new ElectionOrganizer()
+  election.eligibleVoters = []
+  election.status = ElectionStatus.Started
+  election.openDate = new Date(2021, 2, 23)
+  election.closeDate = new Date(2022, 1, 21)
+
+  expect(election.openDate < election.closeDate)
+  await expect(validateEntity(election)).resolves.toBe(undefined)
+})
+
+it('should fail if opening date is earlier than today on create', async () => {
+  const repo = db.getRepository(Election)
+  const election = repo.create()
+  election.id = 1
+  election.title = 'My Test'
+  election.description = 'This is a dummy'
+  election.isAutomatic = false
+  election.isLocked = false
+  election.electionOrganizer = new ElectionOrganizer()
+  election.eligibleVoters = []
+  election.status = ElectionStatus.Started
+  election.openDate = new Date(2020, 2, 23)
+
+  await expect(electionService.create(election)).rejects.toThrowError()
+})
+
+it('should pass if opening date is later than today on create', async () => {
+  const repo = db.getRepository(Election)
+  const election = repo.create()
+  election.title = 'My Test'
+  election.description = 'This is a dummy'
+  election.isAutomatic = false
+  election.isLocked = false
+  election.electionOrganizer = new ElectionOrganizer()
+  election.eligibleVoters = []
+  election.status = ElectionStatus.Started
+  election.openDate = new Date(2040, 2, 23)
+
+  await expect(electionService.create(election)).resolves.toBeDefined()
+})
+
+it('should pass if opening date is same as today on create', async () => {
+  const repo = db.getRepository(Election)
+  const election = repo.create()
+  election.title = 'My Test'
+  election.description = 'This is a dummy'
+  election.isAutomatic = false
+  election.isLocked = false
+  election.electionOrganizer = new ElectionOrganizer()
+  election.eligibleVoters = []
+  election.status = ElectionStatus.Started
+  election.openDate = new Date()
+
+  await expect(electionService.create(election)).resolves.toBeDefined()
+})
+
+it('should pass if opening date is earlier than today on entity update', async () => {
+  const repo = db.getRepository(Election)
+  const election = repo.create()
+  election.title = 'My open date is not to be updated'
+  election.description = 'This has a wrong date and needs to be updated'
+  election.isAutomatic = false
+  election.isLocked = false
+  election.electionOrganizer = organizer
+  election.eligibleVoters = []
+  election.status = ElectionStatus.Started
+
+  const oldElection = await electionService.create(election)
+  const newElection = oldElection!
+  newElection.openDate = new Date(2020, 2, 23) // earlier than today
+  newElection.closeDate = undefined
+
+  expect(newElection !== oldElection)
+  expect(newElection.openDate !== oldElection!.openDate)
+  expect(newElection.openDate < new Date())
+  await expect(electionService.update(newElection.id, newElection)).resolves.toBeDefined()
 })

@@ -76,7 +76,7 @@ export class ElectionService extends BaseEntityService<Election> implements IHas
     })
   }
 
-  async createElection(electionDTO: IElection): Promise<Election | undefined> {
+  private async createElection(electionDTO: IElection): Promise<Election | undefined> {
     if (electionDTO.password) {
       await this.hashEntityPassword(electionDTO)
     }
@@ -98,7 +98,7 @@ export class ElectionService extends BaseEntityService<Election> implements IHas
     electionDTO.password = hashedPassword
   }
 
-  async updateElectionById(id: number, electionDTO: IElection): Promise<Election | undefined> {
+  private async updateElectionById(id: number, electionDTO: IElection): Promise<Election | undefined> {
     const existingElection = await this.manager.findOne(id, {
       where: {
         electionOrganizer: this.owner
@@ -110,7 +110,7 @@ export class ElectionService extends BaseEntityService<Election> implements IHas
     if (strippedElection?.password) await this.hashEntityPassword(strippedElection)
     const updatedElection = this.manager.create(strippedElection!)
     updatedElection.id = existingElection.id
-    await validateEntity(updatedElection)
+    await validateEntity(updatedElection, { strictGroups: true })
 
     return await this.manager.save(updatedElection)
   }

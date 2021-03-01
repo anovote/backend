@@ -17,8 +17,8 @@ export const checkAuth = async (req: Request, res: Response, next: NextFunction)
   const electionOrganizerService = new ElectionOrganizerService(db)
   try {
     const id = (await authenticationService.verifyToken(req.headers.authorization)).id
-    const electionOrganizer = await electionOrganizerService.getElectionOrganizerById(id)
-    req.electionOrganizer = electionOrganizer
+    const electionOrganizer = await electionOrganizerService.getById(id)
+    req.electionOrganizer = electionOrganizer!
   } catch (e) {
     next(e)
   }

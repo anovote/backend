@@ -8,6 +8,7 @@ import { Ballot } from '@/models/Ballot/BallotEntity'
 import { IBallot } from '@/models/Ballot/IBallot'
 import { Election } from '@/models/Election/ElectionEntity'
 import { ElectionOrganizer } from '@/models/ElectionOrganizer/ElectionOrganizerEntity'
+import { classToClass } from 'class-transformer'
 import { Connection, Repository } from 'typeorm'
 import BaseEntityService, { CrudOptions } from './BaseEntityService'
 import { ElectionService } from './ElectionService'
@@ -34,20 +35,20 @@ export class BallotService extends BaseEntityService<Ballot> implements IHasOwne
     throw new NotFoundError({ message: 'No ballots found' })
   }
 
-  getByElection(election: Election) {
-    return this._ballotRepository.find({ where: { election } })
+  async getByElection(election: Election) {
+    return await this._ballotRepository.find({ where: { election } })
   }
 
-  create(dto: IBallot, { parentId: electionId }: CrudOptions): Promise<Ballot | undefined> {
+  async create(dto: IBallot, { parentId: electionId }: CrudOptions): Promise<Ballot | undefined> {
     try {
-      return this.createBallot(dto, electionId!)
+      return classToClass(await this.createBallot(dto, electionId!))
     } catch (error) {
       throw error
     }
   }
 
-  update(id: number, dto: Ballot): Promise<Ballot | undefined> {
-    return this.updateBallot(id, dto)
+  async update(id: number, dto: Ballot): Promise<Ballot | undefined> {
+    return classToClass(await this.updateBallot(id, dto))
   }
 
   /**
@@ -120,6 +121,6 @@ export class BallotService extends BaseEntityService<Ballot> implements IHasOwne
     if (!ballot) return undefined
 
     await this.verifyOwner(ballot!)
-    return ballot
+    return classToClass(ballot)
   }
 }

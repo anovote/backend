@@ -93,7 +93,7 @@ export class BallotService extends BaseEntityService<Ballot> implements IHasOwne
         const existingBallot = await this.getById(id)
         if (!existingBallot) throw new NotFoundError({ message: ServerErrorMessage.notFound('Ballot') })
 
-        await this.verifyOwner(existingBallot)
+        this.verifyOwner(existingBallot)
 
         await this._ballotRepository.remove(existingBallot)
     }
@@ -118,7 +118,7 @@ export class BallotService extends BaseEntityService<Ballot> implements IHasOwne
         })
         if (!ballot) return undefined
 
-        this.verifyOwner(ballot!)
+        this.verifyOwner(ballot)
         return classToClass(ballot)
     }
 }

@@ -2,6 +2,7 @@ import { AuthenticationService } from '@/services/AuthenticationService'
 import { Socket } from 'socket.io'
 import { ExtendedError } from 'socket.io/dist/namespace'
 import { ForbiddenError } from '../../http/ForbiddenError'
+import { AnoSocket } from '../AnoSocket'
 
 /**
  *  SocketIO middleware for validating tokens on authenticating clients
@@ -11,9 +12,9 @@ export const validateConnection = (socket: Socket, next: (err?: ExtendedError) =
         // !TODO Expect token here
         const token = socket.handshake.auth.token
         const authenticationService = new AuthenticationService()
-
-        authenticationService.verifyToken(token)
-        console.log('validated')
+        const decodedToken = authenticationService.verifyToken(token)
+        const upgradedSocket = socket as AnoSocket
+        upgradedSocket.token = decodedToken
         next()
     } catch (error) {
         next(new ForbiddenError())

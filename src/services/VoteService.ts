@@ -26,7 +26,7 @@ export class VoteService extends BaseEntityService<Vote> {
         return this.getVoteById(id)
     }
 
-    create(dto: Vote): Promise<Vote | undefined> {
+    create(dto: IVote): Promise<Vote | undefined> {
         return this.createAndSaveVote(dto)
     }
 

@@ -20,5 +20,5 @@ export class Vote {
     voterId!: string
 
     @Column()
-    ballotId!: number
+    ballotId!: string
 }

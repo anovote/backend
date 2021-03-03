@@ -53,12 +53,12 @@ export class VoteService extends BaseEntityService<Vote> {
         return vote
     }
 
-    async delete(id: number) {
+    async delete(id: number): Promise<void> {
         await this
         throw new NotFoundError({ message: 'Method not impemented' })
     }
 
-    async update(id: number, dto: Vote): Promise<Vote | undefined> {
+    async update(id: number, dto: Vote | undefined): Promise<Vote | undefined> {
         await this
         throw new NotFoundError({ message: 'Method not impemented' })
     }

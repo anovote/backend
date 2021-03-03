@@ -1,4 +1,5 @@
 import { deepCopy } from '@/helpers/object'
+import { NotFoundError } from '@/lib/errors/http/NotFoundError'
 import { Ballot } from '@/models/Ballot/BallotEntity'
 import { Candidate } from '@/models/Candidate/CandidateEntity'
 import { Election } from '@/models/Election/ElectionEntity'
@@ -79,5 +80,37 @@ test('Should throw error when ballot id do not exist', async () => {
         await expect(voteService.create(vote)).rejects.toThrowError()
     } catch (error) {
         console.error(error)
+    }
+})
+
+test('Should not be able to vote on a candidate that has already been voted on', async () => {
+    seedVote = (await voteService.create(seedDTO)) as Vote
+    const vote = deepCopy<IVote>(seedVote)
+    try {
+        await expect(voteService.create(vote)).rejects.toThrowError()
+    } catch (error) {
+        console.error(error)
+    }
+})
+
+test('Should not be able to update a vote', async () => {
+    seedVote = (await voteService.create(seedDTO)) as Vote
+    try {
+        const vote = await voteService.create(deepCopy<IVote>(seedVote))
+        const id = vote!.id
+        await expect(await voteService.update(id, vote)).toThrowError(NotFoundError)
+    } catch (err) {
+        console.error(err)
+    }
+})
+
+test('Should not be able to delete a vote', async () => {
+    seedVote = (await voteService.create(seedDTO)) as Vote
+    try {
+        const vote = await voteService.create(deepCopy<IVote>(seedVote))
+        const id = vote!.id
+        await expect(await voteService.delete(id)).toThrowError(NotFoundError)
+    } catch (err) {
+        console.error(err)
     }
 })

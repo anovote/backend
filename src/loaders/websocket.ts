@@ -34,6 +34,10 @@ export default (expressApp: Application) => {
             console.log('Got ping')
             socket.send('pong')
         })
+
+        socket.on(vote, (data) => {
+            console.log(data)
+        })
     })
     // !TODO add to config
     httpServer.listen(8877)

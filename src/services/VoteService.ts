@@ -1,5 +1,7 @@
 import { NotFoundError } from '@/lib/errors/http/NotFoundError'
 import { ServerErrorMessage } from '@/lib/errors/messages/ServerErrorMessages'
+import { Ballot } from '@/models/Ballot/BallotEntity'
+import { Candidate } from '@/models/Candidate/CandidateEntity'
 import { IVote } from '@/models/Vote/IVote'
 import { Vote } from '@/models/Vote/VoteEntity'
 import { VoteRepository } from '@/models/Vote/VoteRepository'

@@ -33,6 +33,7 @@ if [[ -z "$1" ]]; then
  echo "$typeArgError"
  echo "- anovote prod"
  echo "- anovote dev"
+ echo "- anovote test"
 else
     if [[ "$1" == "prod" ]]; then
         echo "====== PRODUCTION ======="
@@ -43,6 +44,11 @@ else
         echo "$compose"
         composes="-f ./docker-compose.yml -f ./docker-compose-dev.yml"
         docker $2
+    elif [[ "$1" == "test" ]]; then
+        echo "====== TEST ======="
+        echo "$compose"
+        yarn test:locally
+        
     else
         echo "$typeArgError"
         exit 1

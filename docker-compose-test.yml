@@ -1,0 +1,8 @@
+version: '3.9'
+services:
+    db:
+        container_name: 'test_database'
+        env_file:
+            - '.env.test'
+        ports:
+            - '${DB_PORT}:5432'

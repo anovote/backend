@@ -6,54 +6,56 @@ import { Candidate } from '@/models/Candidate/CandidateEntity'
 import { Election } from '@/models/Election/ElectionEntity'
 import { ElectionStatus } from '@/models/Election/ElectionStatus'
 import { ElectionOrganizer } from '@/models/ElectionOrganizer/ElectionOrganizerEntity'
+import { IVote } from '@/models/Vote/IVote'
 import { Vote } from '@/models/Vote/VoteEntity'
+import { VoteService } from '@/services/VoteService'
 import { Connection } from 'typeorm'
+import { createDummyBallot } from '../helpers/seed/ballot'
+import { createDummyCandidate } from '../helpers/seed/candidate'
+import { createDummyElection } from '../helpers/seed/election'
+import { createDummyOrganizer } from '../helpers/seed/organizer'
 import setupConnection from '../helpers/setupTestDB'
+import { clearDatabaseEntityTable } from '../Tests.utils'
 
 let database: Connection
+let organizer: ElectionOrganizer
+let election: Election
+let ballot: Ballot
+let candidate: Candidate
+let voteService: VoteService
+let seedVote: Vote
+let seedDTO: IVote
+
 beforeAll(async () => {
     database = await setupConnection()
+    organizer = await createDummyOrganizer(database)
+    election = await createDummyElection(database, organizer)
+    ballot = await createDummyBallot(database, election)
+    candidate = await createDummyCandidate(database, ballot)
 
-    const orgRes = database.getRepository(ElectionOrganizer)
-    const organizer = new ElectionOrganizer()
-    organizer.firstName = 'Sander'
-    organizer.lastName = 'Træen'
-    organizer.password = 'Password'
+    seedDTO = {
+        candidate: candidate.id,
+        voterId: 69,
+        submitted: new Date('2021-01-16'),
+        ballotId: ballot.id
+    }
+})
 
-    const election = new Election()
-    election.electionOrganizer = organizer
-    election.title = 'Election title'
-    election.description = 'Election description'
-    election.password = 'password'
-    election.status = ElectionStatus.NotStarted
-    election.isLocked = true
-    election.isAutomatic = false
-
-    const ballot = new Ballot()
-    ballot.election = election
-    ballot.title = 'Ballot title'
-    ballot.description = 'Ballot description'
-    ballot.image = 'Ballot image'
-    ballot.type = BallotType.SINGLE
-    ballot.resultDisplayType = BallotResultDisplay.SINGLE
-    ballot.resultDisplayTypeCount = 1
-    ballot.displayResultCount = false
-    ballot.order = 1
-    ballot.status = BallotStatus.IN_QUEUE
-    ballot.candidates = []
-
-    const candidate = new Candidate()
-    candidate.candidate = 'Hufsa Holanger'
-    candidate.ballot = ballot
-
-    const vote = new Vote()
-    vote.candidate = candidate.id
-    vote.submitted = new Date('2021-01.16')
-    vote.ballotId = ballot.id
+beforeEach(async () => {
+    voteService = new VoteService(database)
+    const repo = database.getRepository(Vote)
+    await clearDatabaseEntityTable(repo)
 })
 
 afterAll(async () => {
-    await database.close()
+    try {
+        const repo = database.getRepository(Vote)
+        await clearDatabaseEntityTable(repo)
+
+        await database.close()
+    } catch (error) {
+        console.error(error)
+    }
 })
 
 test('Mytest', () => {

@@ -2,15 +2,11 @@ import { Ballot } from '@/models/Ballot/BallotEntity'
 import { BallotResultDisplay } from '@/models/Ballot/BallotResultDisplay'
 import { BallotStatus } from '@/models/Ballot/BallotStatus'
 import { BallotType } from '@/models/Ballot/BallotType'
-import { Vote } from '@/models/Vote/VoteEntity'
+import { Election } from '@/models/Election/ElectionEntity'
 import { Connection } from 'typeorm'
-import { createDummyElection } from './election'
-import { createDummyOrganizer } from './organizer'
 
-export const createDummyBallot = async (database: Connection): Promise<Ballot> => {
+export const createDummyBallot = async (database: Connection, election: Election): Promise<Ballot> => {
     const repository = database.getRepository(Ballot)
-    const organizer = await createDummyOrganizer(database)
-    const election = await createDummyElection(database, organizer)
 
     const ballot = new Ballot()
     ballot.election = election

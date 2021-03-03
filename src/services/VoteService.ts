@@ -1,7 +1,5 @@
 import { NotFoundError } from '@/lib/errors/http/NotFoundError'
 import { ServerErrorMessage } from '@/lib/errors/messages/ServerErrorMessages'
-import { Ballot } from '@/models/Ballot/BallotEntity'
-import { Candidate } from '@/models/Candidate/CandidateEntity'
 import { IVote } from '@/models/Vote/IVote'
 import { Vote } from '@/models/Vote/VoteEntity'
 import { VoteRepository } from '@/models/Vote/VoteRepository'
@@ -39,6 +37,10 @@ export class VoteService extends BaseEntityService<Vote> {
         return saved
     }
 
+    // TODO, add implementation to check if a vote is submitted
+    // between open and close date of its election
+    // TODO, check if the election has moved on to a different ballot
+    // TODO, check if the election status, to see if it has ended
     async createAndSaveVote(vote: IVote): Promise<Vote> {
         const voteCreated = this.createVote(vote)
 

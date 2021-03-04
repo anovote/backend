@@ -51,7 +51,7 @@ afterAll(async () => {
     await database.close()
 })
 
-test('Should create a vote with all data filled out', async () => {
+it('Should create a vote with all data filled out', async () => {
     const vote = await voteService.create({
         candidate: candidate.id,
         voterId: 69,
@@ -61,56 +61,36 @@ test('Should create a vote with all data filled out', async () => {
     expect(vote).toBeInstanceOf(Vote)
 })
 
-test('Should throw error when candidate id do not exist', async () => {
+it('Should throw error when candidate id do not exist', async () => {
     seedVote = (await voteService.create(seedDTO)) as Vote
     const vote = deepCopy<IVote>(seedVote)
     vote.candidate = 96
-    try {
-        await expect(voteService.create(vote)).rejects.toThrowError()
-    } catch (error) {
-        console.error(error)
-    }
+    await expect(voteService.create(vote)).rejects.toThrowError()
 })
 
-test('Should throw error when ballot id do not exist', async () => {
+it('Should throw error when ballot id do not exist', async () => {
     seedVote = (await voteService.create(seedDTO)) as Vote
     const vote = deepCopy<IVote>(seedVote)
     vote.ballotId = 69
-    try {
-        await expect(voteService.create(vote)).rejects.toThrowError()
-    } catch (error) {
-        console.error(error)
-    }
+    await expect(voteService.create(vote)).rejects.toThrowError()
 })
 
-test('Should not be able to vote on a candidate that has already been voted on', async () => {
+it('Should not be able to vote on a candidate that has already been voted on', async () => {
     seedVote = (await voteService.create(seedDTO)) as Vote
     const vote = deepCopy<IVote>(seedVote)
-    try {
-        await expect(voteService.create(vote)).rejects.toThrowError()
-    } catch (error) {
-        console.error(error)
-    }
+    await expect(voteService.create(vote)).rejects.toThrowError()
 })
 
-test('Should not be able to update a vote', async () => {
+it('Should not be able to update a vote', async () => {
     seedVote = (await voteService.create(seedDTO)) as Vote
-    try {
-        const vote = await voteService.create(deepCopy<IVote>(seedVote))
-        const id = vote!.id
-        await expect(await voteService.update(id, vote)).toThrowError(NotFoundError)
-    } catch (err) {
-        console.error(err)
-    }
+    const vote = await voteService.create(deepCopy<IVote>(seedVote))
+    const id = vote!.id
+    await expect(voteService.update(id, vote)).rejects.toThrowError(NotFoundError)
 })
 
-test('Should not be able to delete a vote', async () => {
+it('Should not be able to delete a vote', async () => {
     seedVote = (await voteService.create(seedDTO)) as Vote
-    try {
-        const vote = await voteService.create(deepCopy<IVote>(seedVote))
-        const id = vote!.id
-        await expect(await voteService.delete(id)).toThrowError(NotFoundError)
-    } catch (err) {
-        console.error(err)
-    }
+    const vote = await voteService.create(deepCopy<IVote>(seedVote))
+    const id = vote!.id
+    await expect(voteService.delete(id)).rejects.toThrowError(NotFoundError)
 })

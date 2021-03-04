@@ -16,12 +16,14 @@ export default (expressApp: Application) => {
     const publishBallot = 'publishBallot'
     const confirmVote = 'confirmVote'
 
-    socketServer.use(validateConnection)
+    // socketServer.use(validateConnection)
     /**
      *
      * ID on election is room name
      */
     socketServer.on('connection', (socketConnection: AnoSocket) => {
+        console.log('trying to log on')
+
         if (socketConnection.token.organizer) {
             // TODO Add organizer events
             console.log('is organizer')

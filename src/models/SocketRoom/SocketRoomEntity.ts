@@ -10,9 +10,9 @@ export class SocketRoomEntity {
     @PrimaryGeneratedColumn()
     id!: number
 
-    @Column({ type: 'enum', default: SocketRoomState.OPEN })
+    @Column('enum', { default: SocketRoomState.OPEN, enum: SocketRoomState })
     roomState!: SocketRoomState
 
-    @OneToOne(() => Election, (election) => election.socketRoom)
+    @OneToOne(() => Election, (election) => election.socketRoom, { cascade: true })
     election!: Election
 }

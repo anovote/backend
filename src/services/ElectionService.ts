@@ -33,18 +33,18 @@ export class ElectionService extends BaseEntityService<Election> implements IHas
         this.encryptionService = new EncryptionService()
     }
 
-    getById(id: number): Promise<Election | undefined> {
-        return this.getElectionById(id)
+    async getById(id: number): Promise<Election | undefined> {
+        return await this.getElectionById(id)
     }
 
-    create(dto: IElection): Promise<Election | undefined> {
-        return this.createElection(dto)
+    async create(dto: IElection): Promise<Election | undefined> {
+        return await this.createElection(dto)
     }
-    update(id: number, dto: Election): Promise<Election | undefined> {
-        return this.updateElectionById(id, dto)
+    async update(id: number, dto: Election): Promise<Election | undefined> {
+        return await this.updateElectionById(id, dto)
     }
-    delete(id: number): Promise<void> {
-        return this.deleteElectionById(id)
+    async delete(id: number): Promise<void> {
+        return await this.deleteElectionById(id)
     }
 
     async get(): Promise<Election[] | undefined> {

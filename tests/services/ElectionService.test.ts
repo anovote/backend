@@ -10,6 +10,7 @@ import { ElectionService } from '@/services/ElectionService'
 import { Connection } from 'typeorm'
 import { createDummyOrganizer, deleteDummyOrganizer } from '../helpers/seed/organizer'
 import { clearDatabaseEntityTable } from '../Tests.utils'
+import { SocketRoomEntity } from '@/models/SocketRoom/SocketRoomEntity'
 
 let db: Connection
 let organizer: ElectionOrganizer
@@ -250,6 +251,7 @@ it('should pass if opening date is earlier than today on entity update', async (
     const newElection = oldElection!
     newElection.openDate = new Date(2020, 2, 23) // earlier than today
     newElection.closeDate = undefined
+    newElection.socketRoom = new SocketRoomEntity()
 
     expect(newElection !== oldElection)
     expect(newElection.openDate !== oldElection!.openDate)

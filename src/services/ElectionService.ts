@@ -11,6 +11,7 @@ import BaseEntityService from './BaseEntityService'
 import { ElectionOrganizer } from '@/models/ElectionOrganizer/ElectionOrganizerEntity'
 import { IHasOwner } from '@/interfaces/IHasOwner'
 import { ForbiddenError } from '@/lib/errors/http/ForbiddenError'
+import { SocketRoomEntity } from '@/models/SocketRoom/SocketRoomEntity'
 
 export interface ElectionBody {
     title: string
@@ -88,6 +89,8 @@ export class ElectionService extends BaseEntityService<Election> implements IHas
         const election = this.manager.create(electionDTO)
         await validateEntity(election, { groups: ['creation'] })
         election.id = -1
+
+        election.socketRoom = new SocketRoomEntity()
 
         return await this.manager.save(election)
     }

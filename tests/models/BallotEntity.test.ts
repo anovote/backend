@@ -1,32 +1,30 @@
-import { getConnection, Repository } from 'typeorm'
-import setupConnection from '../helpers/setupTestDB'
 import { clearDatabaseEntityTable } from '@/../tests/Tests.utils'
-import config from '@/config'
+import { validateEntity } from '@/helpers/validateEntity'
+import { ValidationError } from '@/lib/errors/validation/ValidationError'
 import { Ballot } from '@/models/Ballot/BallotEntity'
 import { BallotResultDisplay } from '@/models/Ballot/BallotResultDisplay'
 import { Election } from '@/models/Election/ElectionEntity'
-import { validateEntity } from '@/helpers/validateEntity'
-import { ValidationError } from '@/lib/errors/validation/ValidationError'
+import { Connection, Repository } from 'typeorm'
+import setupConnection from '../helpers/setupTestDB'
 
 let repo: Repository<Ballot>
-
+let db: Connection
 beforeAll(async () => {
-    await setupConnection()
-    repo = getConnection(config.environment).getRepository(Ballot)
+    db = await setupConnection()
+    repo = db.getRepository(Ballot)
 })
 
 beforeEach(async () => {
-    repo = getConnection(config.environment).getRepository(Ballot)
+    repo = db.getRepository(Ballot)
     await clearDatabaseEntityTable(repo)
 })
 
 afterAll(() => {
-    const conn = getConnection(config.environment)
-    return conn.close()
+    return db.close()
 })
 
 test('Ballot without result display type set should return entity with display type set to default', async () => {
-    repo = getConnection(config.environment).getRepository(Ballot)
+    repo = db.getRepository(Ballot)
     const ballot = repo.create()
     ballot.title = 'My Test'
     ballot.description = 'This is a dummy'

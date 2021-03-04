@@ -15,7 +15,7 @@ beforeAll(async () => {
     try {
         connection = await setupConnection()
     } catch (err) {
-        console.log(err)
+        console.error(err)
     }
 })
 
@@ -28,7 +28,7 @@ afterAll(async () => {
     try {
         return await connection.close()
     } catch (err) {
-        console.log(err)
+        console.error(err)
     }
 })
 

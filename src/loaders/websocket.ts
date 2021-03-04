@@ -1,13 +1,12 @@
 import { AnoSocket } from '@/lib/errors/websocket/AnoSocket'
 import { validateConnection } from '@/lib/errors/websocket/middleware/ValidateConnection'
-import { DecodedTokenValue } from '@/services/AuthenticationService'
 import { Application } from 'express'
 import http from 'http'
-import { Server, Socket } from 'socket.io'
+import { Server } from 'socket.io'
 
 export default (expressApp: Application) => {
     const httpServer = http.createServer(expressApp)
-    const socket = new Server(httpServer, {})
+    const socketServer = new Server(httpServer, {})
 
     // RECEIVE EVENTS
     const stopElection = 'stopElection'
@@ -17,22 +16,22 @@ export default (expressApp: Application) => {
     const publishBallot = 'publishBallot'
     const confirmVote = 'confirmVote'
 
-    socket.use(validateConnection)
+    socketServer.use(validateConnection)
     /**
      *
      * ID on election is room name
      */
-    socket.on('connection', (socket: AnoSocket) => {
-        if (socket.token.organizer) {
+    socketServer.on('connection', (socketConnection: AnoSocket) => {
+        if (socketConnection.token.organizer) {
             // TODO Add organizer events
             console.log('is organizer')
         } else {
             // TODO Add voter events
             console.log('is not organizer')
         }
-        socket.on('ping', () => {
+        socketConnection.on('ping', () => {
             console.log('Got ping')
-            socket.send('pong')
+            socketConnection.send('pong')
         })
     })
     // !TODO add to config

@@ -16,9 +16,9 @@ export class Vote {
     @CreateDateColumn()
     submitted!: Date
 
-    @Column({ type: 'int' })
+    @Column()
     voterId!: number
 
-    @Column({ type: 'int' })
+    @Column()
     ballotId!: number
 }

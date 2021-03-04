@@ -10,5 +10,7 @@ services:
         ports:
             - '9229:9229'
     db:
+        env_file:
+            - '.env'
         ports:
             - '${DB_PORT}:5432'

@@ -28,26 +28,21 @@ export class VoteService extends BaseEntityService<Vote> {
         return this.createAndSaveVote(dto)
     }
 
-    createVote(vote: IVote): Vote {
+    private createVote(vote: IVote): Vote {
         return this._voteRepository.createVote(vote)
-    }
-
-    async save(vote: Vote): Promise<Vote> {
-        const saved = await this._voteRepository.save(vote)
-        return saved
     }
 
     // TODO, add implementation to check if a vote is submitted
     // between open and close date of its election
     // TODO, check if the election has moved on to a different ballot
     // TODO, check if the election status, to see if it has ended
-    async createAndSaveVote(vote: IVote): Promise<Vote> {
+    private async createAndSaveVote(vote: IVote): Promise<Vote> {
         const voteCreated = this.createVote(vote)
 
-        return await this.save(voteCreated)
+        return await this._voteRepository.save(voteCreated)
     }
 
-    async getVoteById(id: number): Promise<Vote> {
+    private async getVoteById(id: number): Promise<Vote> {
         const vote: Vote | undefined = await this._voteRepository.findOne(id)
 
         if (!vote) throw new NotFoundError({ message: ServerErrorMessage.notFound('Vote') })
@@ -55,13 +50,11 @@ export class VoteService extends BaseEntityService<Vote> {
         return vote
     }
 
-    async delete(id: number): Promise<void> {
-        await this
-        throw new NotFoundError({ message: 'Method not impemented' })
+    delete(_id: number): Promise<void> {
+        throw new NotFoundError({ message: 'Method not implemented' })
     }
 
-    async update(id: number, dto: Vote | undefined): Promise<Vote | undefined> {
-        await this
-        throw new NotFoundError({ message: 'Method not impemented' })
+    update(_id: number, _dto: Vote | undefined): Promise<Vote | undefined> {
+        throw new NotFoundError({ message: 'Method not implemented' })
     }
 }

@@ -1,4 +1,4 @@
-import { Candidate } from '@/models/Candidate/CandidateEntity'
+import { ICandidate } from '../Candidate/ICandidate'
 import { BallotResultDisplay } from './BallotResultDisplay'
 import { BallotType } from './BallotType'
 
@@ -11,5 +11,5 @@ export interface IBallot {
     resultDisplayTypeCount: number
     displayResultCount: boolean
     order: number
-    candidates: Candidate[]
+    candidates: ICandidate[]
 }

@@ -14,6 +14,9 @@ export class Candidate {
     @Column({ type: String })
     candidate!: string
 
-    @ManyToOne(() => Ballot, (ballot: Ballot) => ballot.candidates)
+    @ManyToOne(() => Ballot, (ballot: Ballot) => ballot.candidates, {
+        onDelete: 'CASCADE',
+        orphanedRowAction: 'delete'
+    })
     ballot!: Ballot
 }

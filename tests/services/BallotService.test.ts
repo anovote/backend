@@ -26,7 +26,7 @@ beforeAll(async () => {
     try {
         db = await setupConnection()
         organizer = await createDummyOrganizer(db)
-        // election = await createDummyElection(db, organizer)
+
         ballotService = new BallotService(db, new ElectionService(db, organizer), organizer)
         election = await createDummyElection(db, organizer)
 

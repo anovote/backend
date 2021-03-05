@@ -72,6 +72,10 @@ export class Ballot implements IBallot {
     @UpdateDateColumn()
     updatedAt!: Date
 
-    @OneToMany(() => Candidate, (candidate) => candidate.ballot)
+    @OneToMany(() => Candidate, (candidate) => candidate.ballot, {
+        cascade: true,
+        eager: true,
+        orphanedRowAction: 'delete'
+    })
     candidates!: Candidate[]
 }

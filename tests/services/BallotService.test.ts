@@ -15,6 +15,7 @@ import { ValidationError } from '@/lib/errors/validation/ValidationError'
 import setupConnection from '../helpers/setupTestDB'
 import { CrudOptions } from '@/services/BaseEntityService'
 import { clearDatabaseEntityTable } from '../Tests.utils'
+import { Candidate } from '@/models/Candidate/CandidateEntity'
 
 let db: Connection
 let organizer: ElectionOrganizer
@@ -232,4 +233,58 @@ it('should throw not found error when deleting a ballot which do not exist', asy
     } catch (error) {
         expect(error).toBeInstanceOf(NotFoundError)
     }
+})
+
+it('should update candidate list with new candidates and remove old when candidates are replaced', async () => {
+    const initialCandidates = { candidate: 'test1' }
+    const updateCandidates = [{ candidate: 'test2' }, { candidate: 'test3' }]
+    const ballotDTO: IBallot = {
+        candidates: [initialCandidates],
+        order: 1,
+        displayResultCount: true,
+        resultDisplayType: BallotResultDisplay.ALL,
+        resultDisplayTypeCount: 2,
+        title: 'Test ballot',
+        type: BallotType.MULTIPLE,
+        description: 'Description',
+        image: 'img.png'
+    }
+
+    const savedBallot = (await ballotService.create(ballotDTO, { parentId: election.id })) as Ballot
+    expect(savedBallot.candidates.length).toBe(1)
+    expect(savedBallot.candidates[0]).toMatchObject(initialCandidates)
+
+    savedBallot.candidates = updateCandidates as Candidate[]
+    const updatedBallot = (await ballotService.update(savedBallot.id, savedBallot)) as IBallot
+    expect(updatedBallot.candidates.length).toBe(2)
+    expect(updatedBallot.candidates).toMatchObject(updateCandidates)
+})
+
+it('should update old candidates when changed and already exists', async () => {
+    const candidateName = 'test1'
+    const updatedCandidateName = 'test2'
+    const initialCandidates = { candidate: candidateName }
+    const ballotDTO: IBallot = {
+        candidates: [initialCandidates],
+        order: 1,
+        displayResultCount: true,
+        resultDisplayType: BallotResultDisplay.ALL,
+        resultDisplayTypeCount: 2,
+        title: 'Test ballot',
+        type: BallotType.MULTIPLE,
+        description: 'Description',
+        image: 'img.png'
+    }
+
+    const savedBallot = (await ballotService.create(ballotDTO, { parentId: election.id })) as Ballot
+    expect(savedBallot.candidates.length).toBe(1)
+    expect(savedBallot.candidates[0].candidate).toBe(candidateName)
+
+    const initialId = savedBallot.candidates[0].id
+    savedBallot.candidates[0].candidate = updatedCandidateName
+
+    const updatedBallot = (await ballotService.update(savedBallot.id, savedBallot)) as Ballot
+    expect(updatedBallot.candidates.length).toBe(1)
+    expect(updatedBallot.candidates[0].candidate).toBe(updatedCandidateName)
+    expect(updatedBallot.candidates[0].id).toBe(initialId)
 })

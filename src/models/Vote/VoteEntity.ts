@@ -17,7 +17,7 @@ export class Vote {
     @CreateDateColumn()
     submitted!: Date
 
-    @Column()
+    @Column({ type: 'int' })
     @IsPositive()
     @MinLength(4)
     @MaxLength(10)

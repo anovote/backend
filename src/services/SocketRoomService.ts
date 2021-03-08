@@ -1,14 +1,24 @@
+import config from '@/config'
 import { database } from '@/loaders'
 import { SocketRoomEntity } from '@/models/SocketRoom/SocketRoomEntity'
-import { Connection } from 'typeorm'
+import { Connection, getConnectionManager } from 'typeorm'
 import BaseEntityService, { CrudOptions } from './BaseEntityService'
 
 export class SocketRoomService extends BaseEntityService<SocketRoomEntity> {
     // electionId: number
+    private static instance: SocketRoomService
 
-    constructor(databaseConnection: Connection) {
+    private constructor(databaseConnection: Connection) {
         super(databaseConnection, SocketRoomEntity)
         // this.electionId = electionId
+    }
+
+    static getInstance(): SocketRoomService {
+        if (!SocketRoomService.instance) {
+            SocketRoomService.instance = new SocketRoomService(getConnectionManager().get(config.environment))
+        }
+
+        return this.instance
     }
 
     get(): Promise<SocketRoomEntity[] | undefined> {

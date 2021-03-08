@@ -1,5 +1,6 @@
 import { AnoSocket } from '@/lib/errors/websocket/AnoSocket'
 import { validateConnection } from '@/lib/errors/websocket/middleware/ValidateConnection'
+import { WebSocketService } from '@/lib/errors/websocket/WebSocketService'
 import { SocketRoomState } from '@/models/SocketRoom/SocketRoomEntity'
 import { SocketRoomService } from '@/services/SocketRoomService'
 import chalk from 'chalk'
@@ -21,6 +22,7 @@ export default (expressApp: Application) => {
     const confirmVote = 'confirmVote'
 
     const socketRoomService = SocketRoomService.getInstance()
+    const webSocketService = WebSocketService.getInstance()
 
     socketServer.use(validateConnection)
     /**
@@ -29,23 +31,9 @@ export default (expressApp: Application) => {
      */
     socketServer.on('connection', async (socketConnection: AnoSocket) => {
         const socketId = chalk.blue(socketConnection.id)
-        const { token } = socketConnection
         logger.info(`${socketId} was connected`)
 
-        if (token.electionID) {
-            const room = await socketRoomService.getById(token.electionID!)
-            const openRoom = room?.roomState === SocketRoomState.OPEN
-            if (openRoom) {
-                const electionIdString = token.electionID!.toString()
-                logger.info(`${socketId} was added to election room ${electionIdString}`)
-                await socketConnection.join(electionIdString)
-                socketServer.to(electionIdString).send(`You have joined election room: ${electionIdString}`)
-            } else {
-                logger.info(
-                    `tried to connect to room ${token.electionID}. This room is either closed or does not exist`
-                )
-            }
-        }
+        await webSocketService.addUserToRoom(socketConnection, socketServer)
 
         // if (socketConnection.token.organizer) {
         //     // TODO Add organizer events

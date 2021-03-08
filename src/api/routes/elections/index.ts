@@ -23,6 +23,7 @@ router.post('/', async (request, response, next) => {
         electionDTO.electionOrganizer = request.electionOrganizer
 
         const election: Election | undefined = await electionService.createElection(electionDTO)
+
         response.status(StatusCodes.CREATED).json(election)
     } catch (error) {
         next(error)

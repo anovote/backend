@@ -24,8 +24,8 @@ export class VoteService extends BaseEntityService<Vote> {
         return this.getVoteById(id)
     }
 
-    create(dto: IVote): Promise<Vote | undefined> {
-        return this.createAndSaveVote(dto)
+    async create(dto: IVote): Promise<Vote | undefined> {
+        return await this.createAndSaveVote(dto)
     }
 
     private createVote(vote: IVote): Vote {
@@ -50,11 +50,13 @@ export class VoteService extends BaseEntityService<Vote> {
         return vote
     }
 
-    delete(_id: number): Promise<void> {
+    async delete(_id: number): Promise<void> {
+        await this
         throw new NotFoundError({ message: 'Method not implemented' })
     }
 
-    update(_id: number, _dto: Vote | undefined): Promise<Vote | undefined> {
+    async update(_id: number, _dto: Vote | undefined): Promise<Vote | undefined> {
+        await this
         throw new NotFoundError({ message: 'Method not implemented' })
     }
 }

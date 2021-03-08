@@ -33,7 +33,7 @@ beforeAll(async () => {
 
     seedDTO = {
         candidate: candidate.id,
-        voterId: 69,
+        voterId: 69995,
         submitted: new Date('2021-01-16'),
         ballotId: ballot.id
     }
@@ -41,6 +41,11 @@ beforeAll(async () => {
 
 beforeEach(async () => {
     voteService = new VoteService(database)
+    const repo = database.getRepository(Vote)
+    await clearDatabaseEntityTable(repo)
+})
+
+afterEach(async () => {
     const repo = database.getRepository(Vote)
     await clearDatabaseEntityTable(repo)
 })
@@ -71,14 +76,13 @@ it('Should throw error when candidate id do not exist', async () => {
 it('Should throw error when ballot id do not exist', async () => {
     seedVote = (await voteService.create(seedDTO)) as Vote
     const vote = deepCopy<IVote>(seedVote)
-    vote.ballotId = 69
+    vote.ballotId = 1034
     await expect(voteService.create(vote)).rejects.toThrowError()
 })
 
 it('Should not be able to vote on a candidate that has already been voted on', async () => {
-    seedVote = (await voteService.create(seedDTO)) as Vote
-    const vote = deepCopy<IVote>(seedVote)
-    await expect(voteService.create(vote)).rejects.toThrowError()
+    await voteService.create(seedDTO)
+    await expect(voteService.create(seedDTO)).rejects.toThrowError()
 })
 
 it('Should not be able to update a vote', async () => {

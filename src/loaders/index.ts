@@ -26,7 +26,8 @@ export const load = async ({ server }: { server: Application }) => {
 
     logger.info('-- loading websocket')
     const websocket = websocketLoader(loadedExpress)
-    logger.info('------- websocket loaded ✅\n')
+    logger.info('------- websocket loaded ✅')
+    logger.info(`------- websocket listening on: ${process.env.WS_PORT} \n`)
 
     logger.info('-- loading typeORM 🧬')
     const loadedTypeOrm = await typeormLoader()

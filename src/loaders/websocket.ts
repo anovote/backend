@@ -37,5 +37,5 @@ export default (expressApp: Application) => {
         })
     })
     // !TODO add to config
-    httpServer.listen(8877)
+    httpServer.listen(process.env.WS_PORT)
 }

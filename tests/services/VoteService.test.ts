@@ -87,14 +87,12 @@ it('Should not be able to vote on a candidate that has already been voted on', a
 
 it('Should not be able to update a vote', async () => {
     seedVote = (await voteService.create(seedDTO)) as Vote
-    const vote = await voteService.create(deepCopy<IVote>(seedVote))
-    const id = vote!.id
-    await expect(voteService.update(id, vote)).rejects.toThrowError(NotFoundError)
+    const id = seedVote!.id
+    await expect(voteService.update(id, seedVote)).rejects.toThrowError()
 })
 
 it('Should not be able to delete a vote', async () => {
     seedVote = (await voteService.create(seedDTO)) as Vote
-    const vote = await voteService.create(deepCopy<IVote>(seedVote))
-    const id = vote!.id
-    await expect(voteService.delete(id)).rejects.toThrowError(NotFoundError)
+    const id = seedVote!.id
+    await expect(voteService.delete(id)).rejects.toThrowError()
 })

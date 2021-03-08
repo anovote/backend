@@ -38,20 +38,29 @@ export class WebSocketService {
         }
     }
 
-    async addUserToRoom(token: VoterToken, clientSocket: Socket) {
-        const room = await this.socketRoomService.getById(token.electionId)
+    /**
+     * Adds user to room if there is a socket room open for this client. Else does nothing
+     * @param clientSocket The client socket connection
+     * @param socketServer The socket server
+     */
+    async addUserToRoom(clientSocket: AnoSocket, socketServer: Server) {
+        const { token } = clientSocket
 
-        if (!room) {
-            throw new ForbiddenError()
+        const socketId = chalk.blue(clientSocket.id)
+        if (token.electionID) {
+            const room = await this.socketRoomService.getById(token.electionID!)
+            const openRoom = room?.roomState === SocketRoomState.OPEN
+            if (openRoom) {
+                const electionIdString = token.electionID!.toString()
+                logger.info(`${socketId} was added to election room ${electionIdString}`)
+                await clientSocket.join(electionIdString)
+                socketServer.to(electionIdString).send(`You have joined election room: ${electionIdString}`)
+            } else {
+                logger.info(
+                    `tried to connect to room ${token.electionID}. This room is either closed or does not exist`
+                )
         }
-
-        if (room.roomState === SocketRoomState.CLOSE) {
-            throw new RoomNotOpenError(`The room with id ${token.electionId} is not open`)
         }
-
-        const electionIdStr = token.electionId.toString()
-        await clientSocket.join(electionIdStr)
-        return clientSocket
     }
 }
 

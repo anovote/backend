@@ -11,13 +11,19 @@ export class WebSocketService {
     socketConnection: Socket
     socketRoomService: SocketRoomService
 
-    constructor(socketConnection: Socket, socketRoomService: SocketRoomService) {
-        this.socketConnection = socketConnection
+    private static instance: WebSocketService
+    private constructor(socketRoomService: SocketRoomService) {
+        // this.socketConnection = socketConnection
         this.socketRoomService = socketRoomService
     }
 
-    closeRoom(room: SocketRoomEntity) {
-        this.socketConnection.removeAllListeners(room.id.toString())
+    static getInstance(): WebSocketService {
+        if (!WebSocketService.instance) {
+            WebSocketService.instance = new WebSocketService(SocketRoomService.getInstance())
+        }
+
+        return this.instance
+    }
         room.roomState = SocketRoomState.CLOSE
     }
 

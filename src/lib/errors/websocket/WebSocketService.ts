@@ -85,4 +85,3 @@ class RoomNotOpenError extends Error {
 }
 
 // todo add room to election on create. update room status. write tests
-export const jhwejhre = new Ntykrtyj()

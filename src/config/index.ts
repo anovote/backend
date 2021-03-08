@@ -38,6 +38,13 @@ export default {
     http: {
         port: process.env.HTTP_PORT
     },
+    mail: {
+        service: process.env.MAIL_SERVICE,
+        auth: {
+            user: process.env.MAIL_USER,
+            pass: process.env.MAIL_PASS
+        }
+    },
     secret: process.env.SECRET,
     environment,
     src

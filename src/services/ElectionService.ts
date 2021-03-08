@@ -90,8 +90,7 @@ export class ElectionService extends BaseEntityService<Election> implements IHas
         await validateEntity(election, { groups: ['creation'] })
         election.id = -1
 
-        election.socketRoom = new SocketRoomEntity()
-
+        // election.socketRoom = new SocketRoomEntity()
         return await this.manager.save(election)
     }
 

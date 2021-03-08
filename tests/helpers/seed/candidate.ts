@@ -6,7 +6,7 @@ export const createDummyCandidate = async (database: Connection, ballot: Ballot)
     const repository = database.getRepository(Candidate)
 
     const candidate = new Candidate()
-    candidate.candidate = 'Hufsa Holanger'
+    candidate.candidate = 'Hurlen Holanger'
     candidate.ballot = ballot
 
     repository.create(candidate)

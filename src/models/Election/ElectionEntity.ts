@@ -7,6 +7,7 @@ import {
     Column,
     CreateDateColumn,
     Entity,
+    JoinColumn,
     JoinTable,
     ManyToMany,
     ManyToOne,
@@ -76,7 +77,7 @@ export class Election implements IElection {
     @JoinTable()
     eligibleVoters!: EligibleVoter[]
 
-    @OneToOne(() => SocketRoomEntity, (socketRoomEntity) => socketRoomEntity.election)
-    @JoinTable()
+    @OneToOne(() => SocketRoomEntity, (socketRoomEntity) => socketRoomEntity.election, { cascade: true })
+    @JoinColumn()
     socketRoom!: SocketRoomEntity
 }

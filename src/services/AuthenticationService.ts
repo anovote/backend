@@ -45,8 +45,8 @@ export class AuthenticationService {
      * Generates a token from a given id and returns the token
      * @param id, the id to create a token from
      */
-    async generateTokenFromId(id: number): Promise<string> {
-        return await this.generateToken({
+    generateTokenFromId(id: number) {
+        return this.generateToken({
             id: id,
             organizer: true
         })

@@ -1,7 +1,5 @@
-import config from '@/config'
-import { database } from '@/loaders'
 import { SocketRoomEntity } from '@/models/SocketRoom/SocketRoomEntity'
-import { Connection, getConnectionManager } from 'typeorm'
+import { Connection, getConnection } from 'typeorm'
 import BaseEntityService, { CrudOptions } from './BaseEntityService'
 
 export class SocketRoomService extends BaseEntityService<SocketRoomEntity> {
@@ -15,7 +13,8 @@ export class SocketRoomService extends BaseEntityService<SocketRoomEntity> {
 
     static getInstance(): SocketRoomService {
         if (!SocketRoomService.instance) {
-            SocketRoomService.instance = new SocketRoomService(getConnectionManager().get(config.environment))
+            // todo connection should be fetched based on environment. connection should be set to default if environnement is dev or production
+            SocketRoomService.instance = new SocketRoomService(getConnection())
         }
 
         return this.instance
@@ -31,14 +30,21 @@ export class SocketRoomService extends BaseEntityService<SocketRoomEntity> {
      * @returns a socket room entity or undefined
      */
     async getById(electionId: number): Promise<SocketRoomEntity | undefined> {
-        return await database.getRepository(SocketRoomEntity).findOne({ where: { election: electionId } })
+        return await this.repository
+            .createQueryBuilder('socket_room_entity')
+            .leftJoinAndSelect('socket_room_entity.election', 'election')
+            .where('election."id" = :value', { value: electionId })
+            .getOne()
     }
+
     create(dto: SocketRoomEntity, options?: CrudOptions): Promise<SocketRoomEntity | undefined> {
         throw new Error('Method not implemented.')
     }
+
     update(id: number, dto: SocketRoomEntity): Promise<SocketRoomEntity | undefined> {
         throw new Error('Method not implemented.')
     }
+
     delete(id: number): Promise<void> {
         throw new Error('Method not implemented.')
     }

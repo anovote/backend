@@ -12,6 +12,7 @@ import { EncryptionService } from './EncryptionService'
 export interface AuthTokenOptions {
     id: number
     organizer: boolean
+    electionID?: number
 }
 
 /**

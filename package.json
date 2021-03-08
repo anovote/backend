@@ -46,6 +46,7 @@
   },
   "dependencies": {
     "bcrypt": "^5.0.0",
+    "chalk": "^4.1.0",
     "class-validator": "^0.13.1",
     "cors": "^2.8.5",
     "dotenv": "^8.2.0",

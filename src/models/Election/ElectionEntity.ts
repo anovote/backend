@@ -2,6 +2,7 @@ import { ElectionStatus } from '@/models/Election/ElectionStatus'
 import { IElection } from '@/models/Election/IElection'
 import { ElectionOrganizer } from '@/models/ElectionOrganizer/ElectionOrganizerEntity'
 import { EligibleVoter } from '@/models/EligibleVoter/EligibleVoterEntity'
+import { Exclude } from 'class-transformer'
 import { IsOptional, IsPositive, MinDate } from 'class-validator'
 import {
     Column,
@@ -55,6 +56,7 @@ export class Election implements IElection {
     @Column({ type: Date, nullable: true })
     closeDate?: Date
 
+    @Exclude()
     @Column({ type: String, nullable: true })
     password!: string
 
@@ -67,9 +69,11 @@ export class Election implements IElection {
     @Column({ type: 'boolean', default: false })
     isAutomatic!: boolean
 
+    @Exclude()
     @CreateDateColumn()
     createdAt!: Date
 
+    @Exclude()
     @UpdateDateColumn()
     updatedAt!: Date
 

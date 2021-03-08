@@ -4,6 +4,7 @@ import { ServerErrorMessage } from '@/lib/errors/messages/ServerErrorMessages'
 import { ElectionOrganizer } from '@/models/ElectionOrganizer/ElectionOrganizerEntity'
 import { ElectionOrganizerRepository } from '@/models/ElectionOrganizer/ElectionOrganizerRepository'
 import { IElectionOrganizer } from '@/models/ElectionOrganizer/IElectionOrganizer'
+import { classToClass } from 'class-transformer'
 import { Connection, getCustomRepository } from 'typeorm'
 import BaseEntityService from './BaseEntityService'
 import { EncryptionService } from './EncryptionService'
@@ -22,23 +23,23 @@ export class ElectionOrganizerService extends BaseEntityService<ElectionOrganize
         throw new NotFoundError({ message: 'Not found' })
     }
 
-    getById(id: number): Promise<ElectionOrganizer | undefined> {
-        return this.getElectionOrganizerById(id)
+    async getById(id: number): Promise<ElectionOrganizer | undefined> {
+        return classToClass(await this.getElectionOrganizerById(id))
     }
 
-    create(dto: ElectionOrganizer): Promise<ElectionOrganizer | undefined> {
-        return this.createAndSaveElectionOrganizer(dto)
+    async create(dto: ElectionOrganizer): Promise<ElectionOrganizer | undefined> {
+        return classToClass(await this.createAndSaveElectionOrganizer(dto))
     }
 
-    update(id: number, dto: ElectionOrganizer): Promise<ElectionOrganizer | undefined> {
-        return this.updatePassword(dto.password, id)
+    async update(id: number, dto: ElectionOrganizer): Promise<ElectionOrganizer | undefined> {
+        return classToClass(await this.updatePassword(dto.password, id))
     }
 
     /**
      * Creates an election organizer entity from a given election organizer model
      * @param electionOrganizer
      */
-    createElectionOrganizer(electionOrganizer: IElectionOrganizer): ElectionOrganizer {
+    private createElectionOrganizer(electionOrganizer: IElectionOrganizer): ElectionOrganizer {
         return this._organizerRepository.createElectionOrganizer(electionOrganizer)
     }
 
@@ -46,7 +47,7 @@ export class ElectionOrganizerService extends BaseEntityService<ElectionOrganize
      * Saves an given election organizer to the database and returns it
      * @param electionOrganizer the election organizer we want to save
      */
-    async save(electionOrganizer: ElectionOrganizer): Promise<ElectionOrganizer> {
+    private async save(electionOrganizer: ElectionOrganizer): Promise<ElectionOrganizer> {
         const saved = await this._organizerRepository.save(electionOrganizer)
         return saved
     }
@@ -106,7 +107,7 @@ export class ElectionOrganizerService extends BaseEntityService<ElectionOrganize
      * @param id the id of the ballot to delete
      * @return the organizer or if it does not exist, undefined
      */
-    async delete(id: number) {
+    async delete(id: number): Promise<void> {
         const existingOrganizer = await this._organizerRepository.findOne(id)
         if (!existingOrganizer) throw new NotFoundError({ message: ServerErrorMessage.notFound('Election Organizer') })
         await this._organizerRepository.remove(existingOrganizer)

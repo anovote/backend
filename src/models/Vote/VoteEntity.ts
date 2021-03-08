@@ -1,5 +1,7 @@
-import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm'
+import { Column, CreateDateColumn, Entity, ManyToOne, OneToOne, PrimaryGeneratedColumn, Unique } from 'typeorm'
 import { Candidate } from '@/models/Candidate/CandidateEntity'
+import { IsPositive, MaxDate, MaxLength, MinLength } from 'class-validator'
+import { Ballot } from '../Ballot/BallotEntity'
 
 /**
  * Represents the vote on a candidate for a given ballot.
@@ -16,9 +18,12 @@ export class Vote {
     @CreateDateColumn()
     submitted!: Date
 
-    @Column({ type: String })
-    voterId!: string
+    @Column({ type: 'int' })
+    @IsPositive()
+    @MinLength(4)
+    @MaxLength(10)
+    voterId!: number
 
-    @Column({ type: String })
-    ballotId!: string
+    @ManyToOne(() => Ballot, (ballot) => ballot.id)
+    ballotId!: number
 }

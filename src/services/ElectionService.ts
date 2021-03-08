@@ -8,6 +8,7 @@ import { ServerErrorMessage } from '@/lib/errors/messages/ServerErrorMessages'
 import { Election } from '@/models/Election/ElectionEntity'
 import { IElection } from '@/models/Election/IElection'
 import { ElectionOrganizer } from '@/models/ElectionOrganizer/ElectionOrganizerEntity'
+import { classToClass } from 'class-transformer'
 import { Connection, Repository } from 'typeorm'
 import BaseEntityService from './BaseEntityService'
 import { EncryptionService } from './EncryptionService'
@@ -33,23 +34,22 @@ export class ElectionService extends BaseEntityService<Election> implements IHas
     }
 
     async getById(id: number): Promise<Election | undefined> {
-        return await this.getElectionById(id)
+        return classToClass(await this.getElectionById(id))
     }
 
     async create(dto: IElection): Promise<Election | undefined> {
-        return await this.createElection(dto)
+        return classToClass(await this.createElection(dto))
     }
     async update(id: number, dto: Election): Promise<Election | undefined> {
-        return await this.updateElectionById(id, dto)
+        return classToClass(await this.updateElectionById(id, dto))
     }
     async delete(id: number): Promise<void> {
-        return await this.deleteElectionById(id)
+        return classToClass(await this.deleteElectionById(id))
     }
 
     async get(): Promise<Election[] | undefined> {
         try {
-            const allElections = await this.getAllElections()
-            return allElections
+            return classToClass(await this.getAllElections())
         } catch (error) {
             console.error(error)
         }

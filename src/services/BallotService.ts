@@ -8,6 +8,7 @@ import { Ballot } from '@/models/Ballot/BallotEntity'
 import { IBallot } from '@/models/Ballot/IBallot'
 import { Election } from '@/models/Election/ElectionEntity'
 import { ElectionOrganizer } from '@/models/ElectionOrganizer/ElectionOrganizerEntity'
+import { classToClass } from 'class-transformer'
 import { Connection, Repository } from 'typeorm'
 import BaseEntityService, { CrudOptions } from './BaseEntityService'
 import { ElectionService } from './ElectionService'
@@ -34,16 +35,16 @@ export class BallotService extends BaseEntityService<Ballot> implements IHasOwne
         throw new NotFoundError({ message: 'No ballots found' })
     }
 
-    getByElection(election: Election) {
-        return this._ballotRepository.find({ where: { election } })
+    async getByElection(election: Election) {
+        return await this._ballotRepository.find({ where: { election } })
     }
 
-    create(dto: IBallot, { parentId: electionId }: CrudOptions): Promise<Ballot | undefined> {
-        return this.createBallot(dto, electionId!)
+    async create(dto: IBallot, { parentId: electionId }: CrudOptions): Promise<Ballot | undefined> {
+        return classToClass(await this.createBallot(dto, electionId!))
     }
 
-    update(id: number, dto: Ballot): Promise<Ballot | undefined> {
-        return this.updateBallot(id, dto)
+    async update(id: number, dto: Ballot): Promise<Ballot | undefined> {
+        return classToClass(await this.updateBallot(id, dto))
     }
 
     /**
@@ -92,7 +93,7 @@ export class BallotService extends BaseEntityService<Ballot> implements IHasOwne
         const existingBallot = await this.getById(id)
         if (!existingBallot) throw new NotFoundError({ message: ServerErrorMessage.notFound('Ballot') })
 
-        await this.verifyOwner(existingBallot)
+        this.verifyOwner(existingBallot)
 
         await this._ballotRepository.remove(existingBallot)
     }
@@ -117,7 +118,7 @@ export class BallotService extends BaseEntityService<Ballot> implements IHasOwne
         })
         if (!ballot) return undefined
 
-        this.verifyOwner(ballot!)
-        return ballot
+        this.verifyOwner(ballot)
+        return classToClass(ballot)
     }
 }

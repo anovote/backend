@@ -1,10 +1,10 @@
-import dbLoader from '@/loaders/typeorm'
 import { Connection } from 'typeorm'
+import setupConnection from '../helpers/setupTestDB'
 
 let dbConnection: Connection
 
 beforeAll(async () => {
-    dbConnection = await dbLoader()
+    dbConnection = await setupConnection()
 })
 
 afterAll(async () => {

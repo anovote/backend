@@ -1,31 +1,17 @@
-// import { doesNotMatch } from 'assert'
-// import { createServer, Server as htServer } from 'http'
-// import { Server, Socket } from 'socket.io'
+import { WebSocketService } from '@/lib/errors/websocket/WebSocketService'
+// import { Server } from 'mock-socket'
+import { Server } from 'socket.io'
+import { AnoSocket } from 'lib/errors/websocket/AnoSocket'
 
-// let httpServer: htServer
-// let io
+let webSocketService: WebSocketService
+jest.mock('socket.io')
 
-// beforeAll((done) => {
-//     httpServer = createServer()
-//     io = new Server(httpServer, {
-//         // ...
-//     })
+beforeAll(() => {
+    webSocketService = WebSocketService.getInstance()
+})
 
-//     // io.on('connection', (socket: Socket) => {
-//     //     socket.emit('wee')
-//     // })
-
-//     httpServer.listen(3000, () => done())
-// })
-
-// afterAll((done) => {
-//     httpServer.listening ? httpServer.close(() => done()) : done()
-// })
-
-// test('should work', (done) => {
-//     clientSocket.on('hello', (arg) => {
-//         expect(arg).toBe('world')
-//         done()
-//     })
-//     serverSocket.emit('hello', 'world')
-// })
+it('should add user to room', async () => {
+    const socket = { token: { electionID: 6 } } as AnoSocket
+    const server = new Server()
+    await webSocketService.addUserToRoom(socket, server)
+})

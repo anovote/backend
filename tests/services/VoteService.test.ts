@@ -45,14 +45,12 @@ beforeEach(async () => {
     await clearDatabaseEntityTable(repo)
 })
 
-afterEach(async () => {
+afterEach(() => {
     const repo = database.getRepository(Vote)
-    await clearDatabaseEntityTable(repo)
 })
 
 afterAll(async () => {
     const repo = database.getRepository(Vote)
-    await clearDatabaseEntityTable(repo)
     await database.close()
 })
 
@@ -70,6 +68,7 @@ it('Should throw error when candidate id do not exist', async () => {
     seedVote = (await voteService.create(seedDTO)) as Vote
     const vote = deepCopy<IVote>(seedVote)
     vote.candidate = 96
+    expect.assertions(1)
     await expect(voteService.create(vote)).rejects.toThrowError()
 })
 
@@ -88,11 +87,13 @@ it('Should not be able to vote on a candidate that has already been voted on', a
 it('Should not be able to update a vote', async () => {
     seedVote = (await voteService.create(seedDTO)) as Vote
     const id = seedVote!.id
-    await expect(voteService.update(id, seedVote)).rejects.toThrowError()
+    expect.assertions(1)
+    await expect(voteService.update(id, seedVote)).rejects.toThrow()
 })
 
 it('Should not be able to delete a vote', async () => {
     seedVote = (await voteService.create(seedDTO)) as Vote
     const id = seedVote!.id
-    await expect(voteService.delete(id)).rejects.toThrowError()
+    expect.assertions(1)
+    await expect(voteService.delete(id)).rejects.toThrow(NotFoundError)
 })

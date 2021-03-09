@@ -13,6 +13,7 @@ import { IHasOwner } from '@/interfaces/IHasOwner'
 import { ForbiddenError } from '@/lib/errors/http/ForbiddenError'
 import { classToClass, classToPlain } from 'class-transformer'
 import { EligibleVoter } from '@/models/EligibleVoter/EligibleVoterEntity'
+import { EligibleVoterService } from './EligibleVoterService'
 
 export interface ElectionBody {
     title: string
@@ -78,7 +79,9 @@ export class ElectionService extends BaseEntityService<Election> implements IHas
     }
 
     async createElection(electionDTO: IElection): Promise<Election | undefined> {
-        electionDTO.eligibleVoters = this.fixEligibleVotersList(electionDTO.eligibleVoters)
+        const eligibleVoterService = new EligibleVoterService()
+
+        electionDTO.eligibleVoters = eligibleVoterService.correctListOfEligibleVoters(electionDTO.eligibleVoters)
 
         if (electionDTO.password) {
             await this.hashEntityPassword(electionDTO)
@@ -93,41 +96,6 @@ export class ElectionService extends BaseEntityService<Election> implements IHas
         election.id = -1
 
         return await this.manager.save(election)
-    }
-
-    private fixEligibleVotersList(eligibleVoters: EligibleVoter[]): EligibleVoter[] {
-        let copy = [...eligibleVoters]
-
-        for (let i = 0; i < copy.length; i++) {
-            copy[i].identification.trim()
-        }
-
-        copy = copy.filter(function (elem, index, self) {
-            return index === self.indexOf(elem)
-        })
-
-        for (let i = 0; i < copy.length; i++) {
-            if (!this.isEmailValid(copy[i].identification)) {
-                delete copy[i]
-            }
-        }
-
-        return copy
-    }
-
-    /**
-     * Checks if a given email is valid or not.
-     * @param email the email we want to validate
-     * @returns true if valid, false if not valid
-     */
-    private isEmailValid(email: string): boolean {
-        const emailFormat = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/
-
-        if (email.match(emailFormat)) {
-            return true
-        } else {
-            return false
-        }
     }
 
     async updateElectionById(id: number, electionDTO: IElection): Promise<Election | undefined> {

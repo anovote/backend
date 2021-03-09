@@ -97,3 +97,23 @@ it('Should not be able to delete a vote', async () => {
     expect.assertions(1)
     await expect(voteService.delete(id)).rejects.toThrow(NotFoundError)
 })
+
+test('that a candidate cast as blank is registered as null in database', async () => {
+    const voterId = 1
+    const blankVote: IVote = { ballotId: ballot.id, candidate: 'blank', submitted: new Date(), voterId }
+    const saveVote = await voteService.create(blankVote)
+
+    expect.assertions(2)
+    expect(saveVote?.voterId === voterId).toBeTruthy()
+    expect(saveVote?.candidate === null).toBeTruthy()
+})
+
+test('that a candidate cast as null is registered as null in database', async () => {
+    const voterId = 1
+    const blankVote: IVote = { ballotId: ballot.id, candidate: null, submitted: new Date(), voterId }
+    const saveVote = await voteService.create(blankVote)
+
+    expect.assertions(2)
+    expect(saveVote!.voterId === voterId).toBeTruthy()
+    expect(saveVote!.candidate === null).toBeTruthy()
+})

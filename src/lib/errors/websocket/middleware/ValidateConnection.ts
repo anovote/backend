@@ -1,4 +1,6 @@
+import { logger } from '@/loaders/logger'
 import { AuthenticationService } from '@/services/AuthenticationService'
+import chalk from 'chalk'
 import { Socket } from 'socket.io'
 import { ExtendedError } from 'socket.io/dist/namespace'
 import { ForbiddenError } from '../../http/ForbiddenError'
@@ -17,6 +19,7 @@ export const validateConnection = (socket: Socket, next: (err?: ExtendedError) =
         upgradedSocket.token = decodedToken
         next()
     } catch (error) {
+        logger.error(`${chalk.blue(socket.id)}:  ${error}`)
         next(new ForbiddenError())
     }
 }

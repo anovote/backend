@@ -20,7 +20,7 @@ export class ElectionOrganizerService extends BaseEntityService<ElectionOrganize
     }
 
     get(): Promise<ElectionOrganizer[] | undefined> {
-        throw new NotFoundError({ message: 'Not found' })
+        throw new NotFoundError({ message: 'Not found' }) // TODO #127 replace with ServerResponse
     }
 
     async getById(id: number): Promise<ElectionOrganizer | undefined> {

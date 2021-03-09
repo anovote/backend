@@ -96,11 +96,38 @@ export class ElectionService extends BaseEntityService<Election> implements IHas
     }
 
     private fixEligibleVotersList(eligibleVoters: EligibleVoter[]): EligibleVoter[] {
-        const copy = [...eligibleVoters]
+        let copy = [...eligibleVoters]
 
-        for (let i = 0; i < copy.length; i++) {}
+        for (let i = 0; i < copy.length; i++) {
+            copy[i].identification.trim()
+        }
+
+        copy = copy.filter(function (elem, index, self) {
+            return index === self.indexOf(elem)
+        })
+
+        for (let i = 0; i < copy.length; i++) {
+            if (!this.isEmailValid(copy[i].identification)) {
+                delete copy[i]
+            }
+        }
 
         return copy
+    }
+
+    /**
+     * Checks if a given email is valid or not.
+     * @param email the email we want to validate
+     * @returns true if valid, false if not valid
+     */
+    private isEmailValid(email: string): boolean {
+        const emailFormat = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/
+
+        if (email.match(emailFormat)) {
+            return true
+        } else {
+            return false
+        }
     }
 
     async updateElectionById(id: number, electionDTO: IElection): Promise<Election | undefined> {

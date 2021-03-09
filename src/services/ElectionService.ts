@@ -12,6 +12,7 @@ import { ElectionOrganizer } from '@/models/ElectionOrganizer/ElectionOrganizerE
 import { IHasOwner } from '@/interfaces/IHasOwner'
 import { ForbiddenError } from '@/lib/errors/http/ForbiddenError'
 import { classToClass, classToPlain } from 'class-transformer'
+import { EligibleVoter } from '@/models/EligibleVoter/EligibleVoterEntity'
 
 export interface ElectionBody {
     title: string
@@ -77,6 +78,8 @@ export class ElectionService extends BaseEntityService<Election> implements IHas
     }
 
     async createElection(electionDTO: IElection): Promise<Election | undefined> {
+        electionDTO.eligibleVoters = this.fixEligibleVotersList(electionDTO.eligibleVoters)
+
         if (electionDTO.password) {
             await this.hashEntityPassword(electionDTO)
         }
@@ -90,6 +93,14 @@ export class ElectionService extends BaseEntityService<Election> implements IHas
         election.id = -1
 
         return await this.manager.save(election)
+    }
+
+    private fixEligibleVotersList(eligibleVoters: EligibleVoter[]): EligibleVoter[] {
+        const copy = [...eligibleVoters]
+
+        for (let i = 0; i < copy.length; i++) {}
+
+        return copy
     }
 
     async updateElectionById(id: number, electionDTO: IElection): Promise<Election | undefined> {

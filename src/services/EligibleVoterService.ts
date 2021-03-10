@@ -1,25 +1,22 @@
 import { NotFoundError } from '@/lib/errors/http/NotFoundError'
 import { ServerErrorMessage } from '@/lib/errors/messages/ServerErrorMessages'
 import { EligibleVoter } from '@/models/EligibleVoter/EligibleVoterEntity'
-import { Connection, Repository } from 'typeorm'
+import { Connection } from 'typeorm'
 import BaseEntityService from './BaseEntityService'
 
 export class EligibleVoterService extends BaseEntityService<EligibleVoter> {
-    private _db: Connection
-    private _repo: Repository<EligibleVoter>
-
     constructor(db: Connection) {
         super(db, EligibleVoter)
-        this._db = db
-        this._repo = this._db.getRepository(EligibleVoter)
     }
 
     get(): Promise<EligibleVoter[] | undefined> {
         throw new NotFoundError({ message: ServerErrorMessage.notFound('Eligible Voter') })
     }
 
-    getById(id: number): Promise<EligibleVoter | undefined> {
-        throw new NotFoundError({ message: ServerErrorMessage.notFound('Eligible Voter') })
+    async getById(id: number): Promise<EligibleVoter | undefined> {
+        const voter = await this.repository.findOne(id)
+        if (!voter) throw new NotFoundError({ message: ServerErrorMessage.notFound('Eligible Voter') })
+        return voter
     }
 
     create(dto: EligibleVoter): Promise<EligibleVoter | undefined> {
@@ -34,15 +31,15 @@ export class EligibleVoterService extends BaseEntityService<EligibleVoter> {
     }
 
     async storeVerificationHash(identification: string, hash: string): Promise<EligibleVoter | undefined> {
-        const eligibleVoter = await this._repo.findOne({ where: { identification: identification } })
+        const eligibleVoter = await this.repository.findOne({ where: { identification: identification } })
         if (!eligibleVoter) throw new NotFoundError({ message: ServerErrorMessage.notFound('Eligible Voter') })
 
         eligibleVoter.verification = hash
-        return await this._repo.save(eligibleVoter)
+        return await this.repository.save(eligibleVoter)
     }
 
     async getVoterByIdentification(identification: string) {
-        const voter: EligibleVoter | undefined = await this._repo.findOne({ identification })
+        const voter: EligibleVoter | undefined = await this.repository.findOne({ identification })
 
         if (!voter) {
             throw new NotFoundError({ message: ServerErrorMessage.notFound('Eligible Voter') })
@@ -52,24 +49,11 @@ export class EligibleVoterService extends BaseEntityService<EligibleVoter> {
     }
 
     /**
-     * Generates a unique verification string of the eligible voters properties. This string can
-     * be used to generate a hash
-     * @param voter the eligible voter to create a unique identifying verification string of
+     * Marks the voter verified
+     * @param voter the voter to mark as verified
      * @returns
      */
-    generateVerificationString(voter: EligibleVoter) {
-        const identificationForMail = voter.identification.split('@')[0]
-
-        return identificationForMail + voter.id
-    }
-
-    async getVerificationHash(hash: string) {
-        const voter = await this._repo.findOne({ verification: hash })
-        if (!voter) throw new NotFoundError({ message: ServerErrorMessage.notFound('Eligible Voter') })
-        return voter
-    }
-
     async markAsVerified(voter: EligibleVoter) {
-        return await this._repo.update(voter, { verification: '', verified: new Date() })
+        return await this.repository.update(voter, { verification: '', verified: new Date() })
     }
 }

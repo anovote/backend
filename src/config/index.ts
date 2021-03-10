@@ -38,6 +38,9 @@ export default {
     http: {
         port: process.env.HTTP_PORT
     },
+    ws: {
+        port: process.env.WS_PORT
+    },
     secret: process.env.SECRET,
     environment,
     src

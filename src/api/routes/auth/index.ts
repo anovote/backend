@@ -1,13 +1,7 @@
-import config from '@/config'
 import { BadRequestError } from '@/lib/errors/http/BadRequestError'
 import { database } from '@/loaders'
-import mailTransporter from '@/loaders/nodemailer'
 import { AuthenticationService } from '@/services/AuthenticationService'
 import { ElectionOrganizerService } from '@/services/ElectionOrganizerService'
-import { EligibleVoterService } from '@/services/EligibleVoterService'
-import { EncryptionService } from '@/services/EncryptionService'
-import { MailService } from '@/services/MailService'
-import { VoterVerificationService } from '@/services/VoterVerificationService'
 import { Router } from 'express'
 import { StatusCodes } from 'http-status-codes'
 

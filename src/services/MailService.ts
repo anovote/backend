@@ -14,16 +14,16 @@ export class MailService {
         this._transporter = transporter
     }
 
-    async sendVerificationMail(voter: EligibleVoter, election: IElection) {
+    async sendVerificationMail(to: string, verificationCode: string, election: IElection) {
         const mailOptions = {
             from: 'anovotetoday@gmail.com',
-            to: voter.identification,
+            to: to,
             subject: 'Verify your participation for election : ' + election.title,
             text: 'Verify your participation for election : ' + election.title
         }
         const html = `
             <h2>Verify your participation for election ${election.title}</h2><br>
-            <a href="${this._baseUrl}/join/verify?code=${voter.verification}">Verify your participation</a>
+            <a href="${this._baseUrl}/join/verify?code=${verificationCode}">Verify your participation</a>
             <hr>
             <p>You have been listed as a eligible voter for participating in the election '${election.title}', that is going to be held shortly. You have also asked for participating to this election by filling out your email at anovote.io.</p>
             <p>If this was not you, please ignore this email.</p>

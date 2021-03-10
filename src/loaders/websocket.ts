@@ -1,7 +1,5 @@
 import { AnoSocket } from '@/lib/errors/websocket/AnoSocket'
 import { validateConnection } from '@/lib/errors/websocket/middleware/ValidateConnection'
-import { WebSocketService } from '@/lib/errors/websocket/WebSocketService'
-import { SocketRoomState } from '@/models/SocketRoom/SocketRoomEntity'
 import { SocketRoomService } from '@/services/SocketRoomService'
 import chalk from 'chalk'
 import { Application } from 'express'
@@ -22,7 +20,6 @@ export default (expressApp: Application) => {
     const confirmVote = 'confirmVote'
 
     const socketRoomService = SocketRoomService.getInstance()
-    const webSocketService = WebSocketService.getInstance()
 
     socketServer.use(validateConnection)
     /**
@@ -33,7 +30,7 @@ export default (expressApp: Application) => {
         const socketId = chalk.blue(socketConnection.id)
         logger.info(`${socketId} was connected`)
 
-        await webSocketService.addUserToRoom(socketConnection, socketServer)
+        await socketRoomService.addUserToRoom(socketConnection, socketServer)
 
         // if (socketConnection.token.organizer) {
         //     // TODO Add organizer events

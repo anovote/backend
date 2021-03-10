@@ -1,4 +1,8 @@
-import { SocketRoomEntity } from '@/models/SocketRoom/SocketRoomEntity'
+import { AnoSocket } from '@/lib/errors/websocket/AnoSocket'
+import { logger } from '@/loaders/logger'
+import { SocketRoomEntity, SocketRoomState } from '@/models/SocketRoom/SocketRoomEntity'
+import chalk from 'chalk'
+import { Server } from 'socket.io'
 import { Connection, getConnection } from 'typeorm'
 import BaseEntityService, { CrudOptions } from './BaseEntityService'
 
@@ -47,5 +51,31 @@ export class SocketRoomService extends BaseEntityService<SocketRoomEntity> {
 
     delete(id: number): Promise<void> {
         throw new Error('Method not implemented.')
+    }
+
+    /**
+     * Adds user to room if there is a socket room open for this client. Else does nothing
+     * @param clientSocket The client socket connection
+     * @param socketServer The socket server
+     */
+    async addUserToRoom(clientSocket: AnoSocket, socketServer: Server) {
+        const { token } = clientSocket
+
+        const socketId = chalk.blue(clientSocket.id)
+        if (!token.electionID) {
+            logger.info(`tried to connect to room ${token.electionID}. This room is either closed or does not exist`)
+            return
+        }
+        const room = await this.getById(token.electionID!)
+        const openRoom = room?.roomState === SocketRoomState.OPEN
+        if (!openRoom) {
+            logger.info(`tried to connect to room ${token.electionID}. This room is either closed or does not exist`)
+            return
+        }
+
+        const electionIdString = token.electionID!.toString()
+        logger.info(`${socketId} was added to election room ${electionIdString}`)
+        await clientSocket.join(electionIdString)
+        socketServer.to(electionIdString).send(`You have joined election room: ${electionIdString}`)
     }
 }

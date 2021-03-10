@@ -59,7 +59,9 @@ export class EligibleVoterService {
         const eligibleVoters: EligibleVoter[] = []
 
         for (let i = 0; i < identifications.length; i++) {
-            eligibleVoters.push({ id: i, identification: identifications[i] })
+            const newVoter = new EligibleVoter()
+            newVoter.identification = identifications[i]
+            eligibleVoters.push(newVoter)
         }
 
         return eligibleVoters

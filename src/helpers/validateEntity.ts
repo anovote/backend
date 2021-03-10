@@ -10,8 +10,6 @@ export const validateEntity = async (entity: object, validatorOptions?: Validato
     const isValid = validation.length === 0
 
     if (!isValid) {
-        console.log(validation)
-
         const name = validation[0].target?.constructor.name
         throw new ValidationError({ message: `Validation failed for ${name}`, validation: validation })
     }

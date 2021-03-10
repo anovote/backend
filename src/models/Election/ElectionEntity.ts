@@ -8,13 +8,16 @@ import {
     Column,
     CreateDateColumn,
     Entity,
+    JoinColumn,
     JoinTable,
     ManyToMany,
     ManyToOne,
+    OneToOne,
     PrimaryGeneratedColumn,
     UpdateDateColumn
 } from 'typeorm'
 import { IsEarlierThan } from '../constraints/isEarlierThan'
+import { SocketRoomEntity } from '../SocketRoom/SocketRoomEntity'
 
 /**
  * An entity for storing an election.
@@ -79,4 +82,8 @@ export class Election implements IElection {
     })
     @JoinTable()
     eligibleVoters!: EligibleVoter[]
+
+    @OneToOne(() => SocketRoomEntity, (socketRoomEntity) => socketRoomEntity.election, { cascade: true, eager: true })
+    @JoinColumn()
+    socketRoom!: SocketRoomEntity
 }

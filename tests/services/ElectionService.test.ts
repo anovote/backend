@@ -10,7 +10,7 @@ import { ElectionService } from '@/services/ElectionService'
 import { Connection } from 'typeorm'
 import { createDummyOrganizer, deleteDummyOrganizer } from '../helpers/seed/organizer'
 import { clearDatabaseEntityTable } from '../Tests.utils'
-import { SocketRoomEntity } from '@/models/SocketRoom/SocketRoomEntity'
+import { SocketRoomEntity, SocketRoomState } from '@/models/SocketRoom/SocketRoomEntity'
 
 let db: Connection
 let organizer: ElectionOrganizer
@@ -257,4 +257,42 @@ it('should pass if opening date is earlier than today on entity update', async (
     expect(newElection.openDate !== oldElection!.openDate)
     expect(newElection.openDate < new Date())
     await expect(electionService.update(newElection.id, newElection)).resolves.toBeDefined()
+})
+
+it('should initialize a default socket room on creation', async () => {
+    const election = db.getRepository(Election).create()
+    election.title = 'I should have a socket room'
+    election.description = 'I need a socket room'
+    election.isAutomatic = false
+    election.isLocked = false
+    election.electionOrganizer = new ElectionOrganizer()
+    election.eligibleVoters = []
+    election.status = ElectionStatus.Started
+    election.id = 22
+
+    const savedElection = await electionService.create(election)
+
+    expect(savedElection).toBeDefined()
+    expect(savedElection?.socketRoom).toBeDefined()
+    expect(savedElection?.socketRoom.roomState).toBe(SocketRoomState.OPEN)
+})
+
+it('should be able to save an election with a socket room ', async () => {
+    const election = db.getRepository(Election).create()
+    election.title = 'I have a socket room'
+    election.description = 'It is closed'
+    election.isAutomatic = false
+    election.isLocked = false
+    election.electionOrganizer = new ElectionOrganizer()
+    election.eligibleVoters = []
+    election.status = ElectionStatus.Started
+    election.id = 22
+    election.socketRoom = new SocketRoomEntity()
+    election.socketRoom.roomState = SocketRoomState.CLOSE
+
+    const savedElection = await electionService.create(election)
+
+    expect(savedElection).toBeDefined()
+    expect(savedElection?.socketRoom).toBeDefined()
+    expect(savedElection?.socketRoom.roomState).toBe(SocketRoomState.CLOSE)
 })

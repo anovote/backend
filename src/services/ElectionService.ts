@@ -8,6 +8,7 @@ import { ServerErrorMessage } from '@/lib/errors/messages/ServerErrorMessages'
 import { Election } from '@/models/Election/ElectionEntity'
 import { IElection } from '@/models/Election/IElection'
 import { ElectionOrganizer } from '@/models/ElectionOrganizer/ElectionOrganizerEntity'
+import { SocketRoomEntity } from '@/models/SocketRoom/SocketRoomEntity'
 import { classToClass } from 'class-transformer'
 import { Connection, Repository } from 'typeorm'
 import BaseEntityService from './BaseEntityService'
@@ -86,6 +87,11 @@ export class ElectionService extends BaseEntityService<Election> implements IHas
         }
 
         const election = this.manager.create(electionDTO)
+
+        if (!election.socketRoom) {
+            election.socketRoom = new SocketRoomEntity()
+        }
+
         await validateEntity(election, { groups: ['creation'] })
         election.id = -1
 

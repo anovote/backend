@@ -16,10 +16,6 @@ export class EligibleVoter {
     @Exclude()
     identification!: string
 
-    @Column({ type: 'varchar', length: 255, default: null, nullable: true })
-    @Exclude()
-    verification!: string
-
     @Column({ type: 'date', nullable: true })
     verified!: Date
 }

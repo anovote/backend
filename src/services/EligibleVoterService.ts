@@ -30,14 +30,6 @@ export class EligibleVoterService extends BaseEntityService<EligibleVoter> {
         throw new NotFoundError({ message: ServerErrorMessage.notFound('Eligible Voter') })
     }
 
-    async storeVerificationHash(identification: string, hash: string): Promise<EligibleVoter | undefined> {
-        const eligibleVoter = await this.repository.findOne({ where: { identification: identification } })
-        if (!eligibleVoter) throw new NotFoundError({ message: ServerErrorMessage.notFound('Eligible Voter') })
-
-        eligibleVoter.verification = hash
-        return await this.repository.save(eligibleVoter)
-    }
-
     async getVoterByIdentification(identification: string) {
         const voter: EligibleVoter | undefined = await this.repository.findOne({ identification })
 
@@ -54,6 +46,6 @@ export class EligibleVoterService extends BaseEntityService<EligibleVoter> {
      * @returns
      */
     async markAsVerified(voter: EligibleVoter) {
-        return await this.repository.update(voter, { verification: '', verified: new Date() })
+        return await this.repository.update(voter, { verified: new Date() })
     }
 }

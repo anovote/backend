@@ -21,12 +21,7 @@ export class VoterVerificationService {
 
     async stage(voter: EligibleVoter, forElection: IElection, socket: string) {
         const encryptedVerification = this._encryptionService.encrypt(this.generateVerificationCode(voter, socket))
-        const readyVoter = await this._eligibleVoterService.storeVerificationHash(
-            voter.identification,
-            encryptedVerification
-        )
-
-        await this._mailer.sendVerificationMail(readyVoter!, forElection)
+        await this._mailer.sendVerificationMail(voter, forElection)
     }
 
     async verify(verification: string) {

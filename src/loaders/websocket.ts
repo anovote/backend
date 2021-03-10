@@ -1,13 +1,21 @@
 import config from '@/config'
 import { AnoSocket } from '@/lib/errors/websocket/AnoSocket'
 import { validateConnection } from '@/lib/errors/websocket/middleware/ValidateConnection'
+import { ElectionOrganizerService } from '@/services/ElectionOrganizerService'
+import { ElectionService } from '@/services/ElectionService'
+import { EligibleVoterService } from '@/services/EligibleVoterService'
+import { EncryptionService } from '@/services/EncryptionService'
+import { MailService } from '@/services/MailService'
 import { SocketRoomService } from '@/services/SocketRoomService'
+import { VoterVerificationService } from '@/services/VoterVerificationService'
 import chalk from 'chalk'
 import { Application } from 'express'
 import http from 'http'
 import { StatusCodes } from 'http-status-codes'
 import { Server } from 'socket.io'
+import { database } from '.'
 import { logger } from './logger'
+import mailTransporter from '@/loaders/nodemailer'
 
 export default (expressApp: Application) => {
     const httpServer = http.createServer(expressApp)
@@ -29,8 +37,8 @@ export default (expressApp: Application) => {
      * ID on election is room name
      */
     socketServer.on('connection', async (socketConnection: AnoSocket) => {
-        const socketId = chalk.blue(socketConnection.id)
-        logger.info(`${socketId} was connected`)
+        const socketId = socketConnection.id
+        logger.info(`${chalk.blue(socketId)} was connected`)
 
         await socketRoomService.addUserToRoom(socketConnection, socketServer)
 
@@ -42,9 +50,41 @@ export default (expressApp: Application) => {
         //     console.log('is not organizer')
         // }
 
-        socketConnection.on('join', (data: JoinElectionData) => {
-            // todo validate data
-            socketConnection.emit('confirmReceivedJoin', { statusCode: StatusCodes.OK, message: 'Check your email' })
+        socketConnection.on('join', async (data: JoinElectionData) => {
+            const { email, electionCode } = data
+
+            if (!email || !electionCode) {
+                socketConnection.emit('confirmReceivedJoin', {
+                    statusCode: StatusCodes.BAD_REQUEST,
+                    message: 'Please provide the required data for joining a election'
+                })
+            }
+            const electionId = Number.parseInt(electionCode!.toString())
+            try {
+                const verificationService = new VoterVerificationService(
+                    new MailService(config.frontend.url, await mailTransporter()),
+                    new EncryptionService(true),
+                    new EligibleVoterService(database)
+                )
+                const eligibleVoterService = new EligibleVoterService(database)
+                const voter = await eligibleVoterService.getVoterByIdentification(email!.toString())
+
+                const election = await new ElectionService(database).getById(electionId)
+
+                await verificationService.stage(voter!, election!, socketId)
+
+                socketConnection.emit('confirmReceivedJoin', {
+                    statusCode: StatusCodes.OK,
+                    message: 'Check your email'
+                })
+            } catch (err) {
+                console.log(err)
+
+                socketConnection.emit('confirmReceivedJoin', {
+                    statusCode: StatusCodes.IM_A_TEAPOT,
+                    message: err.message
+                })
+            }
         })
 
         socketConnection.onAny((event, ...args) => {
@@ -61,7 +101,6 @@ export default (expressApp: Application) => {
         })
     })
 
-    // !TODO add to config
     httpServer.listen(config.ws.port)
 }
 

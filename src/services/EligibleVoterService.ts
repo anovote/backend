@@ -34,4 +34,14 @@ export class EligibleVoterService {
             return false
         }
     }
+
+    private createArrayOfIdentifications(eligibleVoters: EligibleVoter[]): string[] {
+        const array: string[] = []
+
+        for (let i = 0; i < eligibleVoters.length; i++) {
+            array.push(eligibleVoters[i].identification)
+        }
+
+        return array
+    }
 }

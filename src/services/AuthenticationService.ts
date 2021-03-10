@@ -12,6 +12,7 @@ import { HashService } from './HashService'
 export interface AuthTokenOptions {
     id: number
     organizer: boolean
+    electionID?: number
 }
 
 /**
@@ -45,8 +46,8 @@ export class AuthenticationService {
      * Generates a token from a given id and returns the token
      * @param id, the id to create a token from
      */
-    async generateTokenFromId(id: number): Promise<string> {
-        return await this.generateToken({
+    generateTokenFromId(id: number) {
+        return this.generateToken({
             id: id,
             organizer: true
         })
@@ -84,6 +85,7 @@ export class AuthenticationService {
 
     /**
      * Verifies the token to authenticate user.
+     * Returns the decoded token when validated.
      * @param authorizationSchema the authorization header provided along with request. Default schema is 'Bearer <token>'
      * @returns the payload object or string from the request
      */

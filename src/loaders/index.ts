@@ -7,6 +7,7 @@
 import { Application } from 'express'
 
 import expressLoader from '@/loaders/express'
+import websocketLoader from '@/loaders/websocket'
 import typeormLoader from '@/loaders/typeorm'
 import nodemailerLoader from '@/loaders/nodemailer'
 import config from '@/config'
@@ -33,6 +34,11 @@ export const load = async ({ server }: { server: Application }) => {
     logger.info('-- loading nodemailer 📨')
     const mailTransporter = await nodemailerLoader()
     logger.info('------ nodemailer loaded ✅\n')
+
+    logger.info('-- loading websocket 🔌')
+    const websocket = websocketLoader(loadedExpress)
+    logger.info('------- websocket loaded ✅')
+    logger.info(`------- websocket listening on: ${process.env.WS_PORT} \n`)
 
     loaded = true
 

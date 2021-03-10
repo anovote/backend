@@ -1,3 +1,4 @@
+import config from '@/config'
 import { AnoSocket } from '@/lib/errors/websocket/AnoSocket'
 import { validateConnection } from '@/lib/errors/websocket/middleware/ValidateConnection'
 import { SocketRoomService } from '@/services/SocketRoomService'
@@ -61,7 +62,7 @@ export default (expressApp: Application) => {
     })
 
     // !TODO add to config
-    httpServer.listen(process.env.WS_PORT)
+    httpServer.listen(config.ws.port)
 }
 
 interface JoinElectionData {

@@ -45,6 +45,9 @@ export default {
             pass: process.env.MAIL_PASS
         }
     },
+    frontend: {
+        url: process.env.FRONTEND_PATH
+    },
     ws: {
         port: process.env.WS_PORT
     },

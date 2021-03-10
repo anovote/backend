@@ -4,6 +4,7 @@ import { SocketRoomService } from '@/services/SocketRoomService'
 import chalk from 'chalk'
 import { Application } from 'express'
 import http from 'http'
+import { StatusCodes } from 'http-status-codes'
 import { Server } from 'socket.io'
 import { logger } from './logger'
 
@@ -40,6 +41,15 @@ export default (expressApp: Application) => {
         //     console.log('is not organizer')
         // }
 
+        socketConnection.on('join', (data: JoinElectionData) => {
+            // todo validate data
+            socketConnection.emit('confirmReceivedJoin', { statusCode: StatusCodes.OK, message: 'Check your email' })
+        })
+
+        socketConnection.onAny((event, ...args) => {
+            // console.log(event)
+            // console.log(args)
+        })
         socketConnection.on('ping', () => {
             logger.info(`Got ping from ${socketId}`)
             socketConnection.send('pong')
@@ -52,4 +62,9 @@ export default (expressApp: Application) => {
 
     // !TODO add to config
     httpServer.listen(process.env.WS_PORT)
+}
+
+interface JoinElectionData {
+    email: string
+    electionCode: string
 }

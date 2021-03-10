@@ -4,7 +4,7 @@ import { ServerErrorMessage } from '@/lib/errors/messages/ServerErrorMessages'
 import { ElectionOrganizer } from '@/models/ElectionOrganizer/ElectionOrganizerEntity'
 import { sign, verify } from 'jsonwebtoken'
 import { getRepository } from 'typeorm'
-import { EncryptionService } from './EncryptionService'
+import { HashService } from './HashService'
 
 /**
  * Required properties to pass along to generate a token
@@ -35,10 +35,10 @@ interface LoginPayload {
  */
 export class AuthenticationService {
     private readonly defaultExpirationTime = '48h'
-    private encryptionService: EncryptionService
+    private hashService: HashService
 
     constructor() {
-        this.encryptionService = new EncryptionService()
+        this.hashService = new HashService()
     }
 
     /**
@@ -63,7 +63,7 @@ export class AuthenticationService {
         })
 
         if (!electionOrg) return
-        const passwordMatches = await this.encryptionService.compareAgainstHash(payload.password, electionOrg.password)
+        const passwordMatches = await this.hashService.compareAgainstHash(payload.password, electionOrg.password)
         if (!passwordMatches) return
         return await this.generateTokenFromId(electionOrg.id)
     }

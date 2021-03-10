@@ -1,12 +1,12 @@
-import { EncryptionService } from '../../src/services/EncryptionService'
+import { HashService } from '../../src/services/HashService'
 
 describe('Encryption service', () => {
-    let encryptionService: EncryptionService, password: string, hashedPassword: string
+    let hashService: HashService, password: string, hashedPassword: string
 
     beforeAll(async () => {
-        encryptionService = new EncryptionService()
+        hashService = new HashService()
         password = 'Test123'
-        hashedPassword = await encryptionService.hash(password)
+        hashedPassword = await hashService.hash(password)
     })
 
     it('should hash a string and return it as a string', () => {
@@ -15,10 +15,10 @@ describe('Encryption service', () => {
     })
 
     it('should be equal when compared to its original form', async () => {
-        expect(await encryptionService.compareAgainstHash(password, hashedPassword)).toBeTruthy()
+        expect(await hashService.compareAgainstHash(password, hashedPassword)).toBeTruthy()
     })
 
     it('should falsy when compared to a different password', async () => {
-        expect(await encryptionService.compareAgainstHash('differentPassword', hashedPassword)).toBeFalsy()
+        expect(await hashService.compareAgainstHash('differentPassword', hashedPassword)).toBeFalsy()
     })
 })

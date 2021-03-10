@@ -27,8 +27,8 @@ beforeAll(() => {
 })
 
 it('should correct the list of eligible voters', () => {
-    let copy = [...eligibleVoters]
-    copy = eligibleVoterService.correctListOfEligibleVoters(copy)
+    let copy: EligibleVoter[] = []
+    copy = eligibleVoterService.correctListOfEligibleVoters(eligibleVoters)
     expect(copy.length).toBe(3)
-    expect(copy[2]).toBe('moffeloff@svg.no')
+    expect(copy[2].identification).toBe('moffeloff@svg.no')
 })

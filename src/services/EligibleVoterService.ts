@@ -1,23 +1,28 @@
-import { filterForDuplicates } from '@/helpers/array'
+import { filterForDuplicates, trimItemsInArray } from '@/helpers/array'
 import { EligibleVoter } from '@/models/EligibleVoter/EligibleVoterEntity'
 
 export class EligibleVoterService {
     correctListOfEligibleVoters(eligibleVoters: EligibleVoter[]): EligibleVoter[] {
-        let copy = [...eligibleVoters]
+        let arrayOfIdentifications: string[] = []
+        arrayOfIdentifications = this.createArrayOfIdentifications(eligibleVoters)
 
-        for (let i = 0; i < copy.length; i++) {
-            copy[i].identification.trim()
-        }
+        let trimmedIdentifications: string[] = []
+        trimmedIdentifications = trimItemsInArray(arrayOfIdentifications)
 
-        copy = filterForDuplicates(copy)
+        let noDuplicateIdentifications: string[] = []
+        noDuplicateIdentifications = filterForDuplicates(trimmedIdentifications)
 
-        for (let i = 0; i < copy.length; i++) {
-            if (!this.isEmailValid(copy[i].identification)) {
-                delete copy[i]
+        const validEmails: string[] = []
+        for (let i = 0; i < noDuplicateIdentifications.length; i++) {
+            if (this.isEmailValid(noDuplicateIdentifications[i])) {
+                validEmails.push(noDuplicateIdentifications[i])
             }
         }
 
-        return copy
+        let correctEligibleVoters: EligibleVoter[] = []
+        correctEligibleVoters = this.createArrayOfEligibleVoters(validEmails)
+
+        return correctEligibleVoters
     }
 
     /**
@@ -43,5 +48,15 @@ export class EligibleVoterService {
         }
 
         return array
+    }
+
+    private createArrayOfEligibleVoters(array: string[]): EligibleVoter[] {
+        const eligibleVoters: EligibleVoter[] = []
+
+        for (let i = 0; i < array.length; i++) {
+            eligibleVoters.push({ id: i, identification: array[i] })
+        }
+
+        return eligibleVoters
     }
 }

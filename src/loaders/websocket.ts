@@ -16,6 +16,8 @@ import { Server } from 'socket.io'
 import { database } from '.'
 import { logger } from './logger'
 import mailTransporter from '@/loaders/nodemailer'
+import { join } from '@/lib/events/join'
+import { verify } from '@/lib/events/verify'
 
 export default (expressApp: Application) => {
     const httpServer = http.createServer(expressApp)
@@ -36,7 +38,7 @@ export default (expressApp: Application) => {
      *
      * ID on election is room name
      */
-    socketServer.on('connection', async (socketConnection: AnoSocket) => {
+    socketServer.on('connection', (socketConnection: AnoSocket) => {
         const socketId = socketConnection.id
         logger.info(`${chalk.blue(socketId)} was connected`)
 
@@ -50,42 +52,9 @@ export default (expressApp: Application) => {
         //     console.log('is not organizer')
         // }
 
-        socketConnection.on('join', async (data: JoinElectionData) => {
-            const { email, electionCode } = data
+        socketConnection.on('join', (data) => join(socketConnection, data))
 
-            if (!email || !electionCode) {
-                socketConnection.emit('confirmReceivedJoin', {
-                    statusCode: StatusCodes.BAD_REQUEST,
-                    message: 'Please provide the required data for joining a election'
-                })
-            }
-            const electionId = Number.parseInt(electionCode!.toString())
-            try {
-                const verificationService = new VoterVerificationService(
-                    new MailService(config.frontend.url, await mailTransporter()),
-                    new EncryptionService(true),
-                    new EligibleVoterService(database)
-                )
-                const eligibleVoterService = new EligibleVoterService(database)
-                const voter = await eligibleVoterService.getVoterByIdentification(email!.toString())
-
-                const election = await new ElectionService(database).getById(electionId)
-
-                await verificationService.stage(voter!, election!, socketId)
-
-                socketConnection.emit('confirmReceivedJoin', {
-                    statusCode: StatusCodes.OK,
-                    message: 'Check your email'
-                })
-            } catch (err) {
-                console.log(err)
-
-                socketConnection.emit('confirmReceivedJoin', {
-                    statusCode: StatusCodes.IM_A_TEAPOT,
-                    message: err.message
-                })
-            }
-        })
+        socketConnection.on('verify_voter_integrity', (data) => verify(socketConnection, data))
 
         socketConnection.onAny((event, ...args) => {
             // console.log(event)
@@ -102,9 +71,4 @@ export default (expressApp: Application) => {
     })
 
     httpServer.listen(config.ws.port)
-}
-
-interface JoinElectionData {
-    email: string
-    electionCode: string
 }

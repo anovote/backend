@@ -81,7 +81,7 @@ export class Election implements IElection {
     @JoinTable()
     eligibleVoters!: EligibleVoter[]
 
-    @OneToOne(() => SocketRoomEntity, (socketRoomEntity) => socketRoomEntity.election, { cascade: true })
+    @OneToOne(() => SocketRoomEntity, (socketRoomEntity) => socketRoomEntity.election, { cascade: true, eager: true })
     @JoinColumn()
     socketRoom!: SocketRoomEntity
 }

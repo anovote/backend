@@ -13,6 +13,6 @@ export class SocketRoomEntity {
     @Column('enum', { default: SocketRoomState.OPEN, enum: SocketRoomState })
     roomState!: SocketRoomState
 
-    @OneToOne(() => Election, (election) => election.socketRoom, { cascade: ['insert', 'update'], eager: true })
+    @OneToOne(() => Election, (election) => election.socketRoom, { cascade: ['insert', 'update'] })
     election!: Election
 }

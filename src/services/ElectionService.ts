@@ -1,19 +1,21 @@
-import { Election } from '@/models/Election/ElectionEntity'
-import { Connection, Repository } from 'typeorm'
-import { IElection } from '@/models/Election/IElection'
-import { EncryptionService } from './EncryptionService'
-import { BadRequestError } from '@/lib/errors/http/BadRequestError'
-import { ServerErrorMessage } from '@/lib/errors/messages/ServerErrorMessages'
-import { validateEntity } from '@/helpers/validateEntity'
-import { NotFoundError } from '@/lib/errors/http/NotFoundError'
 import { strip } from '@/helpers/sanitize'
-import BaseEntityService from './BaseEntityService'
-import { ElectionOrganizer } from '@/models/ElectionOrganizer/ElectionOrganizerEntity'
+import { validateEntity } from '@/helpers/validateEntity'
 import { IHasOwner } from '@/interfaces/IHasOwner'
+import { BadRequestError } from '@/lib/errors/http/BadRequestError'
 import { ForbiddenError } from '@/lib/errors/http/ForbiddenError'
 import { classToClass, classToPlain } from 'class-transformer'
 import { EligibleVoter } from '@/models/EligibleVoter/EligibleVoterEntity'
 import { EligibleVoterService } from './EligibleVoterService'
+import { NotFoundError } from '@/lib/errors/http/NotFoundError'
+import { ServerErrorMessage } from '@/lib/errors/messages/ServerErrorMessages'
+import { Election } from '@/models/Election/ElectionEntity'
+import { IElection } from '@/models/Election/IElection'
+import { ElectionOrganizer } from '@/models/ElectionOrganizer/ElectionOrganizerEntity'
+import { SocketRoomEntity } from '@/models/SocketRoom/SocketRoomEntity'
+import { classToClass } from 'class-transformer'
+import { Connection, Repository } from 'typeorm'
+import BaseEntityService from './BaseEntityService'
+import { EncryptionService } from './EncryptionService'
 
 export interface ElectionBody {
     title: string
@@ -92,6 +94,11 @@ export class ElectionService extends BaseEntityService<Election> implements IHas
         }
 
         const election = this.manager.create(electionDTO)
+
+        if (!election.socketRoom) {
+            election.socketRoom = new SocketRoomEntity()
+        }
+
         await validateEntity(election, { groups: ['creation'] })
         election.id = -1
 

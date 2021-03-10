@@ -1,10 +1,9 @@
-import config from '@/config'
 import { validateEntity } from '@/helpers/validateEntity'
 import { Election } from '@/models/Election/ElectionEntity'
 import { ElectionStatus } from '@/models/Election/ElectionStatus'
 import { ElectionOrganizer } from '@/models/ElectionOrganizer/ElectionOrganizerEntity'
 import { validate, ValidatorOptions } from 'class-validator'
-import { Connection, getConnection, Repository } from 'typeorm'
+import { Connection, Repository } from 'typeorm'
 import setupConnection from '../helpers/setupTestDB'
 import { clearDatabaseEntityTable } from '../Tests.utils'
 

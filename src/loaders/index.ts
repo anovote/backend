@@ -7,6 +7,7 @@
 import { Application } from 'express'
 
 import expressLoader from '@/loaders/express'
+import websocketLoader from '@/loaders/websocket'
 import typeormLoader from '@/loaders/typeorm'
 import config from '@/config'
 import { logger } from '@/loaders/logger'
@@ -28,6 +29,11 @@ export const load = async ({ server }: { server: Application }) => {
     logger.info('------ typeORM loaded ✅')
 
     database = loadedTypeOrm
+
+    logger.info('-- loading websocket')
+    const websocket = websocketLoader(loadedExpress)
+    logger.info('------- websocket loaded ✅')
+    logger.info(`------- websocket listening on: ${process.env.WS_PORT} \n`)
 
     loaded = true
 

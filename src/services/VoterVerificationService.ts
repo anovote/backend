@@ -55,7 +55,6 @@ export class VoterVerificationService {
     generateVerificationCode(voter: EligibleVoter, socketId: string) {
         const identificationForMail = voter.identification.split('@')[0]
 
-        // return `${identificationForMail}_${voter.id}_${socketId}`
-        return identificationForMail + '_' + voter.id + '_' + socketId
+        return `${identificationForMail}_${voter.id}_${socketId}`
     }
 }

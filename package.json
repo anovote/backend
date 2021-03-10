@@ -27,6 +27,7 @@
         "@types/jsonwebtoken": "^8.5.0",
         "@types/morgan": "^1.9.2",
         "@types/node": "^14.14.25",
+        "@types/socket.io": "^2.1.13",
         "@typescript-eslint/eslint-plugin": "^4.15.2",
         "@typescript-eslint/parser": "^4.15.2",
         "eslint": "^7.21.0",
@@ -45,6 +46,7 @@
     },
     "dependencies": {
         "bcrypt": "^5.0.0",
+        "chalk": "^4.1.0",
         "class-transformer": "^0.4.0",
         "class-validator": "^0.13.1",
         "cors": "^2.8.5",
@@ -57,6 +59,8 @@
         "morgan": "^1.10.0",
         "pg": "^8.5.1",
         "reflect-metadata": "^0.1.13",
+        "socket.io": "^3.1.2",
+        "socket.io-client": "^3.1.2",
         "typeorm": "^0.2.30",
         "winston": "^3.3.3"
     }

@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 /**
  * ANOVOTE BACKEND APPLICATION
  * This is the main entry of the application!

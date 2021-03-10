@@ -9,6 +9,7 @@ services:
             - './src:/app/src'
         ports:
             - '9229:9229'
+            - '8877:8877'
     db:
         env_file:
             - '.env'

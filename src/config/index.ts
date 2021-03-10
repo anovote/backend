@@ -45,6 +45,9 @@ export default {
             pass: process.env.MAIL_PASS
         }
     },
+    ws: {
+        port: process.env.WS_PORT
+    },
     secret: process.env.SECRET,
     environment,
     src

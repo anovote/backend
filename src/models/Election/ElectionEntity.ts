@@ -84,5 +84,6 @@ export class Election implements IElection {
     @Exclude()
     @OneToOne(() => SocketRoomEntity, (socketRoomEntity) => socketRoomEntity.election, { cascade: true, eager: true })
     @JoinColumn()
+    @Exclude()
     socketRoom!: SocketRoomEntity
 }

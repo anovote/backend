@@ -81,7 +81,6 @@ export class Election implements IElection {
     @JoinTable()
     eligibleVoters!: EligibleVoter[]
 
-    @Exclude()
     @OneToOne(() => SocketRoomEntity, (socketRoomEntity) => socketRoomEntity.election, { cascade: true, eager: true })
     @JoinColumn()
     @Exclude()

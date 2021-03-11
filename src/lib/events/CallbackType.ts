@@ -1,6 +1,5 @@
 /**
- * The callback object an event will acknowledge to should
- * contain the required properties
+ * The callback object an event with acknowledge should contain
  */
 export type CallbackType = {
     statusCode: number

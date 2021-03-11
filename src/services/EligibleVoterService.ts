@@ -1,6 +1,6 @@
 import { filterForDuplicates, trimItemsInArray } from '@/helpers/array'
 import { isEmailValid } from '@/helpers/email'
-import { EligibleVoter } from '@/models/EligibleVoter/EligibleVoterEntity'
+import { EligibleVoter, IEligibleVoter } from '@/models/EligibleVoter/EligibleVoterEntity'
 
 export class EligibleVoterService {
     /**
@@ -10,7 +10,7 @@ export class EligibleVoterService {
      * @param eligibleVoters the list to be corrected
      * @returns corrected list of eligible voters
      */
-    correctListOfEligibleVoters(eligibleVoters: EligibleVoter[]): EligibleVoter[] {
+    correctListOfEligibleVoters(eligibleVoters: IEligibleVoter[]): IEligibleVoter[] {
         let arrayOfIdentifications: string[] = []
         arrayOfIdentifications = this.createArrayOfIdentifications(eligibleVoters)
 
@@ -39,7 +39,7 @@ export class EligibleVoterService {
      * @param eligibleVoters list of eligible voters
      * @returns array of identifications
      */
-    private createArrayOfIdentifications(eligibleVoters: EligibleVoter[]): string[] {
+    private createArrayOfIdentifications(eligibleVoters: IEligibleVoter[]): string[] {
         const array: string[] = []
 
         for (let i = 0; i < eligibleVoters.length; i++) {

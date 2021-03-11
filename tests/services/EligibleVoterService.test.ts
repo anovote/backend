@@ -1,4 +1,4 @@
-import { EligibleVoter } from '@/models/EligibleVoter/EligibleVoterEntity'
+import { EligibleVoter, IEligibleVoter } from '@/models/EligibleVoter/EligibleVoterEntity'
 import { EligibleVoterService } from '@/services/EligibleVoterService'
 
 let eligibleVoters: EligibleVoter[]
@@ -35,14 +35,14 @@ beforeAll(() => {
 })
 
 it('should correct the list of eligible voters', () => {
-    let copy: EligibleVoter[] = []
+    let copy: IEligibleVoter[] = []
     copy = eligibleVoterService.correctListOfEligibleVoters(eligibleVoters)
     expect(copy.length).toBe(3)
     expect(copy[2].identification).toBe('moffeloff@svg.no')
 })
 
 it('should not change already correct identifications', () => {
-    let copy: EligibleVoter[] = []
+    let copy: IEligibleVoter[] = []
     copy = eligibleVoterService.correctListOfEligibleVoters(eligibleVoters)
     expect(copy[0].identification).toBe('hallai@nrk.no')
     expect(copy[1].identification).toBe('hissig@sturla.net')

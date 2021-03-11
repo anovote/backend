@@ -12,7 +12,7 @@ import { EventHandlerAcknowledges } from '../EventHandler'
 export const join: EventHandlerAcknowledges<{ email: string; electionCode: string }> = async (data, socket, cb) => {
     const { email, electionCode } = data
 
-    // TODO validate and verify that the voter exist for election!!!
+    // TODO @freshfish70 validate and verify that the voter exist for election!!!
     if (!email || !electionCode) {
         cb({
             statusCode: StatusCodes.BAD_REQUEST,

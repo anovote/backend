@@ -38,10 +38,11 @@ export class EncryptionService {
      * @returns plaintext UTF8 encoded string
      */
     decrypt(encrypted: string) {
-        let code = this._service.decrypt(encrypted, config.secret!).toString(CryptoJs.enc.Utf8)
+        let code = encrypted
         if (this._uriEncoded) {
             code = decodeURIComponent(code)
         }
-        return code
+        const unique = this._service.decrypt(code, config.secret!).toString(CryptoJs.enc.Utf8)
+        return unique
     }
 }

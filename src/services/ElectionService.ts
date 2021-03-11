@@ -96,8 +96,12 @@ export class ElectionService extends BaseEntityService<Election> implements IHas
         const election = this.manager.create(electionDTO)
 
         // the mapping from json to election does not transform the date string into date type. Have to do it manually
-        election.closeDate = new Date(election.closeDate!)
-        election.openDate = new Date(election.openDate!)
+        if (election.closeDate) {
+            election.closeDate = new Date(election.closeDate!)
+        }
+        if (election.openDate) {
+            election.openDate = new Date(election.openDate!)
+        }
 
         if (!election.socketRoom) {
             election.socketRoom = new SocketRoomEntity()

@@ -1,6 +1,7 @@
 import { validateEntity } from '@/helpers/validateEntity'
 import { Election } from '@/models/Election/ElectionEntity'
 import { ElectionStatus } from '@/models/Election/ElectionStatus'
+import { IElection } from '@/models/Election/IElection'
 import { ElectionOrganizer } from '@/models/ElectionOrganizer/ElectionOrganizerEntity'
 import { validate, ValidatorOptions } from 'class-validator'
 import { Connection, Repository } from 'typeorm'
@@ -184,4 +185,32 @@ it('should validate if id is positive and validation group is not set', async ()
     election.id = 22
 
     await expect(validateEntity(election, { groups: [] })).resolves.toBeUndefined()
+})
+
+it('should validate to true for this data', async () => {
+    // this will fail when open date is exceeded by now
+    const election: IElection = {
+        electionOrganizer: new ElectionOrganizer(),
+        title: 'adf',
+        description: 'adf',
+        openDate: new Date('2050-03-17T23:00:00.990Z'),
+        closeDate: new Date('2056-03-24T23:00:00.052Z'),
+        password: 'adf',
+        status: 0,
+        isLocked: false,
+        isAutomatic: false,
+        eligibleVoters: [
+            {
+                identification: 'opsaj@gmail.com'
+            },
+            {
+                identification: 'asdasdasd@live.no'
+            },
+            {
+                identification: 'aspodkasdpok@hihi.ru'
+            }
+        ]
+    }
+
+    await expect(validateEntity(election, { groups: ['creation'] })).resolves.toBeUndefined()
 })

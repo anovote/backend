@@ -42,7 +42,7 @@ export class EncryptionService {
         if (this._uriEncoded) {
             code = decodeURIComponent(code)
         }
-        const unique = this._service.decrypt(code, config.secret!).toString(CryptoJs.enc.Utf8)
-        return unique
+
+        return this._service.decrypt(code, config.secret!).toString(CryptoJs.enc.Utf8)
     }
 }

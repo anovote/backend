@@ -23,9 +23,12 @@ export const Events = {
         }
     },
     client: {
-        join: 'join',
-        verify: {
-            voterIntegrity: 'verify_voter_integrity'
+        auth: {
+            join: 'join',
+            withToken: 'authenticate_with_token',
+            verify: {
+                voterIntegrity: 'verify_voter_integrity'
+            }
         },
         election: {
             start: 'start_election',
@@ -36,26 +39,16 @@ export const Events = {
             end: 'end_ballot'
         },
         vote: {
-            submit: 'vote_submitted'
+            submit: 'submit_vote'
         }
     },
     server: {
-        join: {
-            received: 'confirm_received_join'
-        },
-        verified: {
-            voterIntegrity: 'voter_integrity_verified'
-        },
-        election: {
-            started: 'election_started',
-            closed: 'election_closed'
-        },
-        ballot: {
-            pushed: 'ballot_pushed',
-            ended: 'ballot_ended'
+        auth: {
+            action: {
+                mail: 'awaiting_mail_action'
+            }
         },
         vote: {
-            confirmed: 'confirm_vote_submitted',
             error: 'vote_error'
         }
     }

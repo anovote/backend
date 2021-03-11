@@ -1,19 +1,20 @@
-import { Column, CreateDateColumn, Entity, ManyToOne, OneToOne, PrimaryGeneratedColumn, Unique } from 'typeorm'
 import { Candidate } from '@/models/Candidate/CandidateEntity'
-import { IsPositive, MaxDate, MaxLength, MinLength } from 'class-validator'
+import { IsPositive, MaxLength, MinLength } from 'class-validator'
+import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm'
 import { Ballot } from '../Ballot/BallotEntity'
+import { IVote } from './IVote'
 
 /**
  * Represents the vote on a candidate for a given ballot.
  * A voter can vote on many candidates
  */
 @Entity()
-export class Vote {
+export class Vote implements IVote {
     @PrimaryGeneratedColumn()
     id!: number
 
-    @ManyToOne(() => Candidate, (candidate) => candidate.id)
-    candidate!: number
+    @ManyToOne(() => Candidate, (candidate) => candidate.id, { nullable: true })
+    candidate!: number | null
 
     @CreateDateColumn()
     submitted!: Date

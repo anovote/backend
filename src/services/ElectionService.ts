@@ -81,8 +81,9 @@ export class ElectionService extends BaseEntityService<Election> implements IHas
     async createElection(electionDTO: IElection): Promise<Election | undefined> {
         const eligibleVoterService = new EligibleVoterService()
 
-        // todo add guard
-        electionDTO.eligibleVoters = eligibleVoterService.correctListOfEligibleVoters(electionDTO.eligibleVoters)
+        if (electionDTO.eligibleVoters) {
+            electionDTO.eligibleVoters = eligibleVoterService.correctListOfEligibleVoters(electionDTO.eligibleVoters)
+        }
 
         if (electionDTO.password) {
             await this.hashEntityPassword(electionDTO)

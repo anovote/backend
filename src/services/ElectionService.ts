@@ -12,6 +12,7 @@ import { SocketRoomEntity } from '@/models/SocketRoom/SocketRoomEntity'
 import { classToClass } from 'class-transformer'
 import { Connection, Repository } from 'typeorm'
 import BaseEntityService from './BaseEntityService'
+import { EligibleVoterService } from './EligibleVoterService'
 import { EncryptionService } from './EncryptionService'
 
 export interface ElectionBody {
@@ -78,6 +79,10 @@ export class ElectionService extends BaseEntityService<Election> implements IHas
     }
 
     async createElection(electionDTO: IElection): Promise<Election | undefined> {
+        const eligibleVoterService = new EligibleVoterService()
+
+        electionDTO.eligibleVoters = eligibleVoterService.correctListOfEligibleVoters(electionDTO.eligibleVoters)
+
         if (electionDTO.password) {
             await this.hashEntityPassword(electionDTO)
         }

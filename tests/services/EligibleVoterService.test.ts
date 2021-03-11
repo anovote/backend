@@ -38,12 +38,12 @@ it('should correct the list of eligible voters', () => {
     let copy: EligibleVoter[] = []
     copy = eligibleVoterService.correctListOfEligibleVoters(eligibleVoters)
     expect(copy.length).toBe(3)
-    expect(copy[2].identification).toBe('moffeloff@svg.no')
+    expect(copy[2].identification).toContain('moffeloff@svg.no')
 })
 
 it('should not change already correct identifications', () => {
     let copy: EligibleVoter[] = []
     copy = eligibleVoterService.correctListOfEligibleVoters(eligibleVoters)
-    expect(copy[0].identification).toBe('hallai@nrk.no')
-    expect(copy[1].identification).toBe('hissig@sturla.net')
+    expect(copy[0].identification).toContain('hallai@nrk.no')
+    expect(copy[1].identification).toContain('hissig@sturla.net')
 })

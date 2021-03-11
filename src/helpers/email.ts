@@ -1,4 +1,6 @@
 /**
+ * https://www.w3resource.com/javascript/form/email-validation.php
+ *
  * Checks if a given email is valid or not.
  * @param email the email we want to validate
  * @returns true if valid, false if not valid

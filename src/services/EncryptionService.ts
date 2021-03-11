@@ -27,7 +27,7 @@ export class EncryptionService {
         let code = this._service.encrypt(plaintext, config.secret!).toString()
 
         if (this._uriEncoded) {
-            code = encodeURI(code)
+            code = encodeURIComponent(code)
         }
         return code
     }
@@ -40,7 +40,7 @@ export class EncryptionService {
     decrypt(encrypted: string) {
         let code = this._service.decrypt(encrypted, config.secret!).toString(CryptoJs.enc.Utf8)
         if (this._uriEncoded) {
-            code = decodeURI(code)
+            code = decodeURIComponent(code)
         }
         return code
     }

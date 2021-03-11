@@ -1,7 +1,10 @@
 import config from '@/config'
 import { AnoSocket } from '@/lib/errors/websocket/AnoSocket'
-import { join } from '@/lib/events/join'
-import { verify } from '@/lib/events/verify'
+import { Events } from '@/lib/events'
+import { join } from '@/lib/events/client/join'
+import { verify } from '@/lib/events/client/verify'
+import { disconnect } from '@/lib/events/standard/disconnect'
+import { ping } from '@/lib/events/standard/ping'
 import { SocketRoomService } from '@/services/SocketRoomService'
 import chalk from 'chalk'
 import { Application } from 'express'
@@ -13,14 +16,6 @@ export default (expressApp: Application) => {
     const httpServer = http.createServer(expressApp)
     const socketServer = new Server(httpServer, {})
 
-    // RECEIVE EVENTS
-    const stopElection = 'stopElection'
-    const createElection = 'createElection'
-    const vote = 'vote'
-    // SEND EVENTS
-    const publishBallot = 'publishBallot'
-    const confirmVote = 'confirmVote'
-
     const socketRoomService = SocketRoomService.getInstance()
 
     socketServer.use(validateConnection)
@@ -28,9 +23,8 @@ export default (expressApp: Application) => {
      *
      * ID on election is room name
      */
-    socketServer.on('connection', (socketConnection: AnoSocket) => {
-        const socketId = socketConnection.id
-        logger.info(`${chalk.blue(socketId)} was connected`)
+    socketServer.on(Events.standard.socket.connect, (socketConnection: AnoSocket) => {
+        logger.info(`${chalk.blue(socketConnection.id)} connected`)
 
         await socketRoomService.addUserToRoom(socketConnection, socketServer)
 
@@ -42,22 +36,16 @@ export default (expressApp: Application) => {
         //     console.log('is not organizer')
         // }
 
-        socketConnection.on('join', (data) => join(socketConnection, data))
+        // standard events
+        socketConnection.on(Events.standard.socket.disconnect, (reason) => disconnect(reason, socketConnection))
 
-        socketConnection.on('verify_voter_integrity', (data) => verify(socketConnection, data))
+        socketConnection.on(Events.standard.manager.ping, (data) => ping(data, socketConnection))
 
-        socketConnection.onAny((event, ...args) => {
-            // console.log(event)
-            // console.log(args)
-        })
-        socketConnection.on('ping', () => {
-            logger.info(`Got ping from ${socketId}`)
-            socketConnection.send('pong')
-        })
-
-        socketConnection.on('disconnect', (reason) => {
-            logger.info(`${socketId} was disconnected due to: ${reason}`)
-        })
+        // voter events
+        socketConnection.on(Events.client.auth.join, (data, callback) => join(data, socketConnection, callback))
+        socketConnection.on(Events.client.auth.verify.voterIntegrity, (data, callback) =>
+            verify(data, socketConnection, callback)
+        )
     })
 
     httpServer.listen(config.ws.port)

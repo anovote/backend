@@ -7,14 +7,14 @@ import { EncryptionService } from '@/services/EncryptionService'
 import { MailService } from '@/services/MailService'
 import { VoterVerificationService } from '@/services/VoterVerificationService'
 import { StatusCodes } from 'http-status-codes'
-import { AnoSocket } from '../errors/websocket/AnoSocket'
+import { EventHandlerAcknowledges } from '../EventHandler'
 
-export const join = async (socket: AnoSocket, data: { email: string; electionCode: string }) => {
+export const join: EventHandlerAcknowledges<{ email: string; electionCode: string }> = async (data, socket, cb) => {
     const { email, electionCode } = data
 
     // TODO validate and verify that the voter exist for election!!!
     if (!email || !electionCode) {
-        socket.emit('confirmReceivedJoin', {
+        cb({
             statusCode: StatusCodes.BAD_REQUEST,
             message: 'Please provide the required data for joining a election'
         })
@@ -32,14 +32,14 @@ export const join = async (socket: AnoSocket, data: { email: string; electionCod
 
         await verificationService.stage(voter!, election!, socket.id)
 
-        socket.emit('confirmReceivedJoin', {
+        cb({
             statusCode: StatusCodes.OK,
             message: 'Check your email'
         })
     } catch (err) {
-        socket.emit('confirmReceivedJoin', {
-            statusCode: StatusCodes.IM_A_TEAPOT,
-            message: err.message
+        cb({
+            statusCode: StatusCodes.BAD_REQUEST,
+            message: 'Something went wrong.'
         })
     }
 }

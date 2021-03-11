@@ -1,9 +1,11 @@
 import { AnoSocket } from '@/lib/errors/websocket/AnoSocket'
 import { validateConnection } from '@/lib/errors/websocket/middleware/ValidateConnection'
+import { Ballot } from '@/models/Ballot/BallotEntity'
 import { SocketRoomService } from '@/services/SocketRoomService'
 import chalk from 'chalk'
 import { Application } from 'express'
 import http from 'http'
+import { StatusCodes } from 'http-status-codes'
 import { Server } from 'socket.io'
 import { logger } from './logger'
 
@@ -43,6 +45,17 @@ export default (expressApp: Application) => {
         socketConnection.on('ping', () => {
             logger.info(`Got ping from ${socketId}`)
             socketConnection.send('pong')
+        })
+
+        socketConnection.on('pushBallot', (ballot: Ballot, fn) => {
+            console.log(ballot)
+            const { id } = ballot.election
+            // todo set right room id
+            socketServer.to(`ElectionRoom: ${id} `).emit('ballot', ballot)
+
+            console.log('send ack')
+
+            fn({ status: StatusCodes.OK, message: 'got it' })
         })
 
         socketConnection.on('disconnect', (reason) => {

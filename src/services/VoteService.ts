@@ -20,6 +20,11 @@ export class VoteService extends BaseEntityService<Vote> {
         throw new NotFoundError({ message: 'Not found' })
     }
 
+    /**
+     * Gets vote by id the vote ID
+     * @param id of the vote to be found
+     * @returns a vote with id or undefined
+     */
     getById(id: number): Promise<Vote | undefined> {
         return this.getVoteById(id)
     }
@@ -28,22 +33,19 @@ export class VoteService extends BaseEntityService<Vote> {
         return await this.createAndSaveVote(dto)
     }
 
-    private createVote(vote: IVote): Vote {
-        return this._voteRepository.createVote(vote)
-    }
-
     // TODO, add implementation to check if a vote is submitted
     // between open and close date of its election
     // TODO, check if the election has moved on to a different ballot
     // TODO, check if the election status, to see if it has ended
-    private async createAndSaveVote(vote: IVote): Promise<Vote> {
-        const exists = await this._voteRepository.findOne({ voterId: vote.voterId, candidate: vote.candidate })
+    private async createAndSaveVote(vote: IVote): Promise<Vote | undefined> {
+        const { ballotId, voterId } = vote
+        const exists = await this._voteRepository.findOne({ voterId, ballotId })
 
-        if (exists != undefined) {
+        if (exists) {
             throw new Error('I already exist')
         }
 
-        const voteCreated = this.createVote(vote)
+        const voteCreated = this._voteRepository.createVote(vote)
 
         return await this._voteRepository.save(voteCreated)
     }
@@ -56,13 +58,11 @@ export class VoteService extends BaseEntityService<Vote> {
         return vote
     }
 
-    async delete(_id: number): Promise<void> {
-        await this
-        throw new NotFoundError({ message: 'Method not implemented' })
+    delete(_id: number): Promise<void> {
+        return Promise.reject(new NotFoundError({ message: 'Method not implemented' }))
     }
 
-    async update(_id: number, _dto: Vote | undefined): Promise<Vote | undefined> {
-        await this
-        throw new NotFoundError({ message: 'Method not implemented' })
+    update(_id: number, _dto: Vote | undefined): Promise<Vote | undefined> {
+        return Promise.reject(new NotFoundError({ message: 'Method not implemented' }))
     }
 }

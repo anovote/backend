@@ -9,7 +9,7 @@ import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm'
  */
 
 @Entity()
-export class EligibleVoter {
+export class EligibleVoter implements IEligibleVoter {
     @PrimaryGeneratedColumn()
     id!: number
 
@@ -17,4 +17,8 @@ export class EligibleVoter {
     @IsEmail()
     @Exclude()
     identification!: string
+}
+
+export interface IEligibleVoter {
+    identification: string
 }

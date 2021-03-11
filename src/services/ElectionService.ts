@@ -81,7 +81,9 @@ export class ElectionService extends BaseEntityService<Election> implements IHas
     async createElection(electionDTO: IElection): Promise<Election | undefined> {
         const eligibleVoterService = new EligibleVoterService()
 
-        electionDTO.eligibleVoters = eligibleVoterService.correctListOfEligibleVoters(electionDTO.eligibleVoters)
+        if (electionDTO.eligibleVoters) {
+            electionDTO.eligibleVoters = eligibleVoterService.correctListOfEligibleVoters(electionDTO.eligibleVoters)
+        }
 
         if (electionDTO.password) {
             await this.hashEntityPassword(electionDTO)
@@ -92,6 +94,14 @@ export class ElectionService extends BaseEntityService<Election> implements IHas
         }
 
         const election = this.manager.create(electionDTO)
+
+        // the mapping from json to election does not transform the date string into date type. Have to do it manually
+        if (election.closeDate) {
+            election.closeDate = new Date(election.closeDate!)
+        }
+        if (election.openDate) {
+            election.openDate = new Date(election.openDate!)
+        }
 
         if (!election.socketRoom) {
             election.socketRoom = new SocketRoomEntity()

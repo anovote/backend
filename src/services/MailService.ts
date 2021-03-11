@@ -1,6 +1,6 @@
 import { logger } from '@/loaders/logger'
 import { IElection } from '@/models/Election/IElection'
-import { EligibleVoter } from '@/models/EligibleVoter/EligibleVoterEntity'
+import chalk from 'chalk'
 import Mail from 'nodemailer/lib/mailer'
 /**
  * Service responsible for creation and sending of mails
@@ -29,7 +29,7 @@ export class MailService {
             <p>If this was not you, please ignore this email.</p>
             `
         const { response } = await this._transporter.sendMail({ ...mailOptions, html })
-        logger.warn(response)
+        logger.info(chalk.yellow('Mail sent') + ' to ' + to)
         return response
     }
 }

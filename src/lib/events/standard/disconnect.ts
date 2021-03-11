@@ -1,4 +1,3 @@
-import { AnoSocket } from '@/lib/errors/websocket/AnoSocket'
 import { logger } from '@/loaders/logger'
 import { EventHandler } from '../EventHandler'
 
@@ -7,7 +6,6 @@ import { EventHandler } from '../EventHandler'
  * @param socket the anosocket to work with
  * @param data info about why the disconnect happened
  */
-export const disconnect: EventHandler<unknown> = (data, socket) => {
-    const reason = data
+export const disconnect: EventHandler<unknown> = (reason, socket) => {
     logger.info(`${socket.id} disconnected due to: ${reason}`)
 }

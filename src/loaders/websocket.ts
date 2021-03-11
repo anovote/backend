@@ -1,5 +1,6 @@
 import config from '@/config'
 import { AnoSocket } from '@/lib/errors/websocket/AnoSocket'
+import { validateConnection } from '@/lib/errors/websocket/middleware/ValidateConnection'
 import { Events } from '@/lib/events'
 import { join } from '@/lib/events/client/join'
 import { verify } from '@/lib/events/client/verify'
@@ -23,7 +24,7 @@ export default (expressApp: Application) => {
      *
      * ID on election is room name
      */
-    socketServer.on(Events.standard.socket.connect, (socketConnection: AnoSocket) => {
+    socketServer.on(Events.standard.socket.connect, async (socketConnection: AnoSocket) => {
         logger.info(`${chalk.blue(socketConnection.id)} connected`)
 
         await socketRoomService.addUserToRoom(socketConnection, socketServer)
@@ -38,7 +39,6 @@ export default (expressApp: Application) => {
 
         // standard events
         socketConnection.on(Events.standard.socket.disconnect, (reason) => disconnect(reason, socketConnection))
-
         socketConnection.on(Events.standard.manager.ping, (data) => ping(data, socketConnection))
 
         // voter events

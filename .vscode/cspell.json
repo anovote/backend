@@ -2,6 +2,7 @@
     "version": "0.1",
     "language": "en",
     "words": [
+        "anosocket",
         "anovote",
         "chmod",
         "Christoffer",
@@ -9,6 +10,8 @@
         "en",
         "es",
         "esnext",
+        "Eventhandler",
+        "freshfish",
         "Holanger",
         "Hurlen",
         "isready",
@@ -23,6 +26,7 @@
         "spmef",
         "Steffen",
         "streetsidesoftware",
+        "testdb",
         "Tr",
         "Træen",
         "tscpaths",
@@ -31,8 +35,7 @@
         "typeorm",
         "unhashed",
         "varchar",
-        "zwaldowski",
-        "testdb"
+        "zwaldowski"
     ],
     "flagWords": [
         "hte"

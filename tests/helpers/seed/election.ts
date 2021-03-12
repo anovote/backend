@@ -1,16 +1,16 @@
 import { Election } from '@/models/Election/ElectionEntity'
 import { ElectionStatus } from '@/models/Election/ElectionStatus'
 import { ElectionOrganizer } from '@/models/ElectionOrganizer/ElectionOrganizerEntity'
-import { EncryptionService } from '@/services/EncryptionService'
+import { HashService } from '@/services/HashService'
 import { Connection } from 'typeorm'
 
 export const createDummyElection = async (connection: Connection, organizer: ElectionOrganizer): Promise<Election> => {
     const repository = connection.getRepository(Election)
-    const encryptionService = new EncryptionService()
+    const hashService = new HashService()
 
     const election = repository.create({
         title: 'Election 2000',
-        password: await encryptionService.hash('123456'),
+        password: await hashService.hash('123456'),
         status: ElectionStatus.NotStarted,
         electionOrganizer: organizer,
         description: 'Some random description',

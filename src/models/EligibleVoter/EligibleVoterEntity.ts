@@ -17,6 +17,9 @@ export class EligibleVoter implements IEligibleVoter {
     @IsEmail()
     @Exclude()
     identification!: string
+
+    @Column({ type: 'date', nullable: true })
+    verified!: Date
 }
 
 export interface IEligibleVoter {

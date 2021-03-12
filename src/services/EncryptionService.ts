@@ -1,32 +1,48 @@
-import bcrypt from 'bcrypt'
+import config from '@/config'
+import * as CryptoJs from 'crypto-js'
 
 /**
- * A service wrapper for encryption
+ * Encrypts or decrypts a plaintext string.
+ * The returned format for the encryption can be uri.
  */
 export class EncryptionService {
-    private service
+    private _service
+    private _uriEncoded
 
-    constructor() {
-        this.service = bcrypt
+    /**
+     * Constructs an encryption service that can encrypt/decrypt strings with/without uri encoding
+     * @param formatToURI if true, the encrypted string will be uri formatted
+     */
+    constructor(formatToURI = false) {
+        this._service = CryptoJs.AES
+        this._uriEncoded = formatToURI
     }
 
     /**
-     * Hashes the provided plaintext string and returns the hashed version.
-     * @param plaintext the string to hash
+     * Encrypts a string with AES encryption. When encrypted, the string is returned as a string directly
+     * @param plaintext the plaintext string to encrypt
+     * @returns the encrypted string
      */
-    async hash(plaintext: string): Promise<string> {
-        return await this.service.hash(plaintext, await this.service.genSalt())
+    encrypt(plaintext: string) {
+        let code = this._service.encrypt(plaintext, config.secret!).toString()
+
+        if (this._uriEncoded) {
+            code = encodeURIComponent(code)
+        }
+        return code
     }
 
     /**
-     * Compares the provided plaintext string against a hashed value to check if
-     * the plaintext is equal to the content of the hashed value.
-     * Returns true if equal, else false.
-     *
-     * @param plaintext password in plain text
-     * @param hashed password in hashed form to compare against
+     * Decrypts a encrypted AES string.
+     * @param encrypted string to decrypt
+     * @returns plaintext UTF8 encoded string
      */
-    async compareAgainstHash(plaintext: string, hashed: string): Promise<boolean> {
-        return await this.service.compare(plaintext, hashed)
+    decrypt(encrypted: string) {
+        let code = encrypted
+        if (this._uriEncoded) {
+            code = decodeURIComponent(code)
+        }
+
+        return this._service.decrypt(code, config.secret!).toString(CryptoJs.enc.Utf8)
     }
 }

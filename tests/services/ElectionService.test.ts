@@ -29,7 +29,8 @@ beforeAll(async () => {
         password: 'password',
         status: ElectionStatus.NotStarted,
         isLocked: true,
-        isAutomatic: false
+        isAutomatic: false,
+        eligibleVoters: []
     }
     electionService = new ElectionService(db, organizer)
 })
@@ -61,7 +62,8 @@ it('should create a election with all data filled out', async () => {
         closeDate: new Date(),
         status: ElectionStatus.NotStarted,
         isLocked: false,
-        isAutomatic: false
+        isAutomatic: false,
+        eligibleVoters: []
     })
     expect(election).toBeInstanceOf(Election)
 })
@@ -73,7 +75,8 @@ it('should create a election without image, openDate and closeDate', async () =>
         description: 'Description',
         status: ElectionStatus.NotStarted,
         isLocked: false,
-        isAutomatic: false
+        isAutomatic: false,
+        eligibleVoters: []
     })
     expect(election).toBeInstanceOf(Election)
 })
@@ -82,11 +85,7 @@ it('should throw error when status is out of range', async () => {
     seedElection = (await electionService.create(seedDTO)) as Election
     const election = deepCopy<IElection>(seedElection)
     election.status = 99 // Out of range of ENUM
-    try {
-        await expect(electionService.create(election)).rejects.toThrowError()
-    } catch (error) {
-        console.error(error)
-    }
+    await expect(electionService.create(election)).rejects.toThrowError()
 })
 
 it('should not update if no election exists', async () => {
@@ -125,7 +124,8 @@ it('should delete a election which exists', async () => {
         description: 'Description',
         status: ElectionStatus.NotStarted,
         isLocked: false,
-        isAutomatic: false
+        isAutomatic: false,
+        eligibleVoters: []
     })
     await expect(electionService.deleteElectionById(election!.id)).resolves.toBeUndefined()
 })

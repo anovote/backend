@@ -45,14 +45,12 @@ beforeEach(async () => {
     await clearDatabaseEntityTable(repo)
 })
 
-afterEach(async () => {
+afterEach(() => {
     const repo = database.getRepository(Vote)
-    await clearDatabaseEntityTable(repo)
 })
 
 afterAll(async () => {
     const repo = database.getRepository(Vote)
-    await clearDatabaseEntityTable(repo)
     await database.close()
 })
 
@@ -70,6 +68,7 @@ it('Should throw error when candidate id do not exist', async () => {
     seedVote = (await voteService.create(seedDTO)) as Vote
     const vote = deepCopy<IVote>(seedVote)
     vote.candidate = 96
+    expect.assertions(1)
     await expect(voteService.create(vote)).rejects.toThrowError()
 })
 
@@ -88,11 +87,33 @@ it('Should not be able to vote on a candidate that has already been voted on', a
 it('Should not be able to update a vote', async () => {
     seedVote = (await voteService.create(seedDTO)) as Vote
     const id = seedVote!.id
-    await expect(voteService.update(id, seedVote)).rejects.toThrowError()
+    expect.assertions(1)
+    await expect(voteService.update(id, seedVote)).rejects.toThrow()
 })
 
 it('Should not be able to delete a vote', async () => {
     seedVote = (await voteService.create(seedDTO)) as Vote
     const id = seedVote!.id
-    await expect(voteService.delete(id)).rejects.toThrowError()
+    expect.assertions(1)
+    await expect(voteService.delete(id)).rejects.toThrow(NotFoundError)
+})
+
+test('that a candidate cast as blank is registered as null in database', async () => {
+    const voterId = 1
+    const blankVote: IVote = { ballotId: ballot.id, candidate: 'blank', submitted: new Date(), voterId }
+    const saveVote = await voteService.create(blankVote)
+
+    expect.assertions(2)
+    expect(saveVote?.voterId === voterId).toBeTruthy()
+    expect(saveVote?.candidate === null).toBeTruthy()
+})
+
+test('that a candidate cast as null is registered as null in database', async () => {
+    const voterId = 1
+    const blankVote: IVote = { ballotId: ballot.id, candidate: null, submitted: new Date(), voterId }
+    const saveVote = await voteService.create(blankVote)
+
+    expect.assertions(2)
+    expect(saveVote!.voterId === voterId).toBeTruthy()
+    expect(saveVote!.candidate === null).toBeTruthy()
 })

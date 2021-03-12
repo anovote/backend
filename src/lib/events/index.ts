@@ -46,10 +46,21 @@ export const Events = {
         auth: {
             action: {
                 mail: 'awaiting_mail_action'
-            }
+            },
+            verified: 'voter_verified'
         },
         vote: {
             error: 'vote_error'
+        },
+        election: {
+            push: 'push_election',
+            close: 'close_election'
+        },
+        ballot: {
+            push: 'push_ballot'
+        },
+        result: {
+            push: 'push_result'
         }
     }
 }

@@ -1,4 +1,4 @@
-import { IElection } from '@/models/Election/IElection'
+import { Election } from '@/models/Election/ElectionEntity'
 import { EligibleVoter } from '@/models/EligibleVoter/EligibleVoterEntity'
 import { EligibleVoterService } from './EligibleVoterService'
 import { EncryptionService } from './EncryptionService'
@@ -27,8 +27,10 @@ export class VoterVerificationService {
      * @param forElection the election the voter attempts to join
      * @param socket the socket identification the encrypted code should contain
      */
-    async stage(voter: EligibleVoter, forElection: IElection, socket: string) {
-        const encryptedCode = this._encryptionService.encrypt(this.generateVerificationCode(voter, socket))
+    async stage(voter: EligibleVoter, forElection: Election, socket: string) {
+        const encryptedCode = this._encryptionService.encrypt(
+            this.generateVerificationCode(voter, forElection.id, socket)
+        )
         await this._mailer.sendVerificationMail(voter.identification, encryptedCode, forElection)
     }
 
@@ -36,18 +38,19 @@ export class VoterVerificationService {
      * Verifies the authenticity of an staged voter.
      * The verification provided are able to prove the voters unique identification
      * @param verification the encrypted string to verify the identity of the voter with
-     * @returns the socket id from the original connection for the voter
+     * @returns returns the id of the election, socketID of original socket, and voter ID
      */
     async verify(verification: string) {
         const decrypted = this._encryptionService.decrypt(verification)
 
         const id = this.getIdFromVerificationCode(decrypted)
         const socketId = this.getSocketIdFromVerificationCode(decrypted)
+        const electionId = this.getElectionIdFromVerificationCode(decrypted)
 
         const voter = await this._eligibleVoterService.getById(Number.parseInt(id))
         await this._eligibleVoterService.markAsVerified(voter!)
 
-        return socketId
+        return { electionId, socketId, voter }
     }
 
     // TODO verification code functions should be handled in own class. Works fine for now
@@ -68,8 +71,18 @@ export class VoterVerificationService {
      * @param decrypted the decrypted string to get the id from
      * @returns socket id, from the decrypted string
      */
-    private getSocketIdFromVerificationCode(decrypted: string) {
+    private getElectionIdFromVerificationCode(decrypted: string) {
         const socketIdIndex = 2
+        return decrypted.split('_')[socketIdIndex]
+    }
+
+    /**
+     * Extracts the socket id from the unique verification code
+     * @param decrypted the decrypted string to get the id from
+     * @returns socket id, from the decrypted string
+     */
+    private getSocketIdFromVerificationCode(decrypted: string) {
+        const socketIdIndex = 3
         return decrypted.split('_')[socketIdIndex]
     }
 
@@ -79,9 +92,9 @@ export class VoterVerificationService {
      * @param socketId the socket id of the voters original connection
      * @returns a unique identification string
      */
-    private generateVerificationCode(voter: EligibleVoter, socketId: string) {
+    private generateVerificationCode(voter: EligibleVoter, electionId: number, socketId: string) {
         const identificationForMail = voter.identification.split('@')[0]
 
-        return `${identificationForMail}_${voter.id}_${socketId}`
+        return `${identificationForMail}_${voter.id}_${electionId}_${socketId}`
     }
 }

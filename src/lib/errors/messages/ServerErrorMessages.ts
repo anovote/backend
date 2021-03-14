@@ -1,18 +1,4 @@
-import { IErrorMessage } from './IErrorMessage'
-
-interface ServerErrorMessages extends IErrorMessage {
-    unexpected: () => string
-    notFound: (entity: string) => string
-    unauthorized: () => string
-    noAuthorizationHeader: () => string
-    invalidTokenFormat: () => string
-    invalidToken: () => string
-    invalidData: () => string
-    forbidden: () => string
-    wrongContentType: (validType: string) => string
-}
-
-export const ServerErrorMessage: ServerErrorMessages = {
+export const ServerErrorMessage = {
     unexpected: () => 'Unexpected server error',
     notFound: (entity: string) => `${entity} not found`,
     unauthorized: () => 'You are unauthorized, please login',

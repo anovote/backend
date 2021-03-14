@@ -7,5 +7,9 @@ export const ServerErrorMessage = {
     invalidToken: () => 'Invalid token, please login again',
     invalidData: () => 'Invalid data',
     forbidden: () => 'You are forbidden to access this resource',
-    wrongContentType: (validType: string) => `Wrong content type. Acceptable content type is: ${validType}`
+    wrongContentType: (validType: string) => `Wrong content type. Acceptable content type is: ${validType}`,
+    missingVerificationCode: () => 'Missing verification code',
+    invalidVerificationCose: () => 'Verification code is invalid',
+    alreadyVerified: () => 'You are already verified on another device',
+    electionClosedEnded: () => 'Election is closed, or has ended'
 }

@@ -1,4 +1,5 @@
 import { ElectionOrganizer } from '@/models/ElectionOrganizer/ElectionOrganizerEntity'
+import { IEligibleVoter } from '../EligibleVoter/EligibleVoterEntity'
 import { ElectionStatus } from './ElectionStatus'
 
 export interface IElection {
@@ -10,6 +11,7 @@ export interface IElection {
     closeDate?: Date
     password?: string
     status: ElectionStatus
+    eligibleVoters: IEligibleVoter[]
     isLocked: boolean
     isAutomatic: boolean
 }

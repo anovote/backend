@@ -1,4 +1,5 @@
 import { Exclude } from 'class-transformer'
+import { IsEmail } from 'class-validator'
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm'
 
 /**
@@ -8,11 +9,19 @@ import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm'
  */
 
 @Entity()
-export class EligibleVoter {
+export class EligibleVoter implements IEligibleVoter {
     @PrimaryGeneratedColumn()
     id!: number
 
     @Column({ type: 'varchar', length: 255 })
+    @IsEmail()
     @Exclude()
     identification!: string
+
+    @Column({ type: 'date', nullable: true })
+    verified!: Date
+}
+
+export interface IEligibleVoter {
+    identification: string
 }

@@ -1,7 +1,7 @@
 import { ElectionOrganizer } from '@/models/ElectionOrganizer/ElectionOrganizerEntity'
 
 export interface IHasOwner<T> {
-    owner: ElectionOrganizer
+    owner: ElectionOrganizer | undefined
     /**
      * Verifies the that the owner owns the entity
      * @param entity the entity to check owner of

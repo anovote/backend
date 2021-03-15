@@ -1,9 +1,9 @@
-import { AuthenticationService } from '@/services/AuthenticationService'
-import { Router } from 'express'
-import { ElectionOrganizerService } from '@/services/ElectionOrganizerService'
-import { StatusCodes } from 'http-status-codes'
 import { BadRequestError } from '@/lib/errors/http/BadRequestError'
 import { database } from '@/loaders'
+import { AuthenticationService } from '@/services/AuthenticationService'
+import { ElectionOrganizerService } from '@/services/ElectionOrganizerService'
+import { Router } from 'express'
+import { StatusCodes } from 'http-status-codes'
 
 const authService = new AuthenticationService()
 const router = Router()

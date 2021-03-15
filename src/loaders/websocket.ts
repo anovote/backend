@@ -1,14 +1,11 @@
-import { createDummyBallot } from '@/../tests/helpers/seed/ballot'
-import { createDummyCandidate } from '@/../tests/helpers/seed/candidate'
-import { createDummyElection } from '@/../tests/helpers/seed/election'
-import { createDummyOrganizer } from '@/../tests/helpers/seed/organizer'
+import config from '@/config'
 import { AnoSocket } from '@/lib/errors/websocket/AnoSocket'
 import { validateConnection } from '@/lib/errors/websocket/middleware/ValidateConnection'
-import { Ballot } from '@/models/Ballot/BallotEntity'
-import { Candidate } from '@/models/Candidate/CandidateEntity'
-import { Election } from '@/models/Election/ElectionEntity'
-import { ElectionOrganizer } from '@/models/ElectionOrganizer/ElectionOrganizerEntity'
-import { IVote } from '@/models/Vote/IVote'
+import { Events } from '@/lib/events'
+import { join } from '@/lib/events/client/join'
+import { verify } from '@/lib/events/client/verify'
+import { disconnect } from '@/lib/events/standard/disconnect'
+import { ping } from '@/lib/events/standard/ping'
 import { SocketRoomService } from '@/services/SocketRoomService'
 import { VoteService } from '@/services/VoteService'
 import chalk from 'chalk'
@@ -22,14 +19,6 @@ export default (expressApp: Application) => {
     const httpServer = http.createServer(expressApp)
     const socketServer = new Server(httpServer, {})
 
-    // RECEIVE EVENTS
-    const stopElection = 'stopElection'
-    const createElection = 'createElection'
-    const vote = 'vote'
-    // SEND EVENTS
-    const publishBallot = 'publishBallot'
-    const confirmVote = 'confirmVote'
-
     const socketRoomService = SocketRoomService.getInstance()
 
     socketServer.use(validateConnection)
@@ -37,9 +26,8 @@ export default (expressApp: Application) => {
      *
      * ID on election is room name
      */
-    socketServer.on('connection', async (socketConnection: AnoSocket) => {
-        const socketId = chalk.blue(socketConnection.id)
-        logger.info(`${socketId} was connected`)
+    socketServer.on(Events.standard.socket.connect, async (socketConnection: AnoSocket) => {
+        logger.info(`${chalk.blue(socketConnection.id)} connected`)
 
         //await socketRoomService.addUserToRoom(socketConnection, socketServer)
 
@@ -51,33 +39,16 @@ export default (expressApp: Application) => {
         //     console.log('is not organizer')
         // }
 
-        socketConnection.on('ping', () => {
-            logger.info(`Got ping from ${socketId}`)
-            socketConnection.send('pong')
-        })
+        // standard events
+        socketConnection.on(Events.standard.socket.disconnect, (reason) => disconnect(reason, socketConnection))
+        socketConnection.on(Events.standard.manager.ping, (data) => ping(data, socketConnection))
 
-        socketConnection.on('disconnect', (reason) => {
-            logger.info(`${socketId} was disconnected due to: ${reason}`)
-        })
-
-        socketConnection.on('vote_submitted', async (vote: IVote) => {
-            const organizer: ElectionOrganizer = await createDummyOrganizer(database)
-            const election: Election = await createDummyElection(database, organizer)
-            const ballot: Ballot = await createDummyBallot(database, election)
-            const candidate: Candidate = await createDummyCandidate(database, ballot)
-            const voteService: VoteService = new VoteService(database)
-
-            vote = {
-                candidate: candidate.id,
-                voterId: 696969,
-                submitted: new Date(),
-                ballotId: ballot.id
-            }
-
-            await voteService.create(vote)
-        })
+        // voter events
+        socketConnection.on(Events.client.auth.join, (data, callback) => join(data, socketConnection, callback))
+        socketConnection.on(Events.client.auth.verify.voterIntegrity, (data, callback) =>
+            verify(data, socketConnection, callback)
+        )
     })
 
-    // !TODO add to config
-    httpServer.listen(process.env.WS_PORT)
+    httpServer.listen(config.ws.port)
 }

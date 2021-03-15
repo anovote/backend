@@ -7,7 +7,7 @@ import { IElectionOrganizer } from '@/models/ElectionOrganizer/IElectionOrganize
 import { classToClass } from 'class-transformer'
 import { Connection, getCustomRepository } from 'typeorm'
 import BaseEntityService from './BaseEntityService'
-import { EncryptionService } from './EncryptionService'
+import { HashService } from './HashService'
 
 export class ElectionOrganizerService extends BaseEntityService<ElectionOrganizer> {
     private _database: Connection
@@ -20,7 +20,7 @@ export class ElectionOrganizerService extends BaseEntityService<ElectionOrganize
     }
 
     get(): Promise<ElectionOrganizer[] | undefined> {
-        throw new NotFoundError({ message: 'Not found' })
+        throw new NotFoundError({ message: 'Not found' }) // TODO #127 replace with ServerResponse
     }
 
     async getById(id: number): Promise<ElectionOrganizer | undefined> {
@@ -53,7 +53,7 @@ export class ElectionOrganizerService extends BaseEntityService<ElectionOrganize
     }
 
     async createAndSaveElectionOrganizer(electionOrganizer: IElectionOrganizer): Promise<ElectionOrganizer> {
-        const encryptionService = new EncryptionService()
+        const encryptionService = new HashService()
 
         const organizer = this.createElectionOrganizer(electionOrganizer)
 
@@ -69,7 +69,7 @@ export class ElectionOrganizerService extends BaseEntityService<ElectionOrganize
      * @param id The id of the election organizer who is changing its password
      */
     async updatePassword(newPassword: string, id: number) {
-        const encryptionService = new EncryptionService()
+        const encryptionService = new HashService()
 
         const electionOrganizer: ElectionOrganizer | undefined = await this._organizerRepository.findOne({
             id

@@ -12,6 +12,8 @@ import { SocketRoomEntity } from '@/models/SocketRoom/SocketRoomEntity'
 import { classToClass } from 'class-transformer'
 import { Connection, Repository } from 'typeorm'
 import BaseEntityService from './BaseEntityService'
+import { HashService } from './HashService'
+import { EligibleVoterService } from './EligibleVoterService'
 import { EncryptionService } from './EncryptionService'
 
 export interface ElectionBody {
@@ -24,14 +26,14 @@ export interface ElectionBody {
  */
 export class ElectionService extends BaseEntityService<Election> implements IHasOwner<Election> {
     private manager: Repository<Election>
-    private readonly encryptionService: EncryptionService
-    owner: ElectionOrganizer
+    private readonly hashService: HashService
+    owner: ElectionOrganizer | undefined
 
-    constructor(db: Connection, owner: ElectionOrganizer) {
+    constructor(db: Connection, owner?: ElectionOrganizer) {
         super(db, Election)
         this.owner = owner
         this.manager = db.getRepository(Election)
-        this.encryptionService = new EncryptionService()
+        this.hashService = new HashService()
     }
 
     async getById(id: number): Promise<Election | undefined> {
@@ -69,15 +71,25 @@ export class ElectionService extends BaseEntityService<Election> implements IHas
     }
 
     private async getElectionById(id: number): Promise<Election | undefined> {
-        return await this.manager.findOne(id, {
-            relations: ['electionOrganizer'],
-            where: {
-                electionOrganizer: this.owner
-            }
-        })
+        if (this.owner) {
+            return await this.manager.findOne(id, {
+                relations: ['electionOrganizer'],
+                where: {
+                    electionOrganizer: this.owner
+                }
+            })
+        }
+
+        return await this.manager.findOne(id)
     }
 
     async createElection(electionDTO: IElection): Promise<Election | undefined> {
+        const eligibleVoterService = new EligibleVoterService()
+
+        if (electionDTO.eligibleVoters) {
+            electionDTO.eligibleVoters = eligibleVoterService.correctListOfEligibleVoters(electionDTO.eligibleVoters)
+        }
+
         if (electionDTO.password) {
             await this.hashEntityPassword(electionDTO)
         }
@@ -87,6 +99,14 @@ export class ElectionService extends BaseEntityService<Election> implements IHas
         }
 
         const election = this.manager.create(electionDTO)
+
+        // the mapping from json to election does not transform the date string into date type. Have to do it manually
+        if (election.closeDate) {
+            election.closeDate = new Date(election.closeDate!)
+        }
+        if (election.openDate) {
+            election.openDate = new Date(election.openDate!)
+        }
 
         if (!election.socketRoom) {
             election.socketRoom = new SocketRoomEntity()
@@ -142,7 +162,7 @@ export class ElectionService extends BaseEntityService<Election> implements IHas
 
     private async hashEntityPassword(electionDTO: IElection) {
         const unhashedPassword = electionDTO.password
-        const hashedPassword = await this.encryptionService.hash(unhashedPassword!)
+        const hashedPassword = await this.hashService.hash(unhashedPassword!)
         electionDTO.password = hashedPassword
     }
 

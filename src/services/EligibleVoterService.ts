@@ -28,11 +28,11 @@ export class EligibleVoterService extends BaseEntityService<EligibleVoter> {
     update(id: number, dto: EligibleVoter): Promise<EligibleVoter | undefined> {
         throw new NotFoundError({ message: ServerErrorMessage.notFound('Eligible Voter') })
     }
-  
+
     delete(id: number): Promise<void> {
         throw new NotFoundError({ message: ServerErrorMessage.notFound('Eligible Voter') })
     }
-  
+
     /**
      * Corrects a list of eligible voters. The list will be
      * corrected of any whitespace. Any duplicates will be removed
@@ -62,7 +62,7 @@ export class EligibleVoterService extends BaseEntityService<EligibleVoter> {
 
         return correctEligibleVoters
     }
-  
+
     async getVoterByIdentification(identification: string) {
         const voter: EligibleVoter | undefined = await this.repository.findOne({ identification })
 
@@ -72,7 +72,7 @@ export class EligibleVoterService extends BaseEntityService<EligibleVoter> {
 
         return voter
     }
-  
+
     /**
      * Marks the voter verified
      * @param voter the voter to mark as verified

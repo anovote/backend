@@ -9,5 +9,6 @@ export const ErrorCode = {
     alreadyVerified: 'ALREADY_VERIFIED',
     voterNotExist: 'VOTER_NOT_EXIST',
     electionFinished: 'ELECTION_FINISHED',
-    electionNotExist: 'ELECTION_NOT_EXIST'
+    electionNotExist: 'ELECTION_NOT_EXIST',
+    electionCodeMissing: 'ELECTION_CODE_MISSING'
 }

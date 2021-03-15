@@ -2,7 +2,6 @@ import config from '@/config'
 import { BaseError } from '@/lib/errors/BaseError'
 import { ErrorCode } from '@/lib/errors/ErrorCodes'
 import { BadRequestError } from '@/lib/errors/http/BadRequestError'
-import { ForbiddenError } from '@/lib/errors/http/ForbiddenError'
 import { NotFoundError } from '@/lib/errors/http/NotFoundError'
 import { ServerErrorMessage } from '@/lib/errors/messages/ServerErrorMessages'
 import { database } from '@/loaders'
@@ -79,7 +78,7 @@ export const join: EventHandlerAcknowledges<{ email: string; electionCode: strin
             })
         } else {
             const entity = data.email ? 'Election code' : 'Email'
-            const code = data.email ? ErrorCode.verificationCodeMissing : ErrorCode.voterIdentificationMissing
+            const code = data.email ? ErrorCode.electionCodeMissing : ErrorCode.voterIdentificationMissing
             cb(EventErrorMessage(new BadRequestError({ message: ServerErrorMessage.isMissing(entity), code })))
         }
     } catch (err) {

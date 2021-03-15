@@ -40,7 +40,8 @@ export class BaseError extends Error {
     toResponse(): IErrorResponse {
         return {
             message: this.message,
-            status: this.getStatusCodeName()
+            status: this.getStatusCodeName(),
+            code: this._code
         }
     }
 }

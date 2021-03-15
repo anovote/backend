@@ -8,8 +8,9 @@ export const ServerErrorMessage = {
     invalidData: () => 'Invalid data',
     forbidden: () => 'You are forbidden to access this resource',
     wrongContentType: (validType: string) => `Wrong content type. Acceptable content type is: ${validType}`,
-    missingVerificationCode: () => 'Missing verification code',
-    invalidVerificationCose: () => 'Verification code is invalid',
+    isMissing: (entity: string) => `${entity} is missing in the request`,
+    invalidVerificationCode: () => 'Verification code is invalid',
+    unableToVerify: () => 'We were unable to verify you',
     alreadyVerified: () => 'You are already verified on another device',
-    electionClosedEnded: () => 'Election is closed, or has ended'
+    electionFinished: () => 'Election is finished, and closed.'
 }

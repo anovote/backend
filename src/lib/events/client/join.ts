@@ -23,9 +23,9 @@ export const join: EventHandlerAcknowledges<{ email: string; electionCode: strin
     // TODO!: check if voter exists
     // TODO!: check if election is closed / room exists
     // TODO!: check if election code and mail is provided
-    const { email, electionCode } = data
     try {
-        if (email && electionCode) {
+        if (data.email && data.electionCode) {
+            const { email, electionCode } = data
             const electionId = Number.parseInt(electionCode)
             const eligibleVoterService = new EligibleVoterService(database)
             const voter = await eligibleVoterService.getVoterByIdentificationForElection(email, electionId)
@@ -78,8 +78,8 @@ export const join: EventHandlerAcknowledges<{ email: string; electionCode: strin
                 socket.to(verificationSocketId).emit(Events.server.auth.joinVerified)
             })
         } else {
-            const entity = email ? 'Election code' : 'Email'
-            const code = email ? ErrorCode.verificationCodeMissing : ErrorCode.voterIdentificationMissing
+            const entity = data.email ? 'Election code' : 'Email'
+            const code = data.email ? ErrorCode.verificationCodeMissing : ErrorCode.voterIdentificationMissing
             cb(EventErrorMessage(new BadRequestError({ message: ServerErrorMessage.isMissing(entity), code })))
         }
     } catch (err) {

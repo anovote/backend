@@ -6,6 +6,7 @@ import { ForbiddenError } from '@/lib/errors/http/ForbiddenError'
 import { NotFoundError } from '@/lib/errors/http/NotFoundError'
 import { ServerErrorMessage } from '@/lib/errors/messages/ServerErrorMessages'
 import { Election } from '@/models/Election/ElectionEntity'
+import { ElectionStatus } from '@/models/Election/ElectionStatus'
 import { IElection } from '@/models/Election/IElection'
 import { ElectionOrganizer } from '@/models/ElectionOrganizer/ElectionOrganizerEntity'
 import { SocketRoomEntity } from '@/models/SocketRoom/SocketRoomEntity'
@@ -164,6 +165,13 @@ export class ElectionService extends BaseEntityService<Election> implements IHas
         const unhashedPassword = electionDTO.password
         const hashedPassword = await this.hashService.hash(unhashedPassword!)
         electionDTO.password = hashedPassword
+    }
+
+    /**
+     * Returns true of the election is finished, else false
+     */
+    isFinished(election: IElection) {
+        return election.status === ElectionStatus.Finished
     }
 
     verifyOwner(entity: Election): void {

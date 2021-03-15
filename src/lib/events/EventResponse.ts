@@ -1,5 +1,13 @@
-import { BaseError } from '../errors/BaseError'
+import { BaseError } from '@/lib/errors/BaseError'
+import { IErrorResponse } from '../errors/IErrorResponse'
 
+export interface IResponseMessage {
+    data: unknown
+}
+
+export interface IErrorResponseMessage {
+    error: IErrorResponse
+}
 /**
  * Creates a response message to be sent to client
  * @param data data to send in event
@@ -18,6 +26,6 @@ export const EventMessage = (data: unknown) => {
  */
 export const EventErrorMessage = (error: BaseError) => {
     return {
-        error
+        error: error.toResponse()
     }
 }

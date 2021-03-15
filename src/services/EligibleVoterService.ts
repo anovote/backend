@@ -41,14 +41,22 @@ export class EligibleVoterService extends BaseEntityService<EligibleVoter> {
         throw new NotFoundError({ message: ServerErrorMessage.notFound('Eligible Voter') })
     }
 
-    async getVoterByIdentification(identification: string) {
-        const voter: EligibleVoter | undefined = await this.repository.findOne({ identification })
-
-        if (!voter) {
-            throw new NotFoundError({ message: ServerErrorMessage.notFound('Eligible Voter') })
-        }
-
-        return voter
+    /**
+     * Returns the voter with given identification on given election id.
+     * If the voter and relation ship exists, returns the voter, else undefined
+     * @param identification the identification for voter
+     * @param electionId the election id it belongs to
+     * @returns voter or undefined if not found
+     */
+    async getVoterByIdentificationForElection(identification: string, electionId: number) {
+        return await this.repository
+            .createQueryBuilder('voter')
+            .leftJoinAndSelect('voter.elections', 'election')
+            .where('election.id = :electionId AND voter.identification = :identification', {
+                electionId: electionId,
+                identification: identification
+            })
+            .getOne()
     }
 
     /**
@@ -59,6 +67,7 @@ export class EligibleVoterService extends BaseEntityService<EligibleVoter> {
     async markAsVerified(voter: EligibleVoter) {
         return await this.repository.update(voter, { verified: new Date() })
     }
+
     /**
      * Corrects a list of eligible voters. The list will be
      * corrected of any whitespace. Any duplicates will be removed

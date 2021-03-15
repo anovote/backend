@@ -41,6 +41,7 @@ export class BaseError extends Error {
         return {
             message: this.message,
             status: this.getStatusCodeName(),
+            statusCode: this._httpStatus,
             code: this._code
         }
     }

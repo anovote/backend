@@ -21,6 +21,15 @@ export class EligibleVoterService extends BaseEntityService<EligibleVoter> {
         return voter
     }
 
+    /**
+     * Checks if the voter is already verified, returns true if verified, else false
+     * @param voter the voter to check for verification
+     * @returns true if voter is verified, else false
+     */
+    isVerified(voter: EligibleVoter) {
+        return voter.verified != null
+    }
+
     create(dto: EligibleVoter): Promise<EligibleVoter | undefined> {
         throw new NotFoundError({ message: ServerErrorMessage.notFound('Eligible Voter') })
     }

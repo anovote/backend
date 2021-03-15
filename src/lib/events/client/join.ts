@@ -1,4 +1,10 @@
 import config from '@/config'
+import { BaseError } from '@/lib/errors/BaseError'
+import { ErrorCode } from '@/lib/errors/ErrorCodes'
+import { BadRequestError } from '@/lib/errors/http/BadRequestError'
+import { ForbiddenError } from '@/lib/errors/http/ForbiddenError'
+import { NotFoundError } from '@/lib/errors/http/NotFoundError'
+import { ServerErrorMessage } from '@/lib/errors/messages/ServerErrorMessages'
 import { database } from '@/loaders'
 import mailTransporter from '@/loaders/nodemailer'
 import { ElectionService } from '@/services/ElectionService'
@@ -6,45 +12,77 @@ import { EligibleVoterService } from '@/services/EligibleVoterService'
 import { EncryptionService } from '@/services/EncryptionService'
 import { MailService } from '@/services/MailService'
 import { VoterVerificationService } from '@/services/VoterVerificationService'
-import { StatusCodes } from 'http-status-codes'
+import { Events } from '..'
 import { EventHandlerAcknowledges } from '../EventHandler'
+import { EventErrorMessage, EventMessage } from '../EventResponse'
 
 export const join: EventHandlerAcknowledges<{ email: string; electionCode: string }> = async (data, socket, cb) => {
+    // TODO!: check if voter already verified
+    // TODO!: check if election exists
+    // TODO!: provide error responses for each case of error
+    // TODO!: check if voter exists
+    // TODO!: check if election is closed / room exists
+    // TODO!: check if election code and mail is provided
     const { email, electionCode } = data
     try {
         if (email && electionCode) {
-            const electionId = Number.parseInt(electionCode!.toString())
+            const electionId = Number.parseInt(electionCode)
+            const eligibleVoterService = new EligibleVoterService(database)
+            const voter = await eligibleVoterService.getVoterByIdentificationForElection(email, electionId)
+            const electionService = new ElectionService(database)
+            const election = await electionService.getById(electionId)
+
             const verificationService = new VoterVerificationService(
                 new MailService(config.frontend.url, await mailTransporter()),
                 new EncryptionService(true),
-                new EligibleVoterService(database)
+                eligibleVoterService
             )
-            const eligibleVoterService = new EligibleVoterService(database)
-            const voter = await eligibleVoterService.getVoterByIdentification(email.toString())
-            const election = await new ElectionService(database).getById(electionId)
-            if (voter && election) {
-                await verificationService.stage(voter, election, socket.id)
-
-                cb({
-                    statusCode: StatusCodes.OK,
-                    message: 'Check your email'
-                })
-            } else {
-                cb({
-                    statusCode: StatusCodes.NOT_FOUND,
-                    message: voter ? 'Election not found' : 'Voter do not exists'
-                })
+            // Handle missing voter/ election
+            if (!voter || !election) {
+                const entity = voter ? 'Election' : 'Voter'
+                const code = voter ? ErrorCode.electionNotExist : ErrorCode.voterNotExist
+                return cb(EventErrorMessage(new NotFoundError({ message: ServerErrorMessage.notFound(entity), code })))
             }
-        } else {
-            cb({
-                statusCode: StatusCodes.BAD_REQUEST,
-                message: 'Please provide the required data for joining a election'
+            // Handle election state finished
+            if (electionService.isFinished(election)) {
+                return cb(
+                    EventErrorMessage(
+                        new BadRequestError({
+                            message: ServerErrorMessage.electionFinished(),
+                            code: ErrorCode.electionFinished
+                        })
+                    )
+                )
+            }
+            // Handle already verified voter
+            if (eligibleVoterService.isVerified(voter)) {
+                return cb(
+                    EventErrorMessage(
+                        new ForbiddenError({
+                            message: ServerErrorMessage.alreadyVerified(),
+                            code: ErrorCode.alreadyVerified
+                        })
+                    )
+                )
+            }
+
+            // Stage the voter for verification
+            await verificationService.stage(voter, election, socket.id)
+            // Ok emit, that we have proceeded
+            cb(EventMessage({}))
+            /**
+             * A single event listener that when triggered, notifies the VERIFICATION socket that
+             * the join page has successfully joined.
+             */
+            socket.once(Events.client.auth.voterVerifiedReceived, (verificationSocketId: string) => {
+                socket.to(verificationSocketId).emit(Events.server.auth.joinVerified)
             })
+        } else {
+            const entity = email ? 'Election code' : 'Email'
+            const code = email ? ErrorCode.verificationCodeMissing : ErrorCode.voterIdentificationMissing
+            cb(EventErrorMessage(new BadRequestError({ message: ServerErrorMessage.isMissing(entity), code })))
         }
     } catch (err) {
-        cb({
-            statusCode: StatusCodes.BAD_REQUEST,
-            message: 'Something went wrong.'
-        })
+        cb(EventErrorMessage(new BaseError({ message: ServerErrorMessage.unableToVerify() })))
     }
 }

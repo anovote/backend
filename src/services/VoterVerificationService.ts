@@ -1,3 +1,4 @@
+import { logger } from '@/loaders/logger'
 import { Election } from '@/models/Election/ElectionEntity'
 import { EligibleVoter } from '@/models/EligibleVoter/EligibleVoterEntity'
 import { EligibleVoterService } from './EligibleVoterService'
@@ -8,7 +9,7 @@ export class VoterVerificationService {
     private _encryptionService: EncryptionService
     private _mailer: MailService
     private _eligibleVoterService: EligibleVoterService
-
+    private _codeDelimiter = '_'
     constructor(
         mailService: MailService,
         encryptionService: EncryptionService,
@@ -31,7 +32,19 @@ export class VoterVerificationService {
         const encryptedCode = this._encryptionService.encrypt(
             this.generateVerificationCode(voter, forElection.id, socket)
         )
+
         await this._mailer.sendVerificationMail(voter.identification, encryptedCode, forElection)
+    }
+
+    /**
+     * Tries to decode the provided encrypted verification code into an object of fields representing
+     * the code fields. If it fails to decode, undefined is returned.
+     * @param verificationCode encrypted verification code to decode
+     * @returns decoded code or undefined
+     */
+    decodeVerificationCode(verificationCode: string) {
+        const decrypted = this._encryptionService.decrypt(verificationCode)
+        return this.decodeVerification(decrypted)
     }
 
     /**
@@ -40,50 +53,8 @@ export class VoterVerificationService {
      * @param verification the encrypted string to verify the identity of the voter with
      * @returns returns the id of the election, socketID of original socket, and voter ID
      */
-    async verify(verification: string) {
-        const decrypted = this._encryptionService.decrypt(verification)
-
-        const id = this.getIdFromVerificationCode(decrypted)
-        const socketId = this.getSocketIdFromVerificationCode(decrypted)
-        const electionId = this.getElectionIdFromVerificationCode(decrypted)
-
-        const voter = await this._eligibleVoterService.getById(Number.parseInt(id))
-        await this._eligibleVoterService.markAsVerified(voter!)
-
-        return { electionId, socketId, voter }
-    }
-
-    // TODO verification code functions should be handled in own class. Works fine for now
-
-    /**
-     * Extracts the id from the unique verification code
-     * @param decrypted the decrypted string to get the id from
-     * @returns id, from the decrypted string
-     */
-    private getIdFromVerificationCode(decrypted: string) {
-        const idIndex = 1
-
-        return decrypted.split('_')[idIndex]
-    }
-
-    /**
-     * Extracts the socket id from the unique verification code
-     * @param decrypted the decrypted string to get the id from
-     * @returns socket id, from the decrypted string
-     */
-    private getElectionIdFromVerificationCode(decrypted: string) {
-        const socketIdIndex = 2
-        return decrypted.split('_')[socketIdIndex]
-    }
-
-    /**
-     * Extracts the socket id from the unique verification code
-     * @param decrypted the decrypted string to get the id from
-     * @returns socket id, from the decrypted string
-     */
-    private getSocketIdFromVerificationCode(decrypted: string) {
-        const socketIdIndex = 3
-        return decrypted.split('_')[socketIdIndex]
+    async verify(voter: EligibleVoter) {
+        await this._eligibleVoterService.markAsVerified(voter)
     }
 
     /**
@@ -95,6 +66,27 @@ export class VoterVerificationService {
     private generateVerificationCode(voter: EligibleVoter, electionId: number, socketId: string) {
         const identificationForMail = voter.identification.split('@')[0]
 
-        return `${identificationForMail}_${voter.id}_${electionId}_${socketId}`
+        return `${identificationForMail}${this._codeDelimiter}${voter.id}${this._codeDelimiter}${electionId}${this._codeDelimiter}${socketId}`
+    }
+
+    /**
+     * Decodes the verification code into an object representing each field in the code.
+     * If the decoding fails, undefined is returned.
+     * @param decryptedCode the decrypted verification code to extract fields from
+     * @returns decoded data as object, or undefined
+     */
+    private decodeVerification(decryptedCode: string) {
+        try {
+            if (decryptedCode) {
+                const codeParts = decryptedCode.split(this._codeDelimiter)
+                return {
+                    voterId: Number.parseInt(codeParts[1]),
+                    electionId: Number.parseInt(codeParts[2]),
+                    joinSocketId: codeParts[3]
+                }
+            }
+        } catch (error) {
+            logger.warn(error)
+        }
     }
 }

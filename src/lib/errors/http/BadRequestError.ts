@@ -6,7 +6,7 @@ import { BaseError } from '../BaseError'
  * Bad request error has default http status code of 400
  */
 export class BadRequestError extends BaseError {
-    constructor({ message }: { message: string }) {
-        super({ message: message, httpStatus: StatusCodes.BAD_REQUEST })
+    constructor({ message, code }: { message: string; code?: string }) {
+        super({ message: message, httpStatus: StatusCodes.BAD_REQUEST, code })
     }
 }

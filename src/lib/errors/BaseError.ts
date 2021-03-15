@@ -1,18 +1,22 @@
 import { StatusCodes } from 'http-status-codes'
 import { ServerErrorMessage } from './messages/ServerErrorMessages'
 import { IErrorResponse } from './IErrorResponse'
+import { ErrorCode } from './ErrorCodes'
 
 /**
  * Top level error object for the application specific errors
- * Contains a message, httpStatus.
+ * Contains a message, httpStatus, error code.
  * Provides method for getting the error as JSON
  */
 export class BaseError extends Error {
     private _httpStatus: number = StatusCodes.INTERNAL_SERVER_ERROR
+    // More specific error code
+    private _code: string = ErrorCode.unexpected
 
-    constructor({ message, httpStatus }: { message?: string; httpStatus?: StatusCodes } = {}) {
+    constructor({ message, httpStatus, code }: { message?: string; httpStatus?: StatusCodes; code?: string } = {}) {
         super(message ? message : ServerErrorMessage.unexpected())
         if (httpStatus) this._httpStatus = httpStatus
+        if (code) this._code = code
     }
 
     /**

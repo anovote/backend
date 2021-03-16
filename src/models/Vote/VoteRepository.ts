@@ -14,8 +14,8 @@ export class VoteRepository extends Repository<Vote> {
         }
 
         vote.submitted = iVote.submitted
-        vote.voterId = iVote.voterId
-        vote.ballotId = iVote.ballotId
+        vote.voter = iVote.voter
+        vote.ballot = iVote.ballot
 
         return vote
     }

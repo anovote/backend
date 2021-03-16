@@ -10,11 +10,11 @@ import { EventHandlerAcknowledges } from '../EventHandler'
  * @param socket the socket
  * @param cb the callback to send acknowledgements with
  */
-export const submitVote: EventHandlerAcknowledges<IVote> = async (data, socket, cb) => {
+export const submitVote: EventHandlerAcknowledges<IVote> = async (data, _socket, cb) => {
     const vote: IVote = data
     const voteService = new VoteService(database)
 
-    if (!vote.candidate || !vote.ballotId || !vote.voterId) {
+    if (!vote.candidate || !vote.ballot || !vote.voter) {
         cb({
             statusCode: StatusCodes.BAD_REQUEST,
             message: 'Please provide the required data'

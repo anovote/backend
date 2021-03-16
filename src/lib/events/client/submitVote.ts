@@ -4,11 +4,17 @@ import { VoteService } from '@/services/VoteService'
 import { StatusCodes } from 'http-status-codes'
 import { EventHandlerAcknowledges } from '../EventHandler'
 
-export const voteSubmitted: EventHandlerAcknowledges<IVote> = async (data, socket, cb) => {
+/**
+ * Submits a vote with the given vote details
+ * @param data data from event
+ * @param socket the socket
+ * @param cb the callback to send acknowledgements with
+ */
+export const submitVote: EventHandlerAcknowledges<IVote> = async (data, socket, cb) => {
     const vote: IVote = data
     const voteService = new VoteService(database)
 
-    if (!vote.candidate) {
+    if (!vote.candidate || !vote.ballotId || !vote.voterId) {
         cb({
             statusCode: StatusCodes.BAD_REQUEST,
             message: 'Please provide the required data'

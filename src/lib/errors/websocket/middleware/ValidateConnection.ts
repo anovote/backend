@@ -11,12 +11,12 @@ import { AnoSocket } from '../AnoSocket'
  */
 export const validateConnection = (socket: Socket, next: (err?: ExtendedError) => void) => {
     try {
-        // // !TODO Expect token here
-        // const token = socket.handshake.auth.token
-        // const authenticationService = new AuthenticationService()
-        // const decodedToken = authenticationService.verifyToken(token)
-        // const upgradedSocket = socket as AnoSocket
-        // upgradedSocket.token = decodedToken
+        // !TODO Expect token here
+        const token = socket.handshake.auth.token
+        const authenticationService = new AuthenticationService()
+        const decodedToken = authenticationService.verifyToken(token)
+        const upgradedSocket = socket as AnoSocket
+        upgradedSocket.token = decodedToken
         next()
     } catch (error) {
         logger.error(`${chalk.blue(socket.id)}:  ${error}`)

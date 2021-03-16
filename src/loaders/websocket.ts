@@ -4,6 +4,7 @@ import { validateConnection } from '@/lib/errors/websocket/middleware/ValidateCo
 import { Events } from '@/lib/events'
 import { join } from '@/lib/events/client/join'
 import { verify } from '@/lib/events/client/verify'
+import { voteSubmitted } from '@/lib/events/client/voteSubmitted'
 import { disconnect } from '@/lib/events/standard/disconnect'
 import { ping } from '@/lib/events/standard/ping'
 import { SocketRoomService } from '@/services/SocketRoomService'
@@ -47,6 +48,9 @@ export default (expressApp: Application) => {
         socketConnection.on(Events.client.auth.join, (data, callback) => join(data, socketConnection, callback))
         socketConnection.on(Events.client.auth.verify.voterIntegrity, (data, callback) =>
             verify(data, socketConnection, callback)
+        )
+        socketConnection.on(Events.client.vote.submit, (data, callback) =>
+            voteSubmitted(data, socketConnection, callback)
         )
     })
 

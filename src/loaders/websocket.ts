@@ -4,7 +4,7 @@ import { validateConnection } from '@/lib/errors/websocket/middleware/ValidateCo
 import { Events } from '@/lib/events'
 import { join } from '@/lib/events/client/join'
 import { verify } from '@/lib/events/client/verify'
-import { submitVote } from '@/lib/events/client/voteSubmitted'
+import { submitVote } from '@/lib/events/client/submitVote'
 import { disconnect } from '@/lib/events/standard/disconnect'
 import { ping } from '@/lib/events/standard/ping'
 import { SocketRoomService } from '@/services/SocketRoomService'

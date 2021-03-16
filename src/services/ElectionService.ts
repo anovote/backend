@@ -15,6 +15,7 @@ import BaseEntityService from './BaseEntityService'
 import { HashService } from './HashService'
 import { EligibleVoterService } from './EligibleVoterService'
 import { EncryptionService } from './EncryptionService'
+import { database } from '@/loaders'
 
 export interface ElectionBody {
     title: string
@@ -28,9 +29,11 @@ export class ElectionService extends BaseEntityService<Election> implements IHas
     private manager: Repository<Election>
     private readonly hashService: HashService
     owner: ElectionOrganizer | undefined
+    private database: Connection
 
     constructor(db: Connection, owner?: ElectionOrganizer) {
         super(db, Election)
+        this.database = db
         this.owner = owner
         this.manager = db.getRepository(Election)
         this.hashService = new HashService()
@@ -84,7 +87,7 @@ export class ElectionService extends BaseEntityService<Election> implements IHas
     }
 
     async createElection(electionDTO: IElection): Promise<Election | undefined> {
-        const eligibleVoterService = new EligibleVoterService()
+        const eligibleVoterService = new EligibleVoterService(database)
 
         if (electionDTO.eligibleVoters) {
             electionDTO.eligibleVoters = eligibleVoterService.correctListOfEligibleVoters(electionDTO.eligibleVoters)

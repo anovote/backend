@@ -37,6 +37,7 @@ export class EligibleVoterService extends BaseEntityService<EligibleVoter> {
     update(id: number, dto: EligibleVoter): Promise<EligibleVoter | undefined> {
         throw new NotFoundError({ message: ServerErrorMessage.notFound('Eligible Voter') })
     }
+
     delete(id: number): Promise<void> {
         throw new NotFoundError({ message: ServerErrorMessage.notFound('Eligible Voter') })
     }
@@ -96,6 +97,16 @@ export class EligibleVoterService extends BaseEntityService<EligibleVoter> {
         correctEligibleVoters = this.createArrayOfEligibleVoters(validEmails)
 
         return correctEligibleVoters
+    }
+
+    async getVoterByIdentification(identification: string) {
+        const voter: EligibleVoter | undefined = await this.repository.findOne({ identification })
+
+        if (!voter) {
+            throw new NotFoundError({ message: ServerErrorMessage.notFound('Eligible Voter') })
+        }
+
+        return voter
     }
 
     /**

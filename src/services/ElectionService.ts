@@ -28,13 +28,15 @@ export class ElectionService extends BaseEntityService<Election> implements IHas
     private manager: Repository<Election>
     private readonly hashService: HashService
     owner: ElectionOrganizer | undefined
-    private _db: Connection
+    private readonly _db: Connection
+
     constructor(db: Connection, owner?: ElectionOrganizer) {
         super(db, Election)
         this._db = db
         this.owner = owner
         this.manager = db.getRepository(Election)
         this.hashService = new HashService()
+        this._db = db
     }
 
     async getById(id: number): Promise<Election | undefined> {

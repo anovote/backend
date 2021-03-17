@@ -7,14 +7,12 @@ import { NotFoundError } from '@/lib/errors/http/NotFoundError'
 import { ServerErrorMessage } from '@/lib/errors/messages/ServerErrorMessages'
 import { database } from '@/loaders'
 import mailTransporter from '@/loaders/nodemailer'
-import { EligibleVoter } from '@/models/EligibleVoter/EligibleVoterEntity'
 import { AuthenticationService } from '@/services/AuthenticationService'
 import { ElectionService } from '@/services/ElectionService'
 import { EligibleVoterService } from '@/services/EligibleVoterService'
 import { EncryptionService } from '@/services/EncryptionService'
 import { MailService } from '@/services/MailService'
 import { VoterVerificationService } from '@/services/VoterVerificationService'
-import { StatusCodes } from 'http-status-codes'
 import { Events } from '..'
 import { EventHandlerAcknowledges } from '../EventHandler'
 import { EventErrorMessage, EventMessage } from '../EventResponse'
@@ -26,12 +24,6 @@ import { EventErrorMessage, EventMessage } from '../EventResponse'
  * @param cb the callback to send acknowledgements with
  */
 export const verify: EventHandlerAcknowledges<{ code: string }> = async (data, _socket, cb) => {
-    // TODO!: check if voter already verified
-    // TODO!: check if election exists
-    // TODO!: check if verification code is valid
-    // TODO!: provide error responses for each case of error
-    // TODO!: check if voter exists
-    // TODO!: check if election is closed / room exists
     try {
         const voterService = new EligibleVoterService(database)
         const electionService = new ElectionService(database)

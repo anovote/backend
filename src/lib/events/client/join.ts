@@ -2,6 +2,7 @@ import config from '@/config'
 import { BaseError } from '@/lib/errors/BaseError'
 import { ErrorCode } from '@/lib/errors/ErrorCodes'
 import { BadRequestError } from '@/lib/errors/http/BadRequestError'
+import { ForbiddenError } from '@/lib/errors/http/ForbiddenError'
 import { NotFoundError } from '@/lib/errors/http/NotFoundError'
 import { ServerErrorMessage } from '@/lib/errors/messages/ServerErrorMessages'
 import { database } from '@/loaders'
@@ -16,12 +17,6 @@ import { EventHandlerAcknowledges } from '../EventHandler'
 import { EventErrorMessage, EventMessage } from '../EventResponse'
 
 export const join: EventHandlerAcknowledges<{ email: string; electionCode: string }> = async (data, socket, cb) => {
-    // TODO!: check if voter already verified
-    // TODO!: check if election exists
-    // TODO!: provide error responses for each case of error
-    // TODO!: check if voter exists
-    // TODO!: check if election is closed / room exists
-    // TODO!: check if election code and mail is provided
     try {
         if (data.email && data.electionCode) {
             const { email, electionCode } = data

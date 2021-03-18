@@ -18,19 +18,19 @@ export const submitVote: EventHandlerAcknowledges<IVote> = async (vote, socket, 
         acknowledgement({
             statusCode: StatusCodes.BAD_REQUEST,
             message: 'Please provide the required data'
-        })
+        } as any)
     } else {
         try {
             await voteService.create(submittedVote)
             acknowledgement({
                 statusCode: StatusCodes.OK,
                 message: 'Vote was submitted!'
-            })
+            } as any)
         } catch (err) {
             acknowledgement({
                 statusCode: StatusCodes.FORBIDDEN,
                 message: 'We were not able to submit your vote'
-            })
+            } as any)
         }
     }
 }

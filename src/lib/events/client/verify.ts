@@ -16,6 +16,7 @@ import { VoterVerificationService } from '@/services/VoterVerificationService'
 import { Events } from '@/lib/events'
 import { EventHandlerAcknowledges } from '@/lib/events/EventHandler'
 import { EventErrorMessage, EventMessage } from '@/lib/events/EventResponse'
+import { VoterSocket } from '@/lib/errors/websocket/AnoSocket'
 
 /**
  * Verifies a voter that have used their mail to verify their identity
@@ -24,6 +25,7 @@ import { EventErrorMessage, EventMessage } from '@/lib/events/EventResponse'
  * @param cb the callback to send acknowledgements with
  */
 export const verify: EventHandlerAcknowledges<{ code: string }> = async (data, _socket, cb) => {
+    const voterSocket = _socket as VoterSocket
     try {
         const voterService = new EligibleVoterService(database)
         const electionService = new ElectionService(database)
@@ -110,6 +112,8 @@ export const verify: EventHandlerAcknowledges<{ code: string }> = async (data, _
          * to get the token and take over the join session.
          */
         _socket.once(Events.client.auth.upgradeVerificationToJoin, (_, cb) => {
+            voterSocket.electionId = electionId
+            voterSocket.voterId = voterId
             cb(EventMessage({ token }))
         })
     } catch (err) {

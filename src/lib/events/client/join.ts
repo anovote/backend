@@ -15,8 +15,10 @@ import { VoterVerificationService } from '@/services/VoterVerificationService'
 import { Events } from '@/lib/events'
 import { EventHandlerAcknowledges } from '@/lib/events/EventHandler'
 import { EventErrorMessage, EventMessage } from '@/lib/events/EventResponse'
+import { VoterSocket } from '@/lib/errors/websocket/AnoSocket'
 
 export const join: EventHandlerAcknowledges<{ email: string; electionCode: string }> = async (data, socket, cb) => {
+    const voterSocket = socket as VoterSocket
     try {
         if (data.email && data.electionCode) {
             const { email, electionCode } = data
@@ -68,8 +70,10 @@ export const join: EventHandlerAcknowledges<{ email: string; electionCode: strin
              * A single event listener that when triggered, notifies the VERIFICATION socket that
              * the join page has successfully joined.
              */
-            socket.once(Events.client.auth.voterVerifiedReceived, (verificationSocketId: string) => {
-                socket.to(verificationSocketId).emit(Events.server.auth.joinVerified)
+            voterSocket.once(Events.client.auth.voterVerifiedReceived, (verificationSocketId: string) => {
+                voterSocket.electionId = election.id
+                voterSocket.voterId = voter.id
+                voterSocket.to(verificationSocketId).emit(Events.server.auth.joinVerified)
             })
         } else {
             const entity = data.email ? 'Election code' : 'Email'

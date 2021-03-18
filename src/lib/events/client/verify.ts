@@ -102,7 +102,7 @@ export const verify: EventHandlerAcknowledges<{ code: string }> = async (data, _
         // notify the verification page that the join was successful, and stop the potential upgrade.
         _socket
             .to(joinSocketId)
-            .emit(Events.server.auth.verified, EventMessage({ token, verificationSocketId: _socket.id }))
+            .emit(Events.server.auth.voterVerified, EventMessage({ token, verificationSocketId: _socket.id }))
 
         /**
          * This event is triggered when the verification page has not received the join_verified event

@@ -14,7 +14,7 @@ export const submitVote: EventHandlerAcknowledges<IVote> = async (vote, socket, 
     const submittedVote: IVote = vote
     const voteService = new VoteService(database)
 
-    if (!submittedVote.candidate || !submittedVote.ballotId || !submittedVote.voterId) {
+    if (!submittedVote.candidate || !submittedVote.ballot || !submittedVote.voter) {
         acknowledgement({
             statusCode: StatusCodes.BAD_REQUEST,
             message: 'Please provide the required data'

@@ -38,8 +38,8 @@ export class VoteService extends BaseEntityService<Vote> {
     // TODO, check if the election has moved on to a different ballot
     // TODO, check if the election status, to see if it has ended
     private async createAndSaveVote(vote: IVote): Promise<Vote | undefined> {
-        const { ballotId, voterId } = vote
-        const exists = await this._voteRepository.findOne({ voterId, ballotId })
+        const { ballot, voter } = vote
+        const exists = await this._voteRepository.findOne({ voter, ballot })
 
         if (exists) {
             throw new Error('I already exist')

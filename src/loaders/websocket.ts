@@ -15,6 +15,7 @@ import http from 'http'
 import { Server } from 'socket.io'
 import { database } from '.'
 import { logger } from './logger'
+import { Vote } from '@/models/Vote/VoteEntity'
 
 export default (expressApp: Application) => {
     const httpServer = http.createServer(expressApp)
@@ -49,7 +50,9 @@ export default (expressApp: Application) => {
         socketConnection.on(Events.client.auth.verify.voterIntegrity, (data, callback) =>
             verify(data, socketConnection, callback)
         )
-        socketConnection.on(Events.client.vote.submit, (data, callback) => submitVote(data, socketConnection, callback))
+        socketConnection.on(Events.client.vote.submit, (vote, acknowledgement) =>
+            submitVote(vote, socketConnection, acknowledgement)
+        )
     })
 
     httpServer.listen(config.ws.port)

@@ -13,9 +13,9 @@ import { EligibleVoterService } from '@/services/EligibleVoterService'
 import { EncryptionService } from '@/services/EncryptionService'
 import { MailService } from '@/services/MailService'
 import { VoterVerificationService } from '@/services/VoterVerificationService'
-import { Events } from '..'
-import { EventHandlerAcknowledges } from '../EventHandler'
-import { EventErrorMessage, EventMessage } from '../EventResponse'
+import { Events } from '@/lib/events'
+import { EventHandlerAcknowledges } from '@/lib/events/EventHandler'
+import { EventErrorMessage, EventMessage } from '@/lib/events/EventResponse'
 
 /**
  * Verifies a voter that have used their mail to verify their identity
@@ -37,7 +37,7 @@ export const verify: EventHandlerAcknowledges<{ code: string }> = async (data, _
         const decodedCode = verificationService.decodeVerificationCode(code)
         // Early exit if we do not have a decoded token object
         if (!decodedCode) {
-            const errorCode = code ? ErrorCode.verificationCodeInvalid : ErrorCode.verificationCodeMissing
+            const errorCode = code ? ErrorCode.VERIFICATION_CODE_INVALID : ErrorCode.VERIFICATION_CODE_MISSING
             const message = code
                 ? ServerErrorMessage.invalidVerificationCode()
                 : ServerErrorMessage.isMissing('Verification code')
@@ -59,7 +59,7 @@ export const verify: EventHandlerAcknowledges<{ code: string }> = async (data, _
         // Handle missing voter/ election
         if (!voter || !election) {
             const entity = voter ? 'Election' : 'Voter'
-            const code = voter ? ErrorCode.electionNotExist : ErrorCode.voterNotExist
+            const code = voter ? ErrorCode.ELECTION_NOT_EXIST : ErrorCode.VOTER_NOT_EXIST
             return cb(EventErrorMessage(new NotFoundError({ message: ServerErrorMessage.notFound(entity), code })))
         }
 
@@ -69,7 +69,7 @@ export const verify: EventHandlerAcknowledges<{ code: string }> = async (data, _
                 EventErrorMessage(
                     new BadRequestError({
                         message: ServerErrorMessage.electionFinished(),
-                        code: ErrorCode.electionFinished
+                        code: ErrorCode.ELECTION_FINISHED
                     })
                 )
             )
@@ -81,7 +81,7 @@ export const verify: EventHandlerAcknowledges<{ code: string }> = async (data, _
                 EventErrorMessage(
                     new ForbiddenError({
                         message: ServerErrorMessage.alreadyVerified(),
-                        code: ErrorCode.alreadyVerified
+                        code: ErrorCode.ALREADY_VERIFIED
                     })
                 )
             )

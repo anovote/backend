@@ -12,9 +12,9 @@ import { EligibleVoterService } from '@/services/EligibleVoterService'
 import { EncryptionService } from '@/services/EncryptionService'
 import { MailService } from '@/services/MailService'
 import { VoterVerificationService } from '@/services/VoterVerificationService'
-import { Events } from '..'
-import { EventHandlerAcknowledges } from '../EventHandler'
-import { EventErrorMessage, EventMessage } from '../EventResponse'
+import { Events } from '@/lib/events'
+import { EventHandlerAcknowledges } from '@/lib/events/EventHandler'
+import { EventErrorMessage, EventMessage } from '@/lib/events/EventResponse'
 
 export const join: EventHandlerAcknowledges<{ email: string; electionCode: string }> = async (data, socket, cb) => {
     try {
@@ -34,7 +34,7 @@ export const join: EventHandlerAcknowledges<{ email: string; electionCode: strin
             // Handle missing voter/ election
             if (!voter || !election) {
                 const entity = voter ? 'Election' : 'Voter'
-                const code = voter ? ErrorCode.electionNotExist : ErrorCode.voterNotExist
+                const code = voter ? ErrorCode.ELECTION_NOT_EXIST : ErrorCode.VOTER_NOT_EXIST
                 return cb(EventErrorMessage(new NotFoundError({ message: ServerErrorMessage.notFound(entity), code })))
             }
             // Handle election state finished
@@ -43,7 +43,7 @@ export const join: EventHandlerAcknowledges<{ email: string; electionCode: strin
                     EventErrorMessage(
                         new BadRequestError({
                             message: ServerErrorMessage.electionFinished(),
-                            code: ErrorCode.electionFinished
+                            code: ErrorCode.ELECTION_FINISHED
                         })
                     )
                 )
@@ -54,7 +54,7 @@ export const join: EventHandlerAcknowledges<{ email: string; electionCode: strin
                     EventErrorMessage(
                         new ForbiddenError({
                             message: ServerErrorMessage.alreadyVerified(),
-                            code: ErrorCode.alreadyVerified
+                            code: ErrorCode.ALREADY_VERIFIED
                         })
                     )
                 )
@@ -73,7 +73,7 @@ export const join: EventHandlerAcknowledges<{ email: string; electionCode: strin
             })
         } else {
             const entity = data.email ? 'Election code' : 'Email'
-            const code = data.email ? ErrorCode.electionCodeMissing : ErrorCode.voterIdentificationMissing
+            const code = data.email ? ErrorCode.ELECTION_CODE_MISSING : ErrorCode.VOTER_IDENTIFICATION_MISSING
             cb(EventErrorMessage(new BadRequestError({ message: ServerErrorMessage.isMissing(entity), code })))
         }
     } catch (err) {

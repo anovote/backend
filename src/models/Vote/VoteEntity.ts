@@ -23,8 +23,8 @@ export class Vote implements IVote {
     @IsPositive()
     @MinLength(4)
     @MaxLength(10)
-    voterId!: number
+    voter!: number
 
     @ManyToOne(() => Ballot, (ballot) => ballot.id)
-    ballotId!: number
+    ballot!: number
 }

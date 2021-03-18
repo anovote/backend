@@ -10,8 +10,8 @@ export interface IErrorResponseMessage {
 }
 /**
  * Creates a response message to be sent to client
- * @param data data to send in event
- * @returns returns data object
+ * @param data to send in event
+ * @returns data object
  */
 export const EventMessage = (data: unknown) => {
     return {
@@ -21,8 +21,8 @@ export const EventMessage = (data: unknown) => {
 
 /**
  * Creates a error response object to be sent to client
- * @param error error to send in event
- * @returns returns error message object
+ * @param error to send in event
+ * @returns error message object
  */
 export const EventErrorMessage = (error: BaseError) => {
     return {

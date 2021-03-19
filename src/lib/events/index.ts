@@ -28,7 +28,9 @@ export const Events = {
             withToken: 'authenticate_with_token',
             verify: {
                 voterIntegrity: 'verify_voter_integrity'
-            }
+            },
+            voterVerifiedReceived: 'voter_verification_received',
+            upgradeVerificationToJoin: 'upgrade_verification_to_join'
         },
         election: {
             start: 'start_election',
@@ -46,10 +48,22 @@ export const Events = {
         auth: {
             action: {
                 mail: 'awaiting_mail_action'
-            }
+            },
+            voterVerified: 'voter_verified',
+            joinVerified: 'join_verified'
         },
         vote: {
             error: 'vote_error'
+        },
+        election: {
+            push: 'push_election',
+            close: 'close_election'
+        },
+        ballot: {
+            push: 'push_ballot'
+        },
+        result: {
+            push: 'push_result'
         }
     }
 }

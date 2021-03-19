@@ -6,7 +6,7 @@ import { BaseError } from '../BaseError'
  * Not acceptable error has default http status code of 406
  */
 export class NotAcceptableError extends BaseError {
-    constructor({ message }: { message: string }) {
-        super({ message: message, httpStatus: StatusCodes.NOT_ACCEPTABLE })
+    constructor({ message, code }: { message: string; code?: string }) {
+        super({ message: message, httpStatus: StatusCodes.NOT_ACCEPTABLE, code })
     }
 }

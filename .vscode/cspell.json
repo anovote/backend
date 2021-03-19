@@ -21,6 +21,7 @@
         "postgres",
         "postgresql",
         "respawn",
+        "socketid",
         "source",
         "sourcemap",
         "spmef",

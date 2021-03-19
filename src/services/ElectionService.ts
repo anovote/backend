@@ -6,16 +6,15 @@ import { ForbiddenError } from '@/lib/errors/http/ForbiddenError'
 import { NotFoundError } from '@/lib/errors/http/NotFoundError'
 import { ServerErrorMessage } from '@/lib/errors/messages/ServerErrorMessages'
 import { Election } from '@/models/Election/ElectionEntity'
+import { ElectionStatus } from '@/models/Election/ElectionStatus'
 import { IElection } from '@/models/Election/IElection'
 import { ElectionOrganizer } from '@/models/ElectionOrganizer/ElectionOrganizerEntity'
 import { SocketRoomEntity } from '@/models/SocketRoom/SocketRoomEntity'
 import { classToClass } from 'class-transformer'
 import { Connection, Repository } from 'typeorm'
 import BaseEntityService from './BaseEntityService'
-import { HashService } from './HashService'
 import { EligibleVoterService } from './EligibleVoterService'
-import { EncryptionService } from './EncryptionService'
-import { database } from '@/loaders'
+import { HashService } from './HashService'
 
 export interface ElectionBody {
     title: string
@@ -29,16 +28,14 @@ export class ElectionService extends BaseEntityService<Election> implements IHas
     private manager: Repository<Election>
     private readonly hashService: HashService
     owner: ElectionOrganizer | undefined
-    private eligibleVoterService: EligibleVoterService
-    private readonly _db: Connection
+    private _eligibleVoterService: EligibleVoterService
 
     constructor(db: Connection, owner?: ElectionOrganizer) {
         super(db, Election)
-        this.eligibleVoterService = new EligibleVoterService(db)
         this.owner = owner
         this.manager = db.getRepository(Election)
         this.hashService = new HashService()
-        this._db = db
+        this._eligibleVoterService = new EligibleVoterService(db)
     }
 
     async getById(id: number): Promise<Election | undefined> {
@@ -90,7 +87,7 @@ export class ElectionService extends BaseEntityService<Election> implements IHas
 
     async createElection(electionDTO: IElection): Promise<Election | undefined> {
         if (electionDTO.eligibleVoters) {
-            electionDTO.eligibleVoters = this.eligibleVoterService.correctListOfEligibleVoters(
+            electionDTO.eligibleVoters = this._eligibleVoterService.correctListOfEligibleVoters(
                 electionDTO.eligibleVoters
             )
         }
@@ -169,6 +166,13 @@ export class ElectionService extends BaseEntityService<Election> implements IHas
         const unhashedPassword = electionDTO.password
         const hashedPassword = await this.hashService.hash(unhashedPassword!)
         electionDTO.password = hashedPassword
+    }
+
+    /**
+     * Returns true of the election is finished, else false
+     */
+    isFinished(election: IElection) {
+        return election.status === ElectionStatus.Finished
     }
 
     verifyOwner(entity: Election): void {

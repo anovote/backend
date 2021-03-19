@@ -1,6 +1,7 @@
 import { Exclude } from 'class-transformer'
 import { IsEmail } from 'class-validator'
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm'
+import { Column, Entity, ManyToMany, PrimaryGeneratedColumn } from 'typeorm'
+import { Election } from '../Election/ElectionEntity'
 
 /**
  * An entity for representing eligible voters for an election. Voters should only have an identification.
@@ -20,6 +21,9 @@ export class EligibleVoter implements IEligibleVoter {
 
     @Column({ type: 'date', nullable: true })
     verified!: Date
+
+    @ManyToMany(() => Election, (election) => election.eligibleVoters)
+    elections!: Election[]
 }
 
 export interface IEligibleVoter {

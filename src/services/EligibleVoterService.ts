@@ -1,10 +1,10 @@
-import { filterForDuplicates, trimItemsInArray } from '@/helpers/array'
-import { isEmailValid } from '@/helpers/email'
-import { EligibleVoter, IEligibleVoter } from '@/models/EligibleVoter/EligibleVoterEntity'
 import { NotFoundError } from '@/lib/errors/http/NotFoundError'
 import { ServerErrorMessage } from '@/lib/errors/messages/ServerErrorMessages'
 import { Connection } from 'typeorm'
 import BaseEntityService from './BaseEntityService'
+import { filterForDuplicates, trimItemsInArray } from '@/helpers/array'
+import { isEmailValid } from '@/helpers/email'
+import { EligibleVoter, IEligibleVoter } from '@/models/EligibleVoter/EligibleVoterEntity'
 
 export class EligibleVoterService extends BaseEntityService<EligibleVoter> {
     constructor(db: Connection) {
@@ -21,6 +21,15 @@ export class EligibleVoterService extends BaseEntityService<EligibleVoter> {
         return voter
     }
 
+    /**
+     * Checks if the voter is already verified, returns true if verified, else false
+     * @param voter the voter to check for verification
+     * @returns true if voter is verified, else false
+     */
+    isVerified(voter: EligibleVoter) {
+        return voter.verified != null
+    }
+
     create(dto: EligibleVoter): Promise<EligibleVoter | undefined> {
         throw new NotFoundError({ message: ServerErrorMessage.notFound('Eligible Voter') })
     }
@@ -31,6 +40,33 @@ export class EligibleVoterService extends BaseEntityService<EligibleVoter> {
 
     delete(id: number): Promise<void> {
         throw new NotFoundError({ message: ServerErrorMessage.notFound('Eligible Voter') })
+    }
+
+    /**
+     * Returns the voter with given identification on given election id.
+     * If the voter and relation ship exists, returns the voter, else undefined
+     * @param identification the identification for voter
+     * @param electionId the election id it belongs to
+     * @returns voter or undefined if not found
+     */
+    async getVoterByIdentificationForElection(identification: string, electionId: number) {
+        return await this.repository
+            .createQueryBuilder('voter')
+            .leftJoinAndSelect('voter.elections', 'election')
+            .where('election.id = :electionId AND voter.identification = :identification', {
+                electionId: electionId,
+                identification: identification
+            })
+            .getOne()
+    }
+
+    /**
+     * Marks the voter verified
+     * @param voter the voter to mark as verified
+     * @returns
+     */
+    async markAsVerified(voter: EligibleVoter) {
+        return await this.repository.update(voter, { verified: new Date() })
     }
 
     /**
@@ -71,15 +107,6 @@ export class EligibleVoterService extends BaseEntityService<EligibleVoter> {
         }
 
         return voter
-    }
-
-    /**
-     * Marks the voter verified
-     * @param voter the voter to mark as verified
-     * @returns
-     */
-    async markAsVerified(voter: EligibleVoter) {
-        return await this.repository.update(voter, { verified: new Date() })
     }
 
     /**

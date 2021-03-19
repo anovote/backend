@@ -1,7 +1,6 @@
+import { IErrorResponseMessage, IResponseMessage } from './EventResponse'
+
 /**
  * The callback object an event with acknowledge should contain
  */
-export type AcknowledgeResponse = {
-    statusCode: number
-    message: string
-}
+export type AcknowledgeResponse = IResponseMessage | IErrorResponseMessage

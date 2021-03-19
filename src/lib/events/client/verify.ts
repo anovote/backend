@@ -1,12 +1,22 @@
 import config from '@/config'
+import { BaseError } from '@/lib/errors/BaseError'
+import { ErrorCode } from '@/lib/errors/ErrorCodes'
+import { BadRequestError } from '@/lib/errors/http/BadRequestError'
+import { ForbiddenError } from '@/lib/errors/http/ForbiddenError'
+import { NotFoundError } from '@/lib/errors/http/NotFoundError'
+import { ServerErrorMessage } from '@/lib/errors/messages/ServerErrorMessages'
 import { database } from '@/loaders'
 import mailTransporter from '@/loaders/nodemailer'
+import { AuthenticationService } from '@/services/AuthenticationService'
+import { ElectionService } from '@/services/ElectionService'
 import { EligibleVoterService } from '@/services/EligibleVoterService'
 import { EncryptionService } from '@/services/EncryptionService'
 import { MailService } from '@/services/MailService'
 import { VoterVerificationService } from '@/services/VoterVerificationService'
-import { StatusCodes } from 'http-status-codes'
-import { EventHandlerAcknowledges } from '../EventHandler'
+import { Events } from '@/lib/events'
+import { EventHandlerAcknowledges } from '@/lib/events/EventHandler'
+import { EventErrorMessage, EventMessage } from '@/lib/events/EventResponse'
+import { VoterSocket } from '@/lib/errors/websocket/AnoSocket'
 
 /**
  * Verifies a voter that have used their mail to verify their identity
@@ -15,31 +25,98 @@ import { EventHandlerAcknowledges } from '../EventHandler'
  * @param cb the callback to send acknowledgements with
  */
 export const verify: EventHandlerAcknowledges<{ code: string }> = async (data, _socket, cb) => {
-    const verificationService = new VoterVerificationService(
-        new MailService(config.frontend.url, await mailTransporter()),
-        new EncryptionService(true),
-        new EligibleVoterService(database)
-    )
-    const { code } = data
-
-    if (!code) {
-        cb({
-            statusCode: StatusCodes.BAD_REQUEST,
-            message: 'Verification code not provided'
-        })
-    }
-    const verificationCode = code!.toString()
-
+    const voterSocket = _socket as VoterSocket
     try {
-        await verificationService.verify(verificationCode)
-        cb({
-            statusCode: StatusCodes.OK,
-            message: 'You are verified. We are currently upgrading your socket'
+        const voterService = new EligibleVoterService(database)
+        const electionService = new ElectionService(database)
+        const verificationService = new VoterVerificationService(
+            new MailService(config.frontend.url, await mailTransporter()),
+            new EncryptionService(true),
+            voterService
+        )
+
+        const { code } = data
+        const decodedCode = verificationService.decodeVerificationCode(code)
+        // Early exit if we do not have a decoded token object
+        if (!decodedCode) {
+            const errorCode = code ? ErrorCode.VERIFICATION_CODE_INVALID : ErrorCode.VERIFICATION_CODE_MISSING
+            const message = code
+                ? ServerErrorMessage.invalidVerificationCode()
+                : ServerErrorMessage.isMissing('Verification code')
+            return cb(
+                EventErrorMessage(
+                    new BadRequestError({
+                        message,
+                        code: errorCode
+                    })
+                )
+            )
+        }
+
+        // Details contained in the verification code.
+        const { voterId, electionId, joinSocketId } = decodedCode
+        const voter = await voterService.getById(voterId)
+        const election = await electionService.getById(electionId)
+
+        // Handle missing voter/ election
+        if (!voter || !election) {
+            const entity = voter ? 'Election' : 'Voter'
+            const code = voter ? ErrorCode.ELECTION_NOT_EXIST : ErrorCode.VOTER_NOT_EXIST
+            return cb(EventErrorMessage(new NotFoundError({ message: ServerErrorMessage.notFound(entity), code })))
+        }
+
+        // Handle election state finished
+        if (electionService.isFinished(election)) {
+            return cb(
+                EventErrorMessage(
+                    new BadRequestError({
+                        message: ServerErrorMessage.electionFinished(),
+                        code: ErrorCode.ELECTION_FINISHED
+                    })
+                )
+            )
+        }
+
+        // Handle already verified voter
+        if (voterService.isVerified(voter)) {
+            return cb(
+                EventErrorMessage(
+                    new ForbiddenError({
+                        message: ServerErrorMessage.alreadyVerified(),
+                        code: ErrorCode.ALREADY_VERIFIED
+                    })
+                )
+            )
+        }
+
+        await verificationService.verify(voter)
+
+        // Generate token for voter
+        const authService = new AuthenticationService()
+        const token = authService.generateToken({
+            id: voterId,
+            organizer: false,
+            electionID: electionId
+        })
+
+        // Notify join page that it is verified. token and socketID for this socket is provided
+        // so the join page can can return response event when it has received the token, and
+        // notify the verification page that the join was successful, and stop the potential upgrade.
+        _socket
+            .to(joinSocketId)
+            .emit(Events.server.auth.voterVerified, EventMessage({ token, verificationSocketId: _socket.id }))
+
+        /**
+         * This event is triggered when the verification page has not received the join_verified event
+         * from the join page after a timeout has ended. This event upgrades the verification page
+         * to get the token and take over the join session.
+         */
+        _socket.once(Events.client.auth.upgradeVerificationToJoin, (_, cb) => {
+            voterSocket.electionId = electionId
+            voterSocket.voterId = voterId
+            cb(EventMessage({ token }))
         })
     } catch (err) {
-        cb({
-            statusCode: StatusCodes.FORBIDDEN,
-            message: 'We were not able to verify you...'
-        })
+        cb(EventErrorMessage(new BaseError({ message: ServerErrorMessage.unableToVerify() })))
     }
 }

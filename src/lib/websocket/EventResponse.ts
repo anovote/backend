@@ -1,5 +1,5 @@
 import { BaseError } from '@/lib/errors/BaseError'
-import { IErrorResponse } from '../errors/IErrorResponse'
+import { IErrorResponse } from '@/lib/errors/IErrorResponse'
 
 export interface IResponseMessage {
     data: unknown

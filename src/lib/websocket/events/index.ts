@@ -53,7 +53,8 @@ export const Events = {
             joinVerified: 'join_verified'
         },
         vote: {
-            error: 'vote_error'
+            error: 'vote_error',
+            newVote: 'new_vote'
         },
         election: {
             push: 'push_election',

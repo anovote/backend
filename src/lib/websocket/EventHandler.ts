@@ -1,4 +1,4 @@
-import { AnoSocket } from '../errors/websocket/AnoSocket'
+import { AnoSocket } from '@/lib/websocket/AnoSocket'
 import { AcknowledgeResponse } from './AcknowledgeResponse'
 
 /**

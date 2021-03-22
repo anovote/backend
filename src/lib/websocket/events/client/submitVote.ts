@@ -1,8 +1,10 @@
 import { database } from '@/loaders'
 import { IVote } from '@/models/Vote/IVote'
+import { SocketRoomService } from '@/services/SocketRoomService'
 import { VoteService } from '@/services/VoteService'
 import { StatusCodes } from 'http-status-codes'
-import { EventHandlerAcknowledges } from '../EventHandler'
+import { Events } from '..'
+import { EventHandlerAcknowledges } from '@/lib/websocket/EventHandler'
 
 /**
  * Submits a vote with the given vote details

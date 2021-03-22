@@ -12,10 +12,10 @@ import { EligibleVoterService } from '@/services/EligibleVoterService'
 import { EncryptionService } from '@/services/EncryptionService'
 import { MailService } from '@/services/MailService'
 import { VoterVerificationService } from '@/services/VoterVerificationService'
-import { Events } from '@/lib/events'
-import { EventHandlerAcknowledges } from '@/lib/events/EventHandler'
-import { EventErrorMessage, EventMessage } from '@/lib/events/EventResponse'
-import { VoterSocket } from '@/lib/errors/websocket/AnoSocket'
+import { Events } from '@/lib/websocket/events'
+import { EventHandlerAcknowledges } from '@/lib/websocket/EventHandler'
+import { EventErrorMessage, EventMessage } from '@/lib/websocket/EventResponse'
+import { VoterSocket } from '@/lib/websocket/AnoSocket'
 
 export const join: EventHandlerAcknowledges<{ email: string; electionCode: string }> = async (data, socket, cb) => {
     const voterSocket = socket as VoterSocket

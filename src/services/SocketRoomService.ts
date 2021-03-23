@@ -1,4 +1,5 @@
-import { AnoSocket } from '@/lib/errors/websocket/AnoSocket'
+import { BallotVoteStats } from '@/lib/voting/BallotStats'
+import { AnoSocket, OrganizerSocket } from '@/lib/websocket/AnoSocket'
 import { logger } from '@/loaders/logger'
 import { SocketRoomEntity, SocketRoomState } from '@/models/SocketRoom/SocketRoomEntity'
 import chalk from 'chalk'
@@ -10,6 +11,19 @@ export class SocketRoomService extends BaseEntityService<SocketRoomEntity> {
     // electionId: number
     private static instance: SocketRoomService
 
+    /**
+     * Contains a list of all election rooms with their organizer socket ID.
+     * An election room can exist without an organizer socket.
+     */
+    private _electionRooms: Map<
+        number,
+        {
+            // the socket id of the organizer of the election
+            organizerSocketId: string | undefined
+            // A map for all ballots, and the current stats of the voting
+            ballotVoteStats: Map<number, BallotVoteStats>
+        }
+    > = new Map()
     private constructor(databaseConnection: Connection) {
         super(databaseConnection, SocketRoomEntity)
         // this.electionId = electionId
@@ -51,6 +65,49 @@ export class SocketRoomService extends BaseEntityService<SocketRoomEntity> {
 
     delete(id: number): Promise<void> {
         throw new Error('Method not implemented.')
+    }
+
+    createRoom(electionId: number) {
+        const room = this._electionRooms.get(electionId)
+        if (!room) {
+            this._electionRooms.set(electionId, {
+                organizerSocketId: undefined,
+                ballotVoteStats: new Map()
+            })
+        }
+    }
+
+    deleteRoom(electionId: number) {
+        this._electionRooms.delete(electionId)
+    }
+    /**
+     * Assigns an organizer socket to a room, and set it as owner of the room
+     * @param organizerSocket an organizer that we want to assign as owner of the room
+     */
+    setElectionRoomOrganizer(electionId: number, organizerSocket: OrganizerSocket) {
+        const room = this._electionRooms.get(electionId)
+        if (room) room.organizerSocketId = organizerSocket.id
+    }
+
+    /**
+     * Assigns an organizer socket to a room, and set it as owner of the room
+     * @param organizerSocket an organizer that we want to assign as owner of the room
+     */
+    removeElectionRoomOrganizer(electionId: number) {
+        this._electionRooms.delete(electionId)
+    }
+
+    getRoom(electionId: number) {
+        return this._electionRooms.get(electionId)
+    }
+
+    /**
+     * Returns the election organizer socket id for the provided election.
+     * @param electionId the election id to get organizer socket from
+     * @returns returns the socket ID or undefined if organizer is not connected
+     */
+    getOrganizerSocketIdForElection(electionId: number) {
+        return this._electionRooms.get(electionId)?.organizerSocketId
     }
 
     /**

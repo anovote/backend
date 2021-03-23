@@ -5,6 +5,7 @@ import { VoteService } from '@/services/VoteService'
 import { StatusCodes } from 'http-status-codes'
 import { Events } from '..'
 import { EventHandlerAcknowledges } from '@/lib/websocket/EventHandler'
+import { VoterSocket } from '../../AnoSocket'
 
 /**
  * Submits a vote with the given vote details
@@ -13,8 +14,10 @@ import { EventHandlerAcknowledges } from '@/lib/websocket/EventHandler'
  * @param cb the callback to send acknowledgements with
  */
 export const submitVote: EventHandlerAcknowledges<IVote> = async (vote, socket, acknowledgement) => {
+    const voterSocket = socket as VoterSocket
     const submittedVote: IVote = vote
     const voteService = new VoteService(database)
+    const socketRoomService = SocketRoomService.getInstance()
 
     // Todo: send vote to organizer of the room
     // Todo: verify if vote is valid
@@ -24,6 +27,7 @@ export const submitVote: EventHandlerAcknowledges<IVote> = async (vote, socket, 
     // Todo: send error if ballot is not current (not sent, or ended)
     // Todo: send error if candidate is not existing on ballot
     // Todo: verify that a vote has not more candidates than allowed
+    // Todo: assign points to RANKED votes according to order of candidates
 
     if (!submittedVote.candidate || !submittedVote.ballot || !submittedVote.voter) {
         acknowledgement({
@@ -33,12 +37,29 @@ export const submitVote: EventHandlerAcknowledges<IVote> = async (vote, socket, 
         } as any)
     } else {
         try {
+            // Create vote first so we know it at least inserts into the database
             await voteService.create(submittedVote)
-            acknowledgement({
-                statusCode: StatusCodes.OK,
-                message: 'Vote was submitted!'
-                // Temp fix
-            } as any)
+            const room = socketRoomService.getRoom(voterSocket.electionId)
+            if (room) {
+                const ballot = room.ballotVoteStats.get(vote.ballot)
+                ballot?.addVotes([vote])
+                // If organizer is connected, we can get the socket id here to broadcast
+                if (room?.organizerSocketId) {
+                    // Volatile so events do not stack, we only want to send the last one
+                    socket.volatile.to(room.organizerSocketId).emit(Events.server.vote.newVote, ballot!.getStats())
+                }
+                acknowledgement({
+                    statusCode: StatusCodes.OK,
+                    message: 'Vote was submitted!'
+                    // Temp fix
+                } as any)
+            } else {
+                acknowledgement({
+                    statusCode: StatusCodes.NOT_FOUND,
+                    message: 'Room not found'
+                    // Temp fix
+                } as any)
+            }
         } catch (err) {
             acknowledgement({
                 statusCode: StatusCodes.FORBIDDEN,

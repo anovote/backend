@@ -3,13 +3,12 @@ import { Socket } from 'socket.io'
 /**
  * Base socket type for socket that are to join an election
  */
-export interface AnoSocket extends Socket {
-    electionId: number
-}
+export type AnoSocket = Socket
 /**
  * Sockets that belongs to a voter
  */
 export interface VoterSocket extends AnoSocket {
+    electionId: number
     voterId: number
 }
 

@@ -1,4 +1,5 @@
 import config from '@/config'
+import { BallotVoteStats } from '@/lib/voting/BallotStats'
 import { AnoSocket } from '@/lib/websocket/AnoSocket'
 import { Events } from '@/lib/websocket/events'
 import { join } from '@/lib/websocket/events/client/join'
@@ -34,13 +35,12 @@ export default (expressApp: Application) => {
         // standard events
         socketConnection.on(Events.standard.socket.disconnect, (reason) => disconnect(reason, socketConnection))
         socketConnection.on(Events.standard.manager.ping, (data) => ping(data, socketConnection))
-
         socketConnection.on('pushBallot', (ballot: Ballot, fn) => {
-            console.log(ballot)
             const { id } = ballot.election
+            // Add ballot to vote stats for the election room
+            socketRoomService.getRoom(id)?.ballotVoteStats.set(ballot.id, new BallotVoteStats(ballot))
             // todo set right room id
             socketServer.to(`ElectionRoom: ${id} `).emit('ballot', ballot)
-
             console.log('send ack')
 
             fn({ status: StatusCodes.OK, message: 'got it' })

@@ -1,4 +1,5 @@
 import { Ballot } from '@/models/Ballot/BallotEntity'
+import { BallotType } from '@/models/Ballot/BallotType'
 import { IVote } from '@/models/Vote/IVote'
 
 /**
@@ -51,17 +52,38 @@ export class BallotVoteStats {
 
     constructor(ballot: Ballot) {
         this._ballot = ballot
+        this.setCandidates()
     }
 
+    /**
+     * Sets the candidates from the ballot to to vote stat map
+     */
+    private setCandidates() {
+        for (const candidate of this._ballot.candidates) {
+            this._candidateVotes.set(candidate.id, new CandidateVote(candidate.id))
+        }
+    }
+
+    /**
+     * Increments total votes by one
+     */
     private incrementTotal() {
         this._total += 1
     }
 
+    /**
+     * Increments votes by one, and
+     * increment total votes
+     */
     private incrementVotes() {
         this._votes += 1
         this.incrementTotal()
     }
 
+    /**
+     * Increments the total blank votes by one, and
+     * increment total votes
+     */
     private incrementBlank() {
         this._blank += 1
         this.incrementTotal()
@@ -73,16 +95,29 @@ export class BallotVoteStats {
      * @param votes votes to add to the ballot stats
      */
     addVotes(votes: Array<IVote>) {
-        for (const vote of votes) {
-            if (vote.candidate && typeof vote.candidate === 'number') {
-                const candidate = this._candidateVotes.get(vote.candidate)
-                if (candidate) {
-                    candidate.incrementVote()
-                    this.incrementVotes()
-                }
-            } else {
-                this.incrementBlank()
+        if (this._ballot.type === BallotType.SINGLE && votes?.length > 0) {
+            this.setVoteStat(votes[0])
+        } else if (votes?.length > 0) {
+            for (const vote of votes) {
+                this.setVoteStat(vote)
             }
+        }
+    }
+
+    /**
+     * Increment vote stats from the provided vote.
+     * Increment candidate vote, or increment blank votes based on the vote
+     * @param vote the vote to do vote stat work of
+     */
+    private setVoteStat(vote: IVote) {
+        if (vote.candidate && typeof vote.candidate === 'number') {
+            const candidate = this._candidateVotes.get(vote.candidate)
+            if (candidate) {
+                candidate.incrementVote()
+                this.incrementVotes()
+            }
+        } else {
+            this.incrementBlank()
         }
     }
 

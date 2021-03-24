@@ -1,6 +1,6 @@
 import { logger } from '@/loaders/logger'
 import { Events } from '..'
-import { EventHandler } from '../EventHandler'
+import { EventHandler } from '@/lib/websocket/EventHandler'
 
 /**
  * Receives and sends a ping to the client

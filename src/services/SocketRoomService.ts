@@ -1,5 +1,5 @@
 import { BallotVoteStats } from '@/lib/voting/BallotStats'
-import { AnoSocket, OrganizerSocket } from '@/lib/websocket/AnoSocket'
+import { AnoSocket, OrganizerSocket, VoterSocket } from '@/lib/websocket/AnoSocket'
 import { logger } from '@/loaders/logger'
 import { SocketRoomEntity, SocketRoomState } from '@/models/SocketRoom/SocketRoomEntity'
 import chalk from 'chalk'
@@ -18,9 +18,9 @@ export class SocketRoomService extends BaseEntityService<SocketRoomEntity> {
     private _electionRooms: Map<
         number,
         {
-            // the socket id of the organizer of the election
+            // the socket id of the organizer of the election, is undefined if the organizer is not connected
             organizerSocketId: string | undefined
-            // A map for all ballots, and the current stats of the voting
+            // Contains ballot vote stats for all ballots for the election, the key is Ballot id
             ballotVoteStats: Map<number, BallotVoteStats>
         }
     > = new Map()
@@ -115,7 +115,7 @@ export class SocketRoomService extends BaseEntityService<SocketRoomEntity> {
      * @param clientSocket The client socket connection
      * @param socketServer The socket server
      */
-    async addUserToRoom(clientSocket: AnoSocket, socketServer: Server) {
+    async addUserToRoom(clientSocket: VoterSocket, socketServer: Server) {
         const socketId = chalk.blue(clientSocket.id)
         if (!clientSocket.electionId) {
             logger.info(

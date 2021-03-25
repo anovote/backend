@@ -19,8 +19,7 @@ export const submitVote: EventHandlerAcknowledges<IVote> = async (event) => {
     const voteService = new VoteService(database)
     const socketRoomService = SocketRoomService.getInstance()
 
-    // Todo: send vote to organizer of the room
-    // Todo: verify if vote is valid
+    // Todo: rewrite ERRORS
     // Todo: verify that a voter has not voted already for the ballot
     // Todo: verify that the ballot is the current
     // Todo: send error if ballot does not exist

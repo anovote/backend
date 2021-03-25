@@ -72,6 +72,23 @@ export class ElectionService extends BaseEntityService<Election> implements IHas
         }
     }
 
+    /**
+     * Returns all started and not started elections
+     * @returns return all started, and non started election
+     */
+    async getAllStartedAndNonStarted() {
+        return await this.manager.find({
+            where: [
+                {
+                    status: ElectionStatus.NotStarted
+                },
+                {
+                    status: ElectionStatus.Started
+                }
+            ]
+        })
+    }
+
     private async getElectionById(id: number): Promise<Election | undefined> {
         if (this.owner) {
             return await this.manager.findOne(id, {

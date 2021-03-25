@@ -19,11 +19,12 @@ import { StatusCodes } from 'http-status-codes'
 import { Server } from 'socket.io'
 import { logger } from './logger'
 
-export default (expressApp: Application) => {
+export default async (expressApp: Application) => {
     const httpServer = http.createServer(expressApp)
     const socketServer = new Server(httpServer, {})
 
     const socketRoomService = SocketRoomService.getInstance()
+    await socketRoomService.loadElections()
 
     socketServer.use(validateConnection)
     /**

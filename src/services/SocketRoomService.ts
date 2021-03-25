@@ -1,11 +1,13 @@
 import { BallotVoteStats } from '@/lib/voting/BallotStats'
 import { AnoSocket, OrganizerSocket, VoterSocket } from '@/lib/websocket/AnoSocket'
+import { database } from '@/loaders'
 import { logger } from '@/loaders/logger'
 import { SocketRoomEntity, SocketRoomState } from '@/models/SocketRoom/SocketRoomEntity'
 import chalk from 'chalk'
 import { Server } from 'socket.io'
 import { Connection, getConnection } from 'typeorm'
 import BaseEntityService, { CrudOptions } from './BaseEntityService'
+import { ElectionService } from './ElectionService'
 
 export class SocketRoomService extends BaseEntityService<SocketRoomEntity> {
     // electionId: number
@@ -27,6 +29,26 @@ export class SocketRoomService extends BaseEntityService<SocketRoomEntity> {
     private constructor(databaseConnection: Connection) {
         super(databaseConnection, SocketRoomEntity)
         // this.electionId = electionId
+    }
+
+    /**
+     * Loads all non-started and started elections to generate all rooms
+     */
+    async loadElections() {
+        // TODO: Load all votes for each ballots to get proper stats for the ballots
+        const electionService = new ElectionService(database)
+        const elections = await electionService.getAllStartedAndNonStarted()
+        for (const election of elections) {
+            const ballotMap = new Map()
+
+            for (const ballot of election.ballots) {
+                ballotMap.set(ballot.id, new BallotVoteStats(ballot))
+            }
+            this._electionRooms.set(election.id, {
+                organizerSocketId: undefined,
+                ballotVoteStats: ballotMap
+            })
+        }
     }
 
     static getInstance(): SocketRoomService {

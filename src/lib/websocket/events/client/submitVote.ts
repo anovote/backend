@@ -29,7 +29,7 @@ export const submitVote: EventHandlerAcknowledges<IVote> = async (event) => {
     // Todo: verify that a vote has not more candidates than allowed
     // Todo: assign points to RANKED votes according to order of candidates
 
-    if (!submittedVote.candidate || !submittedVote.ballot || !submittedVote.voter) {
+    if (!submittedVote.ballot || !submittedVote.voter) {
         event.acknowledgement({
             statusCode: StatusCodes.BAD_REQUEST,
             message: 'Please provide the required data'
@@ -40,11 +40,12 @@ export const submitVote: EventHandlerAcknowledges<IVote> = async (event) => {
             // Create vote first so we know it at least inserts into the database
             await voteService.create(submittedVote)
             const room = socketRoomService.getRoom(voterSocket.electionId)
+
             if (room) {
                 const ballotStats = room.ballotVoteStats.get(submittedVote.ballot)
                 ballotStats?.addVotes([submittedVote])
                 // If organizer is connected, we can get the socket id here to broadcast
-                if (room?.organizerSocketId) {
+                if (room.organizerSocketId) {
                     // Volatile so events do not stack, we only want to send the last one
                     voterSocket.volatile
                         .to(room.organizerSocketId)

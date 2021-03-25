@@ -17,11 +17,11 @@ import { EventHandlerAcknowledges } from '@/lib/websocket/EventHandler'
 import { EventErrorMessage, EventMessage } from '@/lib/websocket/EventResponse'
 import { VoterSocket } from '@/lib/websocket/AnoSocket'
 
-export const join: EventHandlerAcknowledges<{ email: string; electionCode: string }> = async (data, socket, cb) => {
-    const voterSocket = socket as VoterSocket
+export const join: EventHandlerAcknowledges<{ email: string; electionCode: string }> = async (event) => {
+    const voterSocket = event.client as VoterSocket
     try {
-        if (data.email && data.electionCode) {
-            const { email, electionCode } = data
+        if (event.data.email && event.data.electionCode) {
+            const { email, electionCode } = event.data
             const electionId = Number.parseInt(electionCode)
             const eligibleVoterService = new EligibleVoterService(database)
             const voter = await eligibleVoterService.getVoterByIdentificationForElection(email, electionId)
@@ -37,11 +37,13 @@ export const join: EventHandlerAcknowledges<{ email: string; electionCode: strin
             if (!voter || !election) {
                 const entity = voter ? 'Election' : 'Voter'
                 const code = voter ? ErrorCode.ELECTION_NOT_EXIST : ErrorCode.VOTER_NOT_EXIST
-                return cb(EventErrorMessage(new NotFoundError({ message: ServerErrorMessage.notFound(entity), code })))
+                return event.acknowledgement(
+                    EventErrorMessage(new NotFoundError({ message: ServerErrorMessage.notFound(entity), code }))
+                )
             }
             // Handle election state finished
             if (electionService.isFinished(election)) {
-                return cb(
+                return event.acknowledgement(
                     EventErrorMessage(
                         new BadRequestError({
                             message: ServerErrorMessage.electionFinished(),
@@ -52,7 +54,7 @@ export const join: EventHandlerAcknowledges<{ email: string; electionCode: strin
             }
             // Handle already verified voter
             if (eligibleVoterService.isVerified(voter)) {
-                return cb(
+                return event.acknowledgement(
                     EventErrorMessage(
                         new ForbiddenError({
                             message: ServerErrorMessage.alreadyVerified(),
@@ -63,9 +65,9 @@ export const join: EventHandlerAcknowledges<{ email: string; electionCode: strin
             }
 
             // Stage the voter for verification
-            await verificationService.stage(voter, election, socket.id)
+            await verificationService.stage(voter, election, voterSocket.id)
             // Ok emit, that we have proceeded
-            cb(EventMessage({}))
+            event.acknowledgement(EventMessage({}))
             /**
              * A single event listener that when triggered, notifies the VERIFICATION socket that
              * the join page has successfully joined.
@@ -76,11 +78,13 @@ export const join: EventHandlerAcknowledges<{ email: string; electionCode: strin
                 voterSocket.to(verificationSocketId).emit(Events.server.auth.joinVerified)
             })
         } else {
-            const entity = data.email ? 'Election code' : 'Email'
-            const code = data.email ? ErrorCode.ELECTION_CODE_MISSING : ErrorCode.VOTER_IDENTIFICATION_MISSING
-            cb(EventErrorMessage(new BadRequestError({ message: ServerErrorMessage.isMissing(entity), code })))
+            const entity = event.data.email ? 'Election code' : 'Email'
+            const code = event.data.email ? ErrorCode.ELECTION_CODE_MISSING : ErrorCode.VOTER_IDENTIFICATION_MISSING
+            event.acknowledgement(
+                EventErrorMessage(new BadRequestError({ message: ServerErrorMessage.isMissing(entity), code }))
+            )
         }
     } catch (err) {
-        cb(EventErrorMessage(new BaseError({ message: ServerErrorMessage.unableToVerify() })))
+        event.acknowledgement(EventErrorMessage(new BaseError({ message: ServerErrorMessage.unableToVerify() })))
     }
 }

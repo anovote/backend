@@ -13,9 +13,9 @@ import { VoterSocket } from '../../AnoSocket'
  * @param socket the socket
  * @param cb the callback to send acknowledgements with
  */
-export const submitVote: EventHandlerAcknowledges<IVote> = async (vote, socket, acknowledgement) => {
-    const voterSocket = socket as VoterSocket
-    const submittedVote: IVote = vote
+export const submitVote: EventHandlerAcknowledges<IVote> = async (event) => {
+    const voterSocket = event.client as VoterSocket
+    const submittedVote: IVote = event.data
     const voteService = new VoteService(database)
     const socketRoomService = SocketRoomService.getInstance()
 
@@ -30,7 +30,7 @@ export const submitVote: EventHandlerAcknowledges<IVote> = async (vote, socket, 
     // Todo: assign points to RANKED votes according to order of candidates
 
     if (!submittedVote.candidate || !submittedVote.ballot || !submittedVote.voter) {
-        acknowledgement({
+        event.acknowledgement({
             statusCode: StatusCodes.BAD_REQUEST,
             message: 'Please provide the required data'
             // Temp fix
@@ -41,27 +41,29 @@ export const submitVote: EventHandlerAcknowledges<IVote> = async (vote, socket, 
             await voteService.create(submittedVote)
             const room = socketRoomService.getRoom(voterSocket.electionId)
             if (room) {
-                const ballotStats = room.ballotVoteStats.get(vote.ballot)
-                ballotStats?.addVotes([vote])
+                const ballotStats = room.ballotVoteStats.get(submittedVote.ballot)
+                ballotStats?.addVotes([submittedVote])
                 // If organizer is connected, we can get the socket id here to broadcast
                 if (room?.organizerSocketId) {
                     // Volatile so events do not stack, we only want to send the last one
-                    socket.volatile.to(room.organizerSocketId).emit(Events.server.vote.newVote, ballotStats!.getStats())
+                    voterSocket.volatile
+                        .to(room.organizerSocketId)
+                        .emit(Events.server.vote.newVote, ballotStats!.getStats())
                 }
-                acknowledgement({
+                event.acknowledgement({
                     statusCode: StatusCodes.OK,
                     message: 'Vote was submitted!'
                     // Temp fix
                 } as any)
             } else {
-                acknowledgement({
+                event.acknowledgement({
                     statusCode: StatusCodes.NOT_FOUND,
                     message: 'Room not found'
                     // Temp fix
                 } as any)
             }
         } catch (err) {
-            acknowledgement({
+            event.acknowledgement({
                 statusCode: StatusCodes.FORBIDDEN,
                 message: 'We were not able to submit your vote'
                 // Temp fix

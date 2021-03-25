@@ -11,6 +11,7 @@ import { validateConnection } from '@/lib/websocket/middleware/ValidateConnectio
 import { Ballot } from '@/models/Ballot/BallotEntity'
 import { SocketRoomService } from '@/services/SocketRoomService'
 import chalk from 'chalk'
+import { Socket } from 'dgram'
 import { Application } from 'express'
 import http from 'http'
 import { StatusCodes } from 'http-status-codes'
@@ -31,31 +32,25 @@ export default (expressApp: Application) => {
     socketServer.on(Events.standard.socket.connect, async (socketConnection: AnoSocket) => {
         logger.info(`${chalk.blue(socketConnection.id)} connected`)
 
+        const sockets = { client: socketConnection, server: socketServer }
+
         //await socketRoomService.addUserToRoom(socketConnection, socketServer)
         // standard events
-        socketConnection.on(Events.standard.socket.disconnect, (reason) => disconnect(reason, socketConnection))
-        socketConnection.on(Events.standard.manager.ping, (data) => ping(data, socketConnection))
-        socketConnection.on('pushBallot', (ballot: Ballot, fn) => {
-            const { id } = ballot.election
-            // Add ballot to vote stats for the election room
-            socketRoomService.getRoom(id)?.ballotVoteStats.set(ballot.id, new BallotVoteStats(ballot))
-            // todo set right room id
-            socketServer.to(`ElectionRoom: ${id} `).emit('ballot', ballot)
-            console.log('send ack')
-
-            fn({ status: StatusCodes.OK, message: 'got it' })
-        })
+        socketConnection.on(Events.standard.socket.disconnect, (data) => disconnect({ ...sockets, data }))
+        socketConnection.on(Events.standard.manager.ping, (data) => ping({ ...sockets, data }))
 
         socketConnection.on('disconnect', (reason) => {
             logger.info(`${chalk.blue(socketConnection.id)} was disconnected due to: ${reason}`)
         })
         // voter events
-        socketConnection.on(Events.client.auth.join, (data, callback) => join(data, socketConnection, callback))
-        socketConnection.on(Events.client.auth.verify.voterIntegrity, (data, callback) =>
-            verify(data, socketConnection, callback)
+        socketConnection.on(Events.client.auth.join, (data, acknowledgement) =>
+            join({ ...sockets, data, acknowledgement })
         )
-        socketConnection.on(Events.client.vote.submit, (vote, acknowledgement) =>
-            submitVote(vote, socketConnection, acknowledgement)
+        socketConnection.on(Events.client.auth.verify.voterIntegrity, (data, acknowledgement) =>
+            verify({ ...sockets, data, acknowledgement })
+        )
+        socketConnection.on(Events.client.vote.submit, (data, acknowledgement) =>
+            submitVote({ ...sockets, data, acknowledgement })
         )
     })
 

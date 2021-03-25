@@ -199,6 +199,7 @@ it('should validate to true for this data', async () => {
         status: 0,
         isLocked: false,
         isAutomatic: false,
+        ballots: [],
         eligibleVoters: [
             {
                 identification: 'opsaj@gmail.com'

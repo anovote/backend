@@ -30,7 +30,8 @@ beforeAll(async () => {
         status: ElectionStatus.NotStarted,
         isLocked: true,
         isAutomatic: false,
-        eligibleVoters: []
+        eligibleVoters: [],
+        ballots: []
     }
     electionService = new ElectionService(db, organizer)
 })
@@ -63,7 +64,8 @@ it('should create a election with all data filled out', async () => {
         status: ElectionStatus.NotStarted,
         isLocked: false,
         isAutomatic: false,
-        eligibleVoters: []
+        eligibleVoters: [],
+        ballots: []
     })
     expect(election).toBeInstanceOf(Election)
 })
@@ -76,7 +78,8 @@ it('should create a election without image, openDate and closeDate', async () =>
         status: ElectionStatus.NotStarted,
         isLocked: false,
         isAutomatic: false,
-        eligibleVoters: []
+        eligibleVoters: [],
+        ballots: []
     })
     expect(election).toBeInstanceOf(Election)
 })
@@ -125,7 +128,8 @@ it('should delete a election which exists', async () => {
         status: ElectionStatus.NotStarted,
         isLocked: false,
         isAutomatic: false,
-        eligibleVoters: []
+        eligibleVoters: [],
+        ballots: []
     })
     await expect(electionService.deleteElectionById(election!.id)).resolves.toBeUndefined()
 })

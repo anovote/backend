@@ -46,7 +46,8 @@ export default {
         }
     },
     frontend: {
-        url: process.env.FRONTEND_PATH
+        url: process.env.FRONTEND_PATH,
+        port: process.env.FRONTEND_PORT
     },
     ws: {
         port: process.env.WS_PORT

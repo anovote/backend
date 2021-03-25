@@ -6,6 +6,6 @@ import { EventHandler } from '@/lib/websocket/EventHandler'
  * @param socket the anosocket to work with
  * @param data info about why the disconnect happened
  */
-export const disconnect: EventHandler<unknown> = (reason, socket) => {
-    logger.info(`${socket.id} disconnected due to: ${reason}`)
+export const disconnect: EventHandler<unknown> = (event) => {
+    logger.info(`${event.client.id} disconnected due to: ${event.data}`)
 }

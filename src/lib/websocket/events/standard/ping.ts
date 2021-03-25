@@ -7,10 +7,10 @@ import { EventHandler } from '@/lib/websocket/EventHandler'
  * @param socket the anosocket to work with
  * @param data optional data that may be passed with the event
  */
-export const ping: EventHandler<string> = (data, socket) => {
-    const socketId = socket.id
+export const ping: EventHandler<string> = (event) => {
+    const socketId = event.client.id
     const ping = Events.standard.manager
 
     logger.info(`Got ${ping} from ${socketId}, responding with ${ping}`)
-    socket.send(ping)
+    event.client.send(ping)
 }

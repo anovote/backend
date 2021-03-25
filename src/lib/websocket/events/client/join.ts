@@ -30,7 +30,7 @@ export const join: EventHandlerAcknowledges<{ email: string; electionCode: strin
             const election = await electionService.getById(electionId)
 
             const verificationService = new VoterVerificationService(
-                new MailService(config.frontend.url, await mailTransporter()),
+                new MailService(`http://${config.frontend.url}:${config.frontend.port}`, await mailTransporter()),
                 new EncryptionService(true),
                 eligibleVoterService
             )

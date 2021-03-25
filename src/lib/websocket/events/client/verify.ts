@@ -17,6 +17,7 @@ import { Events } from '@/lib/websocket/events'
 import { EventHandlerAcknowledges } from '@/lib/websocket/EventHandler'
 import { EventErrorMessage, EventMessage } from '@/lib/websocket/EventResponse'
 import { VoterSocket } from '@/lib/websocket/AnoSocket'
+import { SocketRoomService } from '@/services/SocketRoomService'
 
 /**
  * Verifies a voter that have used their mail to verify their identity
@@ -113,9 +114,10 @@ export const verify: EventHandlerAcknowledges<{ code: string }> = async (event) 
          * from the join page after a timeout has ended. This event upgrades the verification page
          * to get the token and take over the join session.
          */
-        voterSocket.once(Events.client.auth.upgradeVerificationToJoin, (_, cb) => {
+        voterSocket.once(Events.client.auth.upgradeVerificationToJoin, async (_, cb) => {
             voterSocket.electionId = electionId
             voterSocket.voterId = voterId
+            await SocketRoomService.getInstance().addUserToRoom(voterSocket, event.server)
             cb(EventMessage({ token }))
         })
     } catch (err) {

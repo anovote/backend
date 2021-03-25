@@ -16,6 +16,7 @@ import { Events } from '@/lib/websocket/events'
 import { EventHandlerAcknowledges } from '@/lib/websocket/EventHandler'
 import { EventErrorMessage, EventMessage } from '@/lib/websocket/EventResponse'
 import { VoterSocket } from '@/lib/websocket/AnoSocket'
+import { SocketRoomService } from '@/services/SocketRoomService'
 
 export const join: EventHandlerAcknowledges<{ email: string; electionCode: string }> = async (event) => {
     const voterSocket = event.client as VoterSocket
@@ -72,9 +73,10 @@ export const join: EventHandlerAcknowledges<{ email: string; electionCode: strin
              * A single event listener that when triggered, notifies the VERIFICATION socket that
              * the join page has successfully joined.
              */
-            voterSocket.once(Events.client.auth.voterVerifiedReceived, (verificationSocketId: string) => {
+            voterSocket.once(Events.client.auth.voterVerifiedReceived, async (verificationSocketId: string) => {
                 voterSocket.electionId = election.id
                 voterSocket.voterId = voter.id
+                await SocketRoomService.getInstance().addUserToRoom(voterSocket, event.server)
                 voterSocket.to(verificationSocketId).emit(Events.server.auth.joinVerified)
             })
         } else {

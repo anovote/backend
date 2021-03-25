@@ -36,7 +36,6 @@ export default async (expressApp: Application) => {
 
         const sockets = { client: socketConnection, server: socketServer }
 
-        // await socketRoomService.addUserToRoom(socketConnection, socketServer)
         // standard events
         socketConnection.on(Events.standard.socket.disconnect, (data) => disconnect({ ...sockets, data }))
         socketConnection.on(Events.standard.manager.ping, (data) => ping({ ...sockets, data }))

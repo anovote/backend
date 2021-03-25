@@ -23,6 +23,7 @@ export const tokenJoin: EventHandlerAcknowledges<ITokenJoinPayload> = (event) =>
                 // Ok emit, that we have proceeded
                 event.acknowledgement(EventMessage({}))
                 if (decoded.organizer) {
+                    ;(event.client as OrganizerSocket).organizerId = decoded.id
                     organizerJoin(event)
                 }
             } else {

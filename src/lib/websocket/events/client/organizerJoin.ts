@@ -8,6 +8,7 @@ import { BallotService } from '@/services/BallotService'
 import { ElectionService } from '@/services/ElectionService'
 import { SocketRoomService } from '@/services/SocketRoomService'
 import { StatusCodes } from 'http-status-codes'
+import { Events } from 'lib/websocket/events'
 import { ITokenJoinPayload } from './tokenJoin'
 // TODO CLEAN UP EVENTS
 export const organizerJoin: EventHandlerAcknowledges<ITokenJoinPayload> = (event) => {
@@ -33,7 +34,7 @@ export const organizerJoin: EventHandlerAcknowledges<ITokenJoinPayload> = (event
                     }
                 }
                 // todo set right room id
-                event.server.to(electionId.toString()).emit('ballot', ballot)
+                event.server.to(electionId.toString()).emit(Events.server.ballot.push, ballot)
                 fn({ status: StatusCodes.OK, message: 'got it' })
             }
         )

@@ -1,5 +1,4 @@
 import config from '@/config'
-import { BallotVoteStats } from '@/lib/voting/BallotStats'
 import { AnoSocket } from '@/lib/websocket/AnoSocket'
 import { Events } from '@/lib/websocket/events'
 import { join } from '@/lib/websocket/events/client/join'
@@ -9,13 +8,10 @@ import { verify } from '@/lib/websocket/events/client/verify'
 import { disconnect } from '@/lib/websocket/events/standard/disconnect'
 import { ping } from '@/lib/websocket/events/standard/ping'
 import { validateConnection } from '@/lib/websocket/middleware/ValidateConnection'
-import { Ballot } from '@/models/Ballot/BallotEntity'
 import { SocketRoomService } from '@/services/SocketRoomService'
 import chalk from 'chalk'
-import { Socket } from 'dgram'
 import { Application } from 'express'
 import http from 'http'
-import { StatusCodes } from 'http-status-codes'
 import { Server } from 'socket.io'
 import { logger } from './logger'
 
@@ -33,7 +29,7 @@ export default async (expressApp: Application) => {
      *
      * ID on election is room name
      */
-    socketServer.on(Events.standard.socket.connect, async (socketConnection: AnoSocket) => {
+    socketServer.on(Events.standard.socket.connect, (socketConnection: AnoSocket) => {
         logger.info(`${chalk.blue(socketConnection.id)} connected`)
 
         const sockets = { client: socketConnection, server: socketServer }
@@ -42,9 +38,6 @@ export default async (expressApp: Application) => {
         socketConnection.on(Events.standard.socket.disconnect, (data) => disconnect({ ...sockets, data }))
         socketConnection.on(Events.standard.manager.ping, (data) => ping({ ...sockets, data }))
 
-        socketConnection.on('disconnect', (reason) => {
-            logger.info(`${chalk.blue(socketConnection.id)} was disconnected due to: ${reason}`)
-        })
         socketConnection.on(Events.client.auth.withToken, (data, acknowledgement) => {
             tokenJoin({ ...sockets, data, acknowledgement })
         })

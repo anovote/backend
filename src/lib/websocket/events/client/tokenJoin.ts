@@ -1,12 +1,9 @@
-import { BallotVoteStats } from '@/lib/voting/BallotStats'
 import { OrganizerSocket } from '@/lib/websocket/AnoSocket'
 import { EventHandlerAcknowledges } from '@/lib/websocket/EventHandler'
-import { EventErrorMessage, EventMessage } from '@/lib/websocket/EventResponse'
-import { Ballot } from '@/models/Ballot/BallotEntity'
+import { EventErrorMessage } from '@/lib/websocket/EventResponse'
 import { AuthenticationService } from '@/services/AuthenticationService'
 import { SocketRoomService } from '@/services/SocketRoomService'
-import { StatusCodes } from 'http-status-codes'
-import { organizerJoin } from './organizerJoin'
+import { organizerJoin } from './organizer/organizerJoin'
 
 export interface ITokenJoinPayload {
     token: string
@@ -20,8 +17,6 @@ export const tokenJoin: EventHandlerAcknowledges<ITokenJoinPayload> = (event) =>
             const { token } = event.data
             const decoded = authService.verifyToken(token)
             if (decoded) {
-                // Ok emit, that we have proceeded
-                event.acknowledgement(EventMessage({}))
                 if (decoded.organizer) {
                     ;(event.client as OrganizerSocket).organizerId = decoded.id
                     organizerJoin(event)

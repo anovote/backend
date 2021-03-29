@@ -3,9 +3,9 @@ import { IVote } from '@/models/Vote/IVote'
 import { SocketRoomService } from '@/services/SocketRoomService'
 import { VoteService } from '@/services/VoteService'
 import { StatusCodes } from 'http-status-codes'
-import { Events } from '..'
+import { Events } from '../..'
 import { EventHandlerAcknowledges } from '@/lib/websocket/EventHandler'
-import { VoterSocket } from '../../AnoSocket'
+import { VoterSocket } from '../../../AnoSocket'
 
 /**
  * Submits a vote with the given vote details

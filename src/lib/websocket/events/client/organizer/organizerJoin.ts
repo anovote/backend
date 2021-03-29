@@ -9,7 +9,7 @@ import { ElectionService } from '@/services/ElectionService'
 import { SocketRoomService } from '@/services/SocketRoomService'
 import { StatusCodes } from 'http-status-codes'
 import { Events } from 'lib/websocket/events'
-import { ITokenJoinPayload } from './tokenJoin'
+import { ITokenJoinPayload } from '../tokenJoin'
 // TODO CLEAN UP EVENTS
 export const organizerJoin: EventHandlerAcknowledges<ITokenJoinPayload> = (event) => {
     const socketRoomService = SocketRoomService.getInstance()

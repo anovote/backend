@@ -16,7 +16,7 @@ export const organizerJoin: EventHandlerAcknowledges<ITokenJoinPayload> = (event
     const organizerSocket = event.client as OrganizerSocket
     try {
         // Add protected events to socket
-        organizerSocket.on(Events.client.election.joinElection, ({ electionId }: { electionId: number }) => {
+        organizerSocket.on(Events.client.election.administrate, ({ electionId }: { electionId: number }) => {
             SocketRoomService.getInstance().setElectionRoomOrganizer(electionId, organizerSocket)
         })
         organizerSocket.on(

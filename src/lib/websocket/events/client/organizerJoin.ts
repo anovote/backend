@@ -16,11 +16,11 @@ export const organizerJoin: EventHandlerAcknowledges<ITokenJoinPayload> = (event
     const organizerSocket = event.client as OrganizerSocket
     try {
         // Add protected events to socket
-        organizerSocket.on('join_election', ({ electionId }: { electionId: number }) => {
+        organizerSocket.on(Events.client.election.joinElection, ({ electionId }: { electionId: number }) => {
             SocketRoomService.getInstance().setElectionRoomOrganizer(electionId, organizerSocket)
         })
         organizerSocket.on(
-            'pushBallot',
+            Events.client.ballot.push,
             async ({ ballotId, electionId }: { ballotId: number; electionId: number }, fn) => {
                 // Add ballot to vote stats for the election room
                 const ballotService = new BallotService(database, new ElectionService(database), {

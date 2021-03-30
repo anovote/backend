@@ -19,11 +19,12 @@ import { MailService } from '@/services/MailService'
 import { VoterVerificationService } from '@/services/VoterVerificationService'
 import { joined } from './joined'
 
-export const join: EventHandlerAcknowledges<{ email: string; electionCode: ElectionCode }> = async (event) => {
+export const join: EventHandlerAcknowledges<{ email: string; electionCode: string }> = async (event) => {
     const voterSocket = event.client as VoterSocket
     try {
         if (event.data.email && event.data.electionCode) {
-            const { email, electionCode } = event.data
+            const { email } = event.data
+            const electionCode: ElectionCode = Number.parseInt(event.data.electionCode)
             const eligibleVoterService = new EligibleVoterService(database)
             const voter = await eligibleVoterService.getVoterByIdentificationForElection(email, electionCode)
             const electionService = new ElectionService(database)

@@ -2,7 +2,6 @@ import { OrganizerSocket } from '@/lib/websocket/AnoSocket'
 import { EventHandlerAcknowledges } from '@/lib/websocket/EventHandler'
 import { EventErrorMessage } from '@/lib/websocket/EventResponse'
 import { AuthenticationService } from '@/services/AuthenticationService'
-import { SocketRoomService } from '@/services/SocketRoomService'
 import { organizerJoin } from './organizer/organizerJoin'
 
 export interface ITokenJoinPayload {
@@ -10,7 +9,6 @@ export interface ITokenJoinPayload {
 }
 // JOIN HANDLER FOR TOKEN AUTHENTICATION
 export const tokenJoin: EventHandlerAcknowledges<ITokenJoinPayload> = (event) => {
-    const socketRoomService = SocketRoomService.getInstance()
     const authService = new AuthenticationService()
     try {
         if (event.data && event.data.token) {
@@ -26,6 +24,7 @@ export const tokenJoin: EventHandlerAcknowledges<ITokenJoinPayload> = (event) =>
             }
         }
     } catch (err) {
+        //TODO handle other errors and convert to response error format
         event.acknowledgement(EventErrorMessage(err))
     }
 }

@@ -38,7 +38,7 @@ export const submitVote: EventHandlerAcknowledges<IVote> = async (event) => {
         try {
             // Create vote first so we know it at least inserts into the database
             await voteService.create(submittedVote)
-            const room = socketRoomService.getRoom(voterSocket.electionId)
+            const room = socketRoomService.getRoom(voterSocket.electionCode)
 
             if (room) {
                 const ballotStats = room.ballotVoteStats.get(submittedVote.ballot)

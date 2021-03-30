@@ -139,24 +139,24 @@ export class SocketRoomService extends BaseEntityService<SocketRoomEntity> {
      */
     async addUserToRoom(clientSocket: VoterSocket, socketServer: Server) {
         const socketId = chalk.blue(clientSocket.id)
-        if (!clientSocket.electionId) {
+        if (!clientSocket.electionCode) {
             logger.info(
-                `tried to connect to room ${clientSocket.electionId}. This room is either closed or does not exist`
+                `tried to connect to room ${clientSocket.electionCode}. This room is either closed or does not exist`
             )
             return
         }
-        const room = await this.getById(clientSocket.electionId!)
+        const room = await this.getById(clientSocket.electionCode!)
         const openRoom = room?.roomState === SocketRoomState.OPEN
         if (!openRoom) {
             logger.info(
-                `tried to connect to room ${clientSocket.electionId}. This room is either closed or does not exist`
+                `tried to connect to room ${clientSocket.electionCode}. This room is either closed or does not exist`
             )
             return
         }
 
-        const electionIdString = clientSocket.electionId!.toString()
-        logger.info(`${socketId} was added to election room ${electionIdString}`)
-        await clientSocket.join(electionIdString)
-        socketServer.to(electionIdString).send(`You have joined election room: ${electionIdString}`)
+        const electionCodeString = clientSocket.electionCode!.toString()
+        logger.info(`${socketId} was added to election room ${electionCodeString}`)
+        await clientSocket.join(electionCodeString)
+        socketServer.to(clientSocket.id).send(`You have joined election room: ${electionCodeString}`)
     }
 }

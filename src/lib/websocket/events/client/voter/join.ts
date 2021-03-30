@@ -5,6 +5,11 @@ import { BadRequestError } from '@/lib/errors/http/BadRequestError'
 import { ForbiddenError } from '@/lib/errors/http/ForbiddenError'
 import { NotFoundError } from '@/lib/errors/http/NotFoundError'
 import { ServerErrorMessage } from '@/lib/errors/messages/ServerErrorMessages'
+import { ElectionCode } from '@/lib/voting/ElectionCode'
+import { VoterSocket } from '@/lib/websocket/AnoSocket'
+import { EventHandlerAcknowledges } from '@/lib/websocket/EventHandler'
+import { EventErrorMessage, EventMessage } from '@/lib/websocket/EventResponse'
+import { Events } from '@/lib/websocket/events'
 import { database } from '@/loaders'
 import mailTransporter from '@/loaders/nodemailer'
 import { ElectionService } from '@/services/ElectionService'
@@ -12,22 +17,17 @@ import { EligibleVoterService } from '@/services/EligibleVoterService'
 import { EncryptionService } from '@/services/EncryptionService'
 import { MailService } from '@/services/MailService'
 import { VoterVerificationService } from '@/services/VoterVerificationService'
-import { Events } from '@/lib/websocket/events'
-import { EventHandlerAcknowledges } from '@/lib/websocket/EventHandler'
-import { EventErrorMessage, EventMessage } from '@/lib/websocket/EventResponse'
-import { VoterSocket } from '@/lib/websocket/AnoSocket'
-import { SocketRoomService } from '@/services/SocketRoomService'
+import { joined } from './joined'
 
-export const join: EventHandlerAcknowledges<{ email: string; electionCode: string }> = async (event) => {
+export const join: EventHandlerAcknowledges<{ email: string; electionCode: ElectionCode }> = async (event) => {
     const voterSocket = event.client as VoterSocket
     try {
         if (event.data.email && event.data.electionCode) {
             const { email, electionCode } = event.data
-            const electionId = Number.parseInt(electionCode)
             const eligibleVoterService = new EligibleVoterService(database)
-            const voter = await eligibleVoterService.getVoterByIdentificationForElection(email, electionId)
+            const voter = await eligibleVoterService.getVoterByIdentificationForElection(email, electionCode)
             const electionService = new ElectionService(database)
-            const election = await electionService.getById(electionId)
+            const election = await electionService.getById(electionCode)
 
             const verificationService = new VoterVerificationService(
                 new MailService(`http://${config.frontend.url}:${config.frontend.port}`, await mailTransporter()),
@@ -73,10 +73,8 @@ export const join: EventHandlerAcknowledges<{ email: string; electionCode: strin
              * A single event listener that when triggered, notifies the VERIFICATION socket that
              * the join page has successfully joined.
              */
-            voterSocket.once(Events.client.auth.voterVerifiedReceived, async (verificationSocketId: string) => {
-                voterSocket.electionId = election.id
-                voterSocket.voterId = voter.id
-                await SocketRoomService.getInstance().addUserToRoom(voterSocket, event.server)
+            voterSocket.once(Events.client.auth.voterVerifiedReceived, (verificationSocketId: string) => {
+                joined({ ...event, data: { electionCode, voterId: voter.id } })
                 voterSocket.to(verificationSocketId).emit(Events.server.auth.joinVerified)
             })
         } else {

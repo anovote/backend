@@ -5,6 +5,10 @@ import { BadRequestError } from '@/lib/errors/http/BadRequestError'
 import { ForbiddenError } from '@/lib/errors/http/ForbiddenError'
 import { NotFoundError } from '@/lib/errors/http/NotFoundError'
 import { ServerErrorMessage } from '@/lib/errors/messages/ServerErrorMessages'
+import { VoterSocket } from '@/lib/websocket/AnoSocket'
+import { EventHandlerAcknowledges } from '@/lib/websocket/EventHandler'
+import { EventErrorMessage, EventMessage } from '@/lib/websocket/EventResponse'
+import { Events } from '@/lib/websocket/events'
 import { database } from '@/loaders'
 import mailTransporter from '@/loaders/nodemailer'
 import { AuthenticationService } from '@/services/AuthenticationService'
@@ -13,11 +17,7 @@ import { EligibleVoterService } from '@/services/EligibleVoterService'
 import { EncryptionService } from '@/services/EncryptionService'
 import { MailService } from '@/services/MailService'
 import { VoterVerificationService } from '@/services/VoterVerificationService'
-import { Events } from '@/lib/websocket/events'
-import { EventHandlerAcknowledges } from '@/lib/websocket/EventHandler'
-import { EventErrorMessage, EventMessage } from '@/lib/websocket/EventResponse'
-import { VoterSocket } from '@/lib/websocket/AnoSocket'
-import { SocketRoomService } from '@/services/SocketRoomService'
+import { joined } from './joined'
 
 /**
  * Verifies a voter that have used their mail to verify their identity
@@ -55,9 +55,9 @@ export const verify: EventHandlerAcknowledges<{ code: string }> = async (event) 
         }
 
         // Details contained in the verification code.
-        const { voterId, electionId, joinSocketId } = decodedCode
+        const { voterId, electionCode, joinSocketId } = decodedCode
         const voter = await voterService.getById(voterId)
-        const election = await electionService.getById(electionId)
+        const election = await electionService.getById(electionCode)
 
         // Handle missing voter/ election
         if (!voter || !election) {
@@ -99,7 +99,7 @@ export const verify: EventHandlerAcknowledges<{ code: string }> = async (event) 
         const token = authService.generateToken({
             id: voterId,
             organizer: false,
-            electionID: electionId
+            electionID: electionCode
         })
 
         // Notify join page that it is verified. token and socketID for this socket is provided
@@ -114,10 +114,8 @@ export const verify: EventHandlerAcknowledges<{ code: string }> = async (event) 
          * from the join page after a timeout has ended. This event upgrades the verification page
          * to get the token and take over the join session.
          */
-        voterSocket.once(Events.client.auth.upgradeVerificationToJoin, async (_, cb) => {
-            voterSocket.electionId = electionId
-            voterSocket.voterId = voterId
-            await SocketRoomService.getInstance().addUserToRoom(voterSocket, event.server)
+        voterSocket.once(Events.client.auth.upgradeVerificationToJoin, (_, cb) => {
+            joined({ ...event, data: { electionCode, voterId: voter.id } })
             cb(EventMessage({ token }))
         })
     } catch (err) {

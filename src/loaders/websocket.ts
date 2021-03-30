@@ -48,9 +48,6 @@ export default async (expressApp: Application) => {
         socketConnection.on(Events.client.auth.verify.voterIntegrity, (data, acknowledgement) =>
             verify({ ...sockets, data, acknowledgement })
         )
-        socketConnection.on(Events.client.vote.submit, (data, acknowledgement) =>
-            submitVote({ ...sockets, data, acknowledgement })
-        )
     })
 
     httpServer.listen(config.ws.port)

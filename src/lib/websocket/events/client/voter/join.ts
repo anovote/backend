@@ -17,6 +17,7 @@ import { EligibleVoterService } from '@/services/EligibleVoterService'
 import { EncryptionService } from '@/services/EncryptionService'
 import { MailService } from '@/services/MailService'
 import { VoterVerificationService } from '@/services/VoterVerificationService'
+import { eventRegistration } from './eventRegistration'
 import { enterElection } from './enterElection'
 
 export const join: EventHandlerAcknowledges<{ email: string; electionCode: string }> = async (event) => {
@@ -76,6 +77,7 @@ export const join: EventHandlerAcknowledges<{ email: string; electionCode: strin
              */
             voterSocket.once(Events.client.auth.voterVerifiedReceived, (verificationSocketId: string) => {
                 enterElection({ ...event, data: { electionCode, voterId: voter.id } })
+                eventRegistration({ client: event.client as VoterSocket, server: event.server })
                 voterSocket.to(verificationSocketId).emit(Events.server.auth.joinVerified)
             })
         } else {

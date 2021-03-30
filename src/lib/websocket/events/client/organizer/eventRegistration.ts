@@ -12,7 +12,7 @@ export const eventRegistration = ({ client, server }: { client: OrganizerSocket;
         pushBallot({ client, server, data, acknowledgement })
     })
 
-    client.on(Events.client.election.administrate, (data, acknowledgement) => {
-        administrateElection({ client, server, data, acknowledgement })
+    client.on(Events.client.election.administrate, (data) => {
+        administrateElection({ client, server, data })
     })
 }

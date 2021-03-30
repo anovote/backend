@@ -16,8 +16,7 @@ export const tokenJoin: EventHandlerAcknowledges<ITokenJoinPayload> = (event) =>
             const decoded = authService.verifyToken(token)
             if (decoded) {
                 if (decoded.organizer) {
-                    ;(event.client as OrganizerSocket).organizerId = decoded.id
-                    organizerJoin(event)
+                    organizerJoin({ ...event, data: decoded })
                 }
             } else {
                 // return error

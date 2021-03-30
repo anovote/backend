@@ -152,8 +152,12 @@ it('should throw error if close date is earlier than open date', async () => {
     election.electionOrganizer = new ElectionOrganizer()
     election.eligibleVoters = []
     election.status = ElectionStatus.Started
-    election.openDate = new Date(2021, 2, 23)
-    election.closeDate = new Date(2020, 1, 21)
+    const open = new Date()
+    open.setDate(open.getDate() + 3)
+    const close = new Date()
+    close.setDate(close.getDate() + 2)
+    election.openDate = open
+    election.closeDate = close
 
     await expect(validateEntity(election)).rejects.toThrowError()
 })
@@ -169,7 +173,8 @@ it('should accept object if both dates are the same', async () => {
     election.electionOrganizer = new ElectionOrganizer()
     election.eligibleVoters = []
     election.status = ElectionStatus.Started
-    election.openDate = new Date(2021, 2, 23)
+    const open = new Date()
+    open.setDate(open.getDate() + 1)
     election.closeDate = election.openDate
 
     expect(election.openDate === election.closeDate)
@@ -187,8 +192,12 @@ it('it should resolve when closing date is after opening date', async () => {
     election.electionOrganizer = new ElectionOrganizer()
     election.eligibleVoters = []
     election.status = ElectionStatus.Started
-    election.openDate = new Date(2021, 2, 23)
-    election.closeDate = new Date(2022, 1, 21)
+    const open = new Date()
+    open.setDate(open.getDate() + 1)
+    const close = new Date()
+    close.setDate(close.getDate() + 2)
+    election.openDate = open
+    election.closeDate = close
 
     expect(election.openDate < election.closeDate)
     await expect(validateEntity(election)).resolves.toBe(undefined)
@@ -220,7 +229,7 @@ it('should pass if opening date is later than today on create', async () => {
     election.electionOrganizer = new ElectionOrganizer()
     election.eligibleVoters = []
     election.status = ElectionStatus.Started
-    election.openDate = new Date(2040, 2, 23)
+    election.openDate = new Date()
 
     await expect(electionService.create(election)).resolves.toBeDefined()
 })

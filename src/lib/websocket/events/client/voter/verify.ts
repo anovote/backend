@@ -17,7 +17,7 @@ import { EligibleVoterService } from '@/services/EligibleVoterService'
 import { EncryptionService } from '@/services/EncryptionService'
 import { MailService } from '@/services/MailService'
 import { VoterVerificationService } from '@/services/VoterVerificationService'
-import { joined } from './joined'
+import { enterElection } from './enterElection'
 
 /**
  * Verifies a voter that have used their mail to verify their identity
@@ -115,7 +115,7 @@ export const verify: EventHandlerAcknowledges<{ code: string }> = async (event) 
          * to get the token and take over the join session.
          */
         voterSocket.once(Events.client.auth.upgradeVerificationToJoin, (_, cb) => {
-            joined({ ...event, data: { electionCode, voterId: voter.id } })
+            enterElection({ ...event, data: { electionCode, voterId: voter.id } })
             cb(EventMessage({ token }))
         })
     } catch (err) {

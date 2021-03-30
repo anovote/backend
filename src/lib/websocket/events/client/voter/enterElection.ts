@@ -8,7 +8,7 @@ import { SocketRoomService } from '@/services/SocketRoomService'
  * Assigns electionCode, voter ID to the joined voter socket and adds the voter to the appropriate room
  * @param event event details
  */
-export const joined: EventHandler<{ electionCode: ElectionCode; voterId: VoterId }> = async (event) => {
+export const enterElection: EventHandler<{ electionCode: ElectionCode; voterId: VoterId }> = async (event) => {
     const voterSocket = event.client as VoterSocket
     voterSocket.electionCode = event.data.electionCode
     voterSocket.voterId = event.data.voterId

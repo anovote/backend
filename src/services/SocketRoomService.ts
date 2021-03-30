@@ -1,5 +1,5 @@
 import { BallotVoteStats } from '@/lib/voting/BallotStats'
-import { AnoSocket, OrganizerSocket, VoterSocket } from '@/lib/websocket/AnoSocket'
+import { OrganizerSocket, VoterSocket } from '@/lib/websocket/AnoSocket'
 import { database } from '@/loaders'
 import { logger } from '@/loaders/logger'
 import { SocketRoomEntity, SocketRoomState } from '@/models/SocketRoom/SocketRoomEntity'
@@ -9,6 +9,15 @@ import { Connection, getConnection } from 'typeorm'
 import BaseEntityService, { CrudOptions } from './BaseEntityService'
 import { ElectionService } from './ElectionService'
 
+//  Describes an election room for a given election. A room contains stats for all ballots for the
+// Election. The organizer socket id the ID of the organizer socket when the organizer has
+// joined the election room, will be undefined if organizer is not connected.
+export interface IElectionRoom {
+    // the socket id of the organizer that organizes the election.
+    organizerSocketId: string | undefined
+    // Vote stats for all ballots in the election, the KEY is the ballot ID
+    ballotVoteStats: Map<number, BallotVoteStats>
+}
 export class SocketRoomService extends BaseEntityService<SocketRoomEntity> {
     // electionId: number
     private static instance: SocketRoomService
@@ -17,15 +26,8 @@ export class SocketRoomService extends BaseEntityService<SocketRoomEntity> {
      * Contains a list of all election rooms with their organizer socket ID.
      * An election room can exist without an organizer socket.
      */
-    private _electionRooms: Map<
-        number,
-        {
-            // the socket id of the organizer of the election, is undefined if the organizer is not connected
-            organizerSocketId: string | undefined
-            // Contains ballot vote stats for all ballots for the election, the key is Ballot id
-            ballotVoteStats: Map<number, BallotVoteStats>
-        }
-    > = new Map()
+    private _electionRooms: Map<number, IElectionRoom> = new Map()
+
     private constructor(databaseConnection: Connection) {
         super(databaseConnection, SocketRoomEntity)
         // this.electionId = electionId

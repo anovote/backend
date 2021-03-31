@@ -12,7 +12,7 @@ import { HashService } from './HashService'
 export interface AuthTokenOptions {
     id: number
     organizer: boolean
-    electionID?: number
+    electionId?: number
 }
 
 /**

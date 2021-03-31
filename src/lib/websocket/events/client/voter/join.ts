@@ -77,7 +77,6 @@ export const join: EventHandlerAcknowledges<{ email: string; electionCode: strin
              */
             voterSocket.once(Events.client.auth.voterVerifiedReceived, (verificationSocketId: string) => {
                 enterElection({ ...event, data: { electionCode, voterId: voter.id } })
-                eventRegistration({ client: event.client as VoterSocket, server: event.server })
                 voterSocket.to(verificationSocketId).emit(Events.server.auth.joinVerified)
             })
         } else {

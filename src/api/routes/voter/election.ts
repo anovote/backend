@@ -17,6 +17,7 @@ router.get('/:electionId', async (request, response, next) => {
             const election: IElectionBase = {
                 title: socketRoom.election.title,
                 description: socketRoom.election.description,
+                image: socketRoom.election.image,
                 openDate: socketRoom.election.openDate,
                 closeDate: socketRoom.election.closeDate,
                 isLocked: socketRoom.election.isLocked,

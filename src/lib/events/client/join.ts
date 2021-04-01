@@ -24,7 +24,10 @@ export const join: EventHandlerAcknowledges<{ email: string; electionCode: strin
             const { email, electionCode } = data
             const electionId = Number.parseInt(electionCode)
             const eligibleVoterService = new EligibleVoterService(database)
-            const voter = await eligibleVoterService.getVoterByIdentificationForElection(email, electionId)
+            const voter = await eligibleVoterService.getVoterByIdentificationForElection(
+                email.toLowerCase(),
+                electionId
+            )
             const electionService = new ElectionService(database)
             const election = await electionService.getById(electionId)
 

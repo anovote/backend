@@ -1,7 +1,16 @@
 import { Election } from '@/models/Election/ElectionEntity'
 import { Exclude } from 'class-transformer'
 import { IsEmail, IsString, MaxLength, MinLength } from 'class-validator'
-import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm'
+import {
+    BeforeInsert,
+    BeforeUpdate,
+    Column,
+    CreateDateColumn,
+    Entity,
+    OneToMany,
+    PrimaryGeneratedColumn,
+    UpdateDateColumn
+} from 'typeorm'
 import { IsElectionOrganizerUnique } from './constraints/IsElectionOrganizerUniqueConstraint'
 
 /**
@@ -10,6 +19,12 @@ import { IsElectionOrganizerUnique } from './constraints/IsElectionOrganizerUniq
  */
 @Entity()
 export class ElectionOrganizer {
+    @BeforeInsert()
+    @BeforeUpdate()
+    emailToLowercase() {
+        this.email = this.email.toLowerCase()
+    }
+
     @PrimaryGeneratedColumn()
     id!: number
 

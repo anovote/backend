@@ -111,7 +111,7 @@ export class EligibleVoterService extends BaseEntityService<EligibleVoter> {
 
     /**
      * Creates an array of identifications from a given array
-     * of eligible voters.
+     * of eligible voters, the identification is also made to lowercase.
      * @param eligibleVoters list of eligible voters
      * @returns array of identifications
      */
@@ -119,7 +119,7 @@ export class EligibleVoterService extends BaseEntityService<EligibleVoter> {
         const array: string[] = []
 
         for (let i = 0; i < eligibleVoters.length; i++) {
-            array.push(eligibleVoters[i].identification)
+            array.push(eligibleVoters[i].identification.toLowerCase())
         }
 
         return array

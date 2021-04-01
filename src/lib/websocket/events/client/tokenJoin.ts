@@ -1,8 +1,9 @@
-import { OrganizerSocket } from '@/lib/websocket/AnoSocket'
 import { EventHandlerAcknowledges } from '@/lib/websocket/EventHandler'
-import { EventErrorMessage } from '@/lib/websocket/EventResponse'
+import { EventErrorMessage, EventMessage } from '@/lib/websocket/EventResponse'
 import { AuthenticationService } from '@/services/AuthenticationService'
+import { VoterSocket } from '../../AnoSocket'
 import { organizerJoin } from './organizer/organizerJoin'
+import { enterElection } from './voter/enterElection'
 
 export interface ITokenJoinPayload {
     token: string
@@ -17,6 +18,12 @@ export const tokenJoin: EventHandlerAcknowledges<ITokenJoinPayload> = (event) =>
             if (decoded) {
                 if (decoded.organizer) {
                     organizerJoin({ ...event, data: decoded })
+                } else {
+                    const voterSocket = event.client as VoterSocket
+                    if (!voterSocket.electionCode && decoded.electionId) {
+                        enterElection({ ...event, data: { electionCode: decoded.electionId, voterId: decoded.id } })
+                        event.acknowledgement(EventMessage({}))
+                    }
                 }
             } else {
                 // return error

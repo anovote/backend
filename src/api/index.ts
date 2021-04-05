@@ -9,7 +9,7 @@ import { enforceContentTypeJson } from './middleware/enforceContentTypeJson'
 import morgan from 'morgan'
 import { errorHandler } from './middleware/errorHandler'
 import { rateLimits } from './middleware/rateLimits'
-import joinElectionRoutes from './routes/voter/joinElection'
+import voterElectionRoutes from './routes/voter/election'
 
 const publicRoutes = Router()
 publicRoutes.use('/auth/login', rateLimits.loginLimiter)
@@ -17,7 +17,7 @@ publicRoutes.use('/auth', authRoutes)
 
 const voterRoutes = Router()
 // voterRoutes.use(checkVoterAuth) Todo
-voterRoutes.use('/join', joinElectionRoutes)
+voterRoutes.use('/elections', voterElectionRoutes)
 // Add voter routes....
 
 const organizerRoutes = Router()

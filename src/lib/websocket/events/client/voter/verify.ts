@@ -99,7 +99,7 @@ export const verify: EventHandlerAcknowledges<{ code: string }> = async (event) 
         const token = authService.generateToken({
             id: voterId,
             organizer: false,
-            electionID: electionCode
+            electionId: electionCode
         })
 
         // Notify join page that it is verified. token and socketID for this socket is provided

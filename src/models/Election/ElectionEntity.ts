@@ -12,10 +12,12 @@ import {
     JoinTable,
     ManyToMany,
     ManyToOne,
+    OneToMany,
     OneToOne,
     PrimaryGeneratedColumn,
     UpdateDateColumn
 } from 'typeorm'
+import { Ballot } from '../Ballot/BallotEntity'
 import { IsEarlierThan } from '../constraints/isEarlierThan'
 import { SocketRoomEntity } from '../SocketRoom/SocketRoomEntity'
 
@@ -82,6 +84,10 @@ export class Election implements IElection {
     })
     @JoinTable()
     eligibleVoters!: EligibleVoter[]
+
+    @OneToMany(() => Ballot, (ballot) => ballot.election, { cascade: true, eager: true })
+    @JoinTable()
+    ballots!: Ballot[]
 
     @OneToOne(() => SocketRoomEntity, (socketRoomEntity) => socketRoomEntity.election, { cascade: true, eager: true })
     @JoinColumn()

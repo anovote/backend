@@ -1,3 +1,5 @@
+import { ElectionCode } from '@/lib/voting/ElectionCode'
+import { VoterId } from '@/lib/voting/VoterId'
 import { logger } from '@/loaders/logger'
 import { Election } from '@/models/Election/ElectionEntity'
 import { EligibleVoter } from '@/models/EligibleVoter/EligibleVoterEntity'
@@ -5,6 +7,11 @@ import { EligibleVoterService } from './EligibleVoterService'
 import { EncryptionService } from './EncryptionService'
 import { MailService } from './MailService'
 
+export interface VoterVerificationCode {
+    voterId: VoterId
+    electionCode: ElectionCode
+    joinSocketId: string
+}
 export class VoterVerificationService {
     private _encryptionService: EncryptionService
     private _mailer: MailService
@@ -75,13 +82,13 @@ export class VoterVerificationService {
      * @param decryptedCode the decrypted verification code to extract fields from
      * @returns decoded data as object, or undefined
      */
-    private decodeVerification(decryptedCode: string) {
+    private decodeVerification(decryptedCode: string): VoterVerificationCode | undefined {
         try {
             if (decryptedCode) {
                 const codeParts = decryptedCode.split(this._codeDelimiter)
                 return {
                     voterId: Number.parseInt(codeParts[1]),
-                    electionId: Number.parseInt(codeParts[2]),
+                    electionCode: Number.parseInt(codeParts[2]),
                     joinSocketId: codeParts[3]
                 }
             }

@@ -1,10 +1,12 @@
 import { BallotVoteStats } from '@/lib/voting/BallotStats'
 import { OrganizerSocket, VoterSocket } from '@/lib/websocket/AnoSocket'
+import { Events } from '@/lib/websocket/events'
 import { database } from '@/loaders'
 import { logger } from '@/loaders/logger'
+import { ElectionBaseDTO } from '@/models/Election/ElectionBase'
 import { SocketRoomEntity, SocketRoomState } from '@/models/SocketRoom/SocketRoomEntity'
 import chalk from 'chalk'
-import { Server } from 'socket.io'
+import { classToClass } from 'class-transformer'
 import { Connection, getConnection } from 'typeorm'
 import BaseEntityService, { CrudOptions } from './BaseEntityService'
 import { ElectionService } from './ElectionService'
@@ -139,7 +141,7 @@ export class SocketRoomService extends BaseEntityService<SocketRoomEntity> {
      * @param clientSocket The client socket connection
      * @param socketServer The socket server
      */
-    async addUserToRoom(clientSocket: VoterSocket, socketServer: Server) {
+    async addUserToRoom(clientSocket: VoterSocket) {
         const socketId = chalk.blue(clientSocket.id)
         if (!clientSocket.electionCode) {
             logger.info(
@@ -159,6 +161,17 @@ export class SocketRoomService extends BaseEntityService<SocketRoomEntity> {
         const electionCodeString = clientSocket.electionCode!.toString()
         logger.info(`${socketId} was added to election room ${electionCodeString}`)
         await clientSocket.join(electionCodeString)
-        socketServer.to(clientSocket.id).send(`You have joined election room: ${electionCodeString}`)
+
+        await this.pushElectionToVoter(clientSocket)
+    }
+
+    /**
+     * Push the election registered to the socket back to the voter owning the socket
+     * @param clientSocket socket to send election to
+     */
+    private async pushElectionToVoter(clientSocket: VoterSocket) {
+        // Gets the election, transform it and emits it to the voter
+        const election = (await SocketRoomService.getInstance().getById(clientSocket.electionCode)) as SocketRoomEntity
+        clientSocket.emit(Events.server.election.push, classToClass<ElectionBaseDTO>(election.election))
     }
 }

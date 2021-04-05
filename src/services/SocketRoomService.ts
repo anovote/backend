@@ -3,7 +3,7 @@ import { OrganizerSocket, VoterSocket } from '@/lib/websocket/AnoSocket'
 import { Events } from '@/lib/websocket/events'
 import { database } from '@/loaders'
 import { logger } from '@/loaders/logger'
-import { ElectionBaseDTO } from '@/models/Election/ElectionBase'
+import { ElectionBaseDTO } from '@/models/Election/ElectionBaseDTO'
 import { SocketRoomEntity, SocketRoomState } from '@/models/SocketRoom/SocketRoomEntity'
 import chalk from 'chalk'
 import { classToClass } from 'class-transformer'
@@ -171,7 +171,9 @@ export class SocketRoomService extends BaseEntityService<SocketRoomEntity> {
      */
     private async pushElectionToVoter(clientSocket: VoterSocket) {
         // Gets the election, transform it and emits it to the voter
-        const election = (await SocketRoomService.getInstance().getById(clientSocket.electionCode)) as SocketRoomEntity
-        clientSocket.emit(Events.server.election.push, classToClass<ElectionBaseDTO>(election.election))
+        const electionRoom = (await SocketRoomService.getInstance().getById(
+            clientSocket.electionCode
+        )) as SocketRoomEntity
+        clientSocket.emit(Events.server.election.push, classToClass<ElectionBaseDTO>(electionRoom.election))
     }
 }

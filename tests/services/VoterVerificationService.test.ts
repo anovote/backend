@@ -37,6 +37,6 @@ it('should decode verification code into object with each key', () => {
     // Random string is passed here as the decrypted code is provided by encryption service decrypt
     const decoded = verificationService.decodeVerificationCode('')
     expect(decoded?.voterId).toBe(voterId)
-    expect(decoded?.electionId).toBe(electionId)
+    expect(decoded?.electionCode).toBe(electionId)
     expect(decoded?.joinSocketId).toBe(socketId)
 })

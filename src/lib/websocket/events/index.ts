@@ -33,6 +33,7 @@ export const Events = {
             upgradeVerificationToJoin: 'upgrade_verification_to_join'
         },
         election: {
+            administrate: 'administrate_election',
             start: 'start_election',
             close: 'close_election'
         },
@@ -53,7 +54,8 @@ export const Events = {
             joinVerified: 'join_verified'
         },
         vote: {
-            error: 'vote_error'
+            error: 'vote_error',
+            newVote: 'new_vote'
         },
         election: {
             push: 'push_election',

@@ -5,6 +5,10 @@ import { BadRequestError } from '@/lib/errors/http/BadRequestError'
 import { ForbiddenError } from '@/lib/errors/http/ForbiddenError'
 import { NotFoundError } from '@/lib/errors/http/NotFoundError'
 import { ServerErrorMessage } from '@/lib/errors/messages/ServerErrorMessages'
+import { VoterSocket } from '@/lib/websocket/AnoSocket'
+import { EventHandlerAcknowledges } from '@/lib/websocket/EventHandler'
+import { EventErrorMessage, EventMessage } from '@/lib/websocket/EventResponse'
+import { Events } from '@/lib/websocket/events'
 import { database } from '@/loaders'
 import mailTransporter from '@/loaders/nodemailer'
 import { AuthenticationService } from '@/services/AuthenticationService'
@@ -13,10 +17,7 @@ import { EligibleVoterService } from '@/services/EligibleVoterService'
 import { EncryptionService } from '@/services/EncryptionService'
 import { MailService } from '@/services/MailService'
 import { VoterVerificationService } from '@/services/VoterVerificationService'
-import { Events } from '@/lib/events'
-import { EventHandlerAcknowledges } from '@/lib/events/EventHandler'
-import { EventErrorMessage, EventMessage } from '@/lib/events/EventResponse'
-import { VoterSocket } from '@/lib/errors/websocket/AnoSocket'
+import { enterElection } from './enterElection'
 
 /**
  * Verifies a voter that have used their mail to verify their identity
@@ -24,8 +25,8 @@ import { VoterSocket } from '@/lib/errors/websocket/AnoSocket'
  * @param _socket the socket
  * @param cb the callback to send acknowledgements with
  */
-export const verify: EventHandlerAcknowledges<{ code: string }> = async (data, _socket, cb) => {
-    const voterSocket = _socket as VoterSocket
+export const verify: EventHandlerAcknowledges<{ code: string }> = async (event) => {
+    const voterSocket = event.client as VoterSocket
     try {
         const voterService = new EligibleVoterService(database)
         const electionService = new ElectionService(database)
@@ -35,7 +36,7 @@ export const verify: EventHandlerAcknowledges<{ code: string }> = async (data, _
             voterService
         )
 
-        const { code } = data
+        const { code } = event.data
         const decodedCode = verificationService.decodeVerificationCode(code)
         // Early exit if we do not have a decoded token object
         if (!decodedCode) {
@@ -43,7 +44,7 @@ export const verify: EventHandlerAcknowledges<{ code: string }> = async (data, _
             const message = code
                 ? ServerErrorMessage.invalidVerificationCode()
                 : ServerErrorMessage.isMissing('Verification code')
-            return cb(
+            return event.acknowledgement(
                 EventErrorMessage(
                     new BadRequestError({
                         message,
@@ -54,20 +55,22 @@ export const verify: EventHandlerAcknowledges<{ code: string }> = async (data, _
         }
 
         // Details contained in the verification code.
-        const { voterId, electionId, joinSocketId } = decodedCode
+        const { voterId, electionCode, joinSocketId } = decodedCode
         const voter = await voterService.getById(voterId)
-        const election = await electionService.getById(electionId)
+        const election = await electionService.getById(electionCode)
 
         // Handle missing voter/ election
         if (!voter || !election) {
             const entity = voter ? 'Election' : 'Voter'
             const code = voter ? ErrorCode.ELECTION_NOT_EXIST : ErrorCode.VOTER_NOT_EXIST
-            return cb(EventErrorMessage(new NotFoundError({ message: ServerErrorMessage.notFound(entity), code })))
+            return event.acknowledgement(
+                EventErrorMessage(new NotFoundError({ message: ServerErrorMessage.notFound(entity), code }))
+            )
         }
 
         // Handle election state finished
         if (electionService.isFinished(election)) {
-            return cb(
+            return event.acknowledgement(
                 EventErrorMessage(
                     new BadRequestError({
                         message: ServerErrorMessage.electionFinished(),
@@ -79,7 +82,7 @@ export const verify: EventHandlerAcknowledges<{ code: string }> = async (data, _
 
         // Handle already verified voter
         if (voterService.isVerified(voter)) {
-            return cb(
+            return event.acknowledgement(
                 EventErrorMessage(
                     new ForbiddenError({
                         message: ServerErrorMessage.alreadyVerified(),
@@ -96,27 +99,26 @@ export const verify: EventHandlerAcknowledges<{ code: string }> = async (data, _
         const token = authService.generateToken({
             id: voterId,
             organizer: false,
-            electionID: electionId
+            electionId: electionCode
         })
 
         // Notify join page that it is verified. token and socketID for this socket is provided
         // so the join page can can return response event when it has received the token, and
         // notify the verification page that the join was successful, and stop the potential upgrade.
-        _socket
+        voterSocket
             .to(joinSocketId)
-            .emit(Events.server.auth.voterVerified, EventMessage({ token, verificationSocketId: _socket.id }))
+            .emit(Events.server.auth.voterVerified, EventMessage({ token, verificationSocketId: voterSocket.id }))
 
         /**
          * This event is triggered when the verification page has not received the join_verified event
          * from the join page after a timeout has ended. This event upgrades the verification page
          * to get the token and take over the join session.
          */
-        _socket.once(Events.client.auth.upgradeVerificationToJoin, (_, cb) => {
-            voterSocket.electionId = electionId
-            voterSocket.voterId = voterId
+        voterSocket.once(Events.client.auth.upgradeVerificationToJoin, (_, cb) => {
+            enterElection({ ...event, data: { electionCode, voterId: voter.id } })
             cb(EventMessage({ token }))
         })
     } catch (err) {
-        cb(EventErrorMessage(new BaseError({ message: ServerErrorMessage.unableToVerify() })))
+        event.acknowledgement(EventErrorMessage(new BaseError({ message: ServerErrorMessage.unableToVerify() })))
     }
 }

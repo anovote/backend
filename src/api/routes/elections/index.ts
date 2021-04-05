@@ -8,12 +8,14 @@ import { isObjectEmpty } from '@/helpers/isObjectEmpty'
 import { NotFoundError } from '@/lib/errors/http/NotFoundError'
 import { ServerErrorMessage } from '@/lib/errors/messages/ServerErrorMessages'
 import { BadRequestError } from '@/lib/errors/http/BadRequestError'
+import { SocketRoomService } from '@/services/SocketRoomService'
 
 const router = Router()
 
 router.post('/', async (request, response, next) => {
     try {
         const electionService = new ElectionService(database, request.electionOrganizer)
+        const socketRoomService = SocketRoomService.getInstance()
         const electionDTO: IElection = request.body
 
         if (!electionDTO || isObjectEmpty(electionDTO)) {
@@ -23,7 +25,9 @@ router.post('/', async (request, response, next) => {
         electionDTO.electionOrganizer = request.electionOrganizer
 
         const election: Election | undefined = await electionService.createElection(electionDTO)
-
+        if (election) {
+            socketRoomService.createRoom(election.id)
+        }
         response.status(StatusCodes.CREATED).json(election)
     } catch (error) {
         next(error)

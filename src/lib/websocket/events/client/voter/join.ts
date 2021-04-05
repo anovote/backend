@@ -17,7 +17,6 @@ import { EligibleVoterService } from '@/services/EligibleVoterService'
 import { EncryptionService } from '@/services/EncryptionService'
 import { MailService } from '@/services/MailService'
 import { VoterVerificationService } from '@/services/VoterVerificationService'
-import { eventRegistration } from './eventRegistration'
 import { enterElection } from './enterElection'
 
 export const join: EventHandlerAcknowledges<{ email: string; electionCode: string }> = async (event) => {

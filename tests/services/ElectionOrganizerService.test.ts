@@ -10,16 +10,11 @@ describe('election organizer service', () => {
     const organizers: ElectionOrganizer[] = []
 
     const passwordPassedIn = '@passwordIsSecret1099'
-    const rand = Math.random() * 10
+    const rand = () => (Math.random() * 100000).toFixed()
+    const createEmail = () => rand() + 'VerYniCeEmail@DoMAin.cOm'
     beforeAll(async () => {
         db = await getTestDatabase()
         service = new ElectionOrganizerService(db)
-        seedOrganizer = await (service.createAndSaveElectionOrganizer({
-            firstName: 'First organizer',
-            lastName: 'Last name org',
-            email: rand + 'testing@gmail.com',
-            password: passwordPassedIn
-        }) as Promise<ElectionOrganizer>)
 
         organizers.push(seedOrganizer)
     })
@@ -28,11 +23,35 @@ describe('election organizer service', () => {
         await db.close()
     })
 
-    it('should create a election organizer', () => {
-        expect(seedOrganizer).toBeInstanceOf(ElectionOrganizer)
+    it('should create a election organizer', async () => {
+        const organizer = await service.createAndSaveElectionOrganizer({
+            firstName: 'first',
+            lastName: 'last',
+            email: createEmail(),
+            password: passwordPassedIn
+        })
+        expect(organizer).toBeInstanceOf(ElectionOrganizer)
+        expect(organizer.firstName).toBe('first')
     })
 
-    it('should generate a hash for the password', () => {
-        expect(seedOrganizer.password).not.toBe(passwordPassedIn)
+    it('should create organizer with lowercase email address', async () => {
+        const email = createEmail()
+        const organizer = await service.createAndSaveElectionOrganizer({
+            firstName: 'first',
+            lastName: 'last',
+            email,
+            password: passwordPassedIn
+        })
+        expect(organizer.email).toBe(email.toLowerCase())
+    })
+
+    it('should generate a hash for the password', async () => {
+        const organizer = await service.createAndSaveElectionOrganizer({
+            firstName: 'first',
+            lastName: 'last',
+            email: createEmail(),
+            password: passwordPassedIn
+        })
+        expect(organizer.password).not.toBe(passwordPassedIn)
     })
 })

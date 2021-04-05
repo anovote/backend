@@ -1,6 +1,6 @@
 import { Exclude } from 'class-transformer'
 import { IsEmail } from 'class-validator'
-import { Column, Entity, ManyToMany, PrimaryGeneratedColumn } from 'typeorm'
+import { BeforeInsert, BeforeUpdate, Column, Entity, ManyToMany, PrimaryGeneratedColumn } from 'typeorm'
 import { Election } from '../Election/ElectionEntity'
 
 /**
@@ -11,6 +11,12 @@ import { Election } from '../Election/ElectionEntity'
 
 @Entity()
 export class EligibleVoter implements IEligibleVoter {
+    @BeforeInsert()
+    @BeforeUpdate()
+    emailToLowercase() {
+        this.identification = this.identification.toLowerCase()
+    }
+
     @PrimaryGeneratedColumn()
     id!: number
 

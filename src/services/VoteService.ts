@@ -2,6 +2,7 @@ import { NotFoundError } from '@/lib/errors/http/NotFoundError'
 import { ServerErrorMessage } from '@/lib/errors/messages/ServerErrorMessages'
 import { Ballot } from '@/models/Ballot/BallotEntity'
 import { Candidate } from '@/models/Candidate/CandidateEntity'
+import { Election } from '@/models/Election/ElectionEntity'
 import { ElectionStatus } from '@/models/Election/ElectionStatus'
 import { IVote } from '@/models/Vote/IVote'
 import { Vote } from '@/models/Vote/VoteEntity'
@@ -44,11 +45,30 @@ export class VoteService extends BaseEntityService<Vote> {
         const { ballot, voter, candidate } = vote
         const ballotRepository = this._database.getRepository(Ballot)
         const candidateRepository = this._database.getRepository(Candidate)
+        const electionRepository = this._database.getRepository(Election)
 
         const ballotExists = await ballotRepository.findOne(ballot)
 
         if (!ballotExists) {
             throw new NotFoundError({ message: ServerErrorMessage.notFound('Ballot') })
+        }
+
+        const elections = await electionRepository.find()
+        let electionExists
+        for (let i = 0; i < elections.length; i++) {
+            for (let j = 0; j < elections[i].ballots.length; j++) {
+                if (elections[i].ballots[j].id === ballotExists.id) {
+                    electionExists = elections[i]
+                }
+            }
+        }
+
+        if (!electionExists) {
+            throw new NotFoundError({ message: ServerErrorMessage.notFound('Election') })
+        }
+
+        if (electionExists.status != ElectionStatus.Started) {
+            throw new Error('Cannot vote on not started election')
         }
 
         if (!(candidate === 'blank' || candidate === null)) {

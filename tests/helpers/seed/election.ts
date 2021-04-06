@@ -11,7 +11,7 @@ export const createDummyElection = async (connection: Connection, organizer: Ele
     const election = repository.create({
         title: 'Election 2000',
         password: await hashService.hash('123456'),
-        status: ElectionStatus.NotStarted,
+        status: ElectionStatus.Started,
         electionOrganizer: organizer,
         description: 'Some random description',
         image: 'img.png',

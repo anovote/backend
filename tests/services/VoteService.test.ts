@@ -76,7 +76,7 @@ it('Should throw error when ballot id do not exist', async () => {
     seedVote = (await voteService.create(seedDTO)) as Vote
     const vote = deepCopy<IVote>(seedVote)
     vote.ballot = 1034
-    await expect(voteService.create(vote)).rejects.toThrowError()
+    await expect(voteService.create(vote)).rejects.toThrowError(NotFoundError)
 })
 
 it('Should not be able to vote on a candidate that has already been voted on', async () => {

@@ -42,13 +42,15 @@ export class VoteService extends BaseEntityService<Vote> {
         const { ballot, voter } = vote
         const ballotRepository = this._database.getRepository(Ballot)
 
-        if (!ballotRepository.findOne(ballot)) {
+        const ballotExists = await ballotRepository.findOne(ballot)
+
+        if (!ballotExists) {
             throw new NotFoundError({ message: ServerErrorMessage.notFound('Ballot') })
         }
 
-        const exists = await this._voteRepository.findOne({ voter, ballot })
+        const voteExists = await this._voteRepository.findOne({ voter, ballot })
 
-        if (exists) {
+        if (voteExists) {
             throw new Error('I already exist')
         }
 

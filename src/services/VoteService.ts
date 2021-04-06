@@ -1,6 +1,7 @@
 import { NotFoundError } from '@/lib/errors/http/NotFoundError'
 import { ServerErrorMessage } from '@/lib/errors/messages/ServerErrorMessages'
 import { Ballot } from '@/models/Ballot/BallotEntity'
+import { Candidate } from '@/models/Candidate/CandidateEntity'
 import { IVote } from '@/models/Vote/IVote'
 import { Vote } from '@/models/Vote/VoteEntity'
 import { VoteRepository } from '@/models/Vote/VoteRepository'
@@ -39,13 +40,25 @@ export class VoteService extends BaseEntityService<Vote> {
     // TODO, check if the election has moved on to a different ballot
     // TODO, check if the election status, to see if it has ended
     private async createAndSaveVote(vote: IVote): Promise<Vote | undefined> {
-        const { ballot, voter } = vote
+        const { ballot, voter, candidate } = vote
         const ballotRepository = this._database.getRepository(Ballot)
+        const candidateRepository = this._database.getRepository(Candidate)
 
         const ballotExists = await ballotRepository.findOne(ballot)
 
         if (!ballotExists) {
             throw new NotFoundError({ message: ServerErrorMessage.notFound('Ballot') })
+        }
+
+        let candidateExists
+        if (!(candidate === 'blank' || candidate === null)) {
+            candidateExists = await candidateRepository
+                .createQueryBuilder('Candidate')
+                .where('Candidate.id = :id', { id: candidate })
+                .getOne()
+            if (!candidateExists) {
+                throw new NotFoundError({ message: ServerErrorMessage.notFound('Candidate') })
+            }
         }
 
         const voteExists = await this._voteRepository.findOne({ voter, ballot })

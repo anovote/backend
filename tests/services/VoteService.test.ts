@@ -117,3 +117,9 @@ test('that a candidate cast as null is registered as null in database', async ()
     expect(saveVote!.voter === voter).toBeTruthy()
     expect(saveVote!.candidate === null).toBeTruthy()
 })
+
+it('Should not be able to vote on a candidate that does not exists', async () => {
+    const voter = 1
+    const candidateNotExistVote: IVote = { ballot: ballot.id, candidate: 32902, submitted: new Date(), voter }
+    await expect(voteService.create(candidateNotExistVote)).rejects.toThrowError(NotFoundError)
+})

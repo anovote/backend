@@ -1,5 +1,6 @@
 import { NotFoundError } from '@/lib/errors/http/NotFoundError'
 import { ServerErrorMessage } from '@/lib/errors/messages/ServerErrorMessages'
+import { Ballot } from '@/models/Ballot/BallotEntity'
 import { IVote } from '@/models/Vote/IVote'
 import { Vote } from '@/models/Vote/VoteEntity'
 import { VoteRepository } from '@/models/Vote/VoteRepository'
@@ -39,6 +40,12 @@ export class VoteService extends BaseEntityService<Vote> {
     // TODO, check if the election status, to see if it has ended
     private async createAndSaveVote(vote: IVote): Promise<Vote | undefined> {
         const { ballot, voter } = vote
+        const ballotRepository = this._database.getRepository(Ballot)
+
+        if (!ballotRepository.findOne(ballot)) {
+            throw new NotFoundError({ message: ServerErrorMessage.notFound('Ballot') })
+        }
+
         const exists = await this._voteRepository.findOne({ voter, ballot })
 
         if (exists) {

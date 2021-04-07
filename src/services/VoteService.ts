@@ -67,7 +67,7 @@ export class VoteService extends BaseEntityService<Vote> {
             throw new NotFoundError({ message: ServerErrorMessage.notFound('Election') })
         }
 
-        if (electionExists.status != ElectionStatus.Started) {
+        if (electionExists.status.valueOf() !== ElectionStatus.Started) {
             throw new Error('Cannot vote on not started election')
         }
 

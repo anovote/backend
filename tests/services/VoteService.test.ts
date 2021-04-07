@@ -3,9 +3,13 @@ import { NotFoundError } from '@/lib/errors/http/NotFoundError'
 import { Ballot } from '@/models/Ballot/BallotEntity'
 import { Candidate } from '@/models/Candidate/CandidateEntity'
 import { Election } from '@/models/Election/ElectionEntity'
+import { ElectionStatus } from '@/models/Election/ElectionStatus'
+import { IElection } from '@/models/Election/IElection'
 import { ElectionOrganizer } from '@/models/ElectionOrganizer/ElectionOrganizerEntity'
 import { IVote } from '@/models/Vote/IVote'
 import { Vote } from '@/models/Vote/VoteEntity'
+import { ElectionService } from '@/services/ElectionService'
+import { HashService } from '@/services/HashService'
 import { VoteService } from '@/services/VoteService'
 import { Connection } from 'typeorm'
 import { createDummyBallot } from '../helpers/seed/ballot'
@@ -122,4 +126,36 @@ it('Should not be able to vote on a candidate that does not exists', async () =>
     const voter = 1
     const candidateNotExistVote: IVote = { ballot: ballot.id, candidate: 32902, submitted: new Date(), voter }
     await expect(voteService.create(candidateNotExistVote)).rejects.toThrowError(NotFoundError)
+})
+
+it('Should not be able to vote when election is not started', async () => {
+    const electionRepository = database.getRepository(Election)
+    const hashService = new HashService()
+
+    const notStartedElection = electionRepository.create({
+        title: 'Election yes',
+        password: await hashService.hash('password'),
+        status: ElectionStatus.NotStarted,
+        electionOrganizer: organizer,
+        description: 'Long description',
+        image: 'img.png',
+        openDate: new Date(),
+        closeDate: new Date(),
+        isLocked: true,
+        isAutomatic: false,
+        eligibleVoters: []
+    })
+
+    const createdElection = await electionRepository.save(notStartedElection)
+    const testBallot = await createDummyBallot(database, createdElection)
+
+    const voter = 1
+    const electionStatusNotValidVote: IVote = {
+        ballot: testBallot.id,
+        candidate: null,
+        submitted: new Date(),
+        voter
+    }
+
+    await expect(voteService.create(electionStatusNotValidVote)).rejects.toThrowError(Error)
 })

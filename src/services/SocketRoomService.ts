@@ -163,4 +163,15 @@ export class SocketRoomService extends BaseEntityService<SocketRoomEntity> {
         socketServer.to(clientSocket.id).send(`You have joined election room: ${electionCodeString}`)
         socketServer.emit(Events.server.election.voterConnected, electionCodeString)
     }
+
+    /**
+     * TODO make this method complete
+     * @param clientSocket The client socket connection
+     * @param socketServer The socket server
+     */
+    removeUserFromRoom(clientSocket: VoterSocket, socketServer: Server) {
+        // TODO fill in rest of logic
+        const electionCodeString = clientSocket.electionCode!.toString()
+        socketServer.emit(Events.server.election.voterConnected, electionCodeString)
+    }
 }

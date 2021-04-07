@@ -77,14 +77,9 @@ export class VoteService extends BaseEntityService<Vote> {
         }
 
         const elections = await electionRepository.find()
-        let electionExists
-        for (let i = 0; i < elections.length; i++) {
-            for (let j = 0; j < elections[i].ballots.length; j++) {
-                if (elections[i].ballots[j].id === ballotExists.id) {
-                    electionExists = elections[i]
-                }
-            }
-        }
+        const electionExists: Election | undefined = elections.find((election) =>
+            election.ballots?.some((ballot) => ballot.id === ballotExists.id)
+        )
 
         if (!electionExists) {
             throw new NotFoundError({ message: ServerErrorMessage.notFound('Election') })

@@ -40,8 +40,31 @@ export class VoteService extends BaseEntityService<Vote> {
     // TODO, add implementation to check if a vote is submitted
     // between open and close date of its election
     // TODO, check if the election has moved on to a different ballot
-    // TODO, check if the election status, to see if it has ended
     private async createAndSaveVote(vote: IVote): Promise<Vote | undefined> {
+        await this.doVoteChecks(vote)
+
+        const voteCreated = this._voteRepository.createVote(vote)
+
+        return await this._voteRepository.save(voteCreated)
+    }
+
+    private async getVoteById(id: number): Promise<Vote> {
+        const vote: Vote | undefined = await this._voteRepository.findOne(id)
+
+        if (!vote) throw new NotFoundError({ message: ServerErrorMessage.notFound('Vote') })
+
+        return vote
+    }
+
+    delete(_id: number): Promise<void> {
+        return Promise.reject(new NotFoundError({ message: 'Method not implemented' }))
+    }
+
+    update(_id: number, _dto: Vote | undefined): Promise<Vote | undefined> {
+        return Promise.reject(new NotFoundError({ message: 'Method not implemented' }))
+    }
+
+    private async doVoteChecks(vote: IVote): Promise<void> {
         const { ballot, voter, candidate } = vote
         const ballotRepository = this._database.getRepository(Ballot)
         const candidateRepository = this._database.getRepository(Candidate)
@@ -72,10 +95,7 @@ export class VoteService extends BaseEntityService<Vote> {
         }
 
         if (!(candidate === 'blank' || candidate === null)) {
-            const candidateExists = await candidateRepository
-                .createQueryBuilder('Candidate')
-                .where('Candidate.id = :id', { id: candidate })
-                .getOne()
+            const candidateExists = await candidateRepository.findOne(candidate)
             if (!candidateExists) {
                 throw new NotFoundError({ message: ServerErrorMessage.notFound('Candidate') })
             }
@@ -86,25 +106,5 @@ export class VoteService extends BaseEntityService<Vote> {
         if (voteExists) {
             throw new Error('I already exist')
         }
-
-        const voteCreated = this._voteRepository.createVote(vote)
-
-        return await this._voteRepository.save(voteCreated)
-    }
-
-    private async getVoteById(id: number): Promise<Vote> {
-        const vote: Vote | undefined = await this._voteRepository.findOne(id)
-
-        if (!vote) throw new NotFoundError({ message: ServerErrorMessage.notFound('Vote') })
-
-        return vote
-    }
-
-    delete(_id: number): Promise<void> {
-        return Promise.reject(new NotFoundError({ message: 'Method not implemented' }))
-    }
-
-    update(_id: number, _dto: Vote | undefined): Promise<Vote | undefined> {
-        return Promise.reject(new NotFoundError({ message: 'Method not implemented' }))
     }
 }

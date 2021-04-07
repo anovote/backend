@@ -161,6 +161,6 @@ export class SocketRoomService extends BaseEntityService<SocketRoomEntity> {
         logger.info(`${socketId} was added to election room ${electionCodeString}`)
         await clientSocket.join(electionCodeString)
         socketServer.to(clientSocket.id).send(`You have joined election room: ${electionCodeString}`)
-        socketServer.emit(Events.server.election.voterConnected)
+        socketServer.emit(Events.server.election.voterConnected, electionCodeString)
     }
 }

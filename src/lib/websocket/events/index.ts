@@ -59,7 +59,9 @@ export const Events = {
         },
         election: {
             push: 'push_election',
-            close: 'close_election'
+            close: 'close_election',
+            voterConnected: 'voter_connected',
+            voterDisconnected: 'voter_disconnected'
         },
         ballot: {
             push: 'push_ballot'

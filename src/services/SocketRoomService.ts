@@ -1,9 +1,10 @@
 import { BallotVoteStats } from '@/lib/voting/BallotStats'
 import { OrganizerSocket, VoterSocket } from '@/lib/websocket/AnoSocket'
+import { Events } from '@/lib/websocket/events'
 import { database } from '@/loaders'
 import { logger } from '@/loaders/logger'
 import { SocketRoomEntity, SocketRoomState } from '@/models/SocketRoom/SocketRoomEntity'
-import chalk from 'chalk'
+import chalk, { Instance } from 'chalk'
 import { Server } from 'socket.io'
 import { Connection, getConnection } from 'typeorm'
 import BaseEntityService, { CrudOptions } from './BaseEntityService'
@@ -160,5 +161,6 @@ export class SocketRoomService extends BaseEntityService<SocketRoomEntity> {
         logger.info(`${socketId} was added to election room ${electionCodeString}`)
         await clientSocket.join(electionCodeString)
         socketServer.to(clientSocket.id).send(`You have joined election room: ${electionCodeString}`)
+        socketServer.emit(Events.server.election.voterConnected)
     }
 }

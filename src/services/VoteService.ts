@@ -4,6 +4,7 @@ import { Ballot } from '@/models/Ballot/BallotEntity'
 import { Candidate } from '@/models/Candidate/CandidateEntity'
 import { Election } from '@/models/Election/ElectionEntity'
 import { ElectionStatus } from '@/models/Election/ElectionStatus'
+import { EligibleVoter } from '@/models/EligibleVoter/EligibleVoterEntity'
 import { IVote } from '@/models/Vote/IVote'
 import { Vote } from '@/models/Vote/VoteEntity'
 import { VoteRepository } from '@/models/Vote/VoteRepository'
@@ -37,9 +38,6 @@ export class VoteService extends BaseEntityService<Vote> {
         return await this.createAndSaveVote(dto)
     }
 
-    // TODO, add implementation to check if a vote is submitted
-    // between open and close date of its election
-    // TODO, check if the election has moved on to a different ballot
     private async createAndSaveVote(vote: IVote): Promise<Vote | undefined> {
         await this.doVoteChecks(vote)
 
@@ -64,13 +62,16 @@ export class VoteService extends BaseEntityService<Vote> {
         return Promise.reject(new NotFoundError({ message: 'Method not implemented' }))
     }
 
+    // TODO, add implementation to check if election vote is submitted
+    // between open and close date of its election
+    // TODO, check if the election has moved on to a different ballot
     private async doVoteChecks(vote: IVote): Promise<void> {
         const { ballot, voter, candidate } = vote
         const ballotRepository = this._database.getRepository(Ballot)
         const candidateRepository = this._database.getRepository(Candidate)
         const electionRepository = this._database.getRepository(Election)
 
-        const ballotExists = await ballotRepository.findOne(ballot)
+        const ballotExists: Ballot | undefined = await ballotRepository.findOne(ballot)
 
         if (!ballotExists) {
             throw new NotFoundError({ message: ServerErrorMessage.notFound('Ballot') })
@@ -90,7 +91,7 @@ export class VoteService extends BaseEntityService<Vote> {
         }
 
         if (!(candidate === 'blank' || candidate === null)) {
-            const candidateExists = await candidateRepository.findOne(candidate)
+            const candidateExists: Candidate | undefined = await candidateRepository.findOne(candidate)
             if (!candidateExists) {
                 throw new NotFoundError({ message: ServerErrorMessage.notFound('Candidate') })
             }

@@ -18,7 +18,13 @@ export interface IElectionRoom {
     organizerSocketId: string | undefined
     // Vote stats for all ballots in the election, the KEY is the ballot ID
     ballotVoteStats: Map<number, BallotVoteStats>
+
+    connectedVoters: number
 }
+
+/**
+ * This is singleton
+ */
 export class SocketRoomService extends BaseEntityService<SocketRoomEntity> {
     // electionId: number
     private static instance: SocketRoomService
@@ -49,7 +55,8 @@ export class SocketRoomService extends BaseEntityService<SocketRoomEntity> {
             }
             this._electionRooms.set(election.id, {
                 organizerSocketId: undefined,
-                ballotVoteStats: ballotMap
+                ballotVoteStats: ballotMap,
+                connectedVoters: 0
             })
         }
     }
@@ -97,7 +104,8 @@ export class SocketRoomService extends BaseEntityService<SocketRoomEntity> {
         if (!room) {
             this._electionRooms.set(electionId, {
                 organizerSocketId: undefined,
-                ballotVoteStats: new Map()
+                ballotVoteStats: new Map(),
+                connectedVoters: 0
             })
         }
     }
@@ -112,6 +120,11 @@ export class SocketRoomService extends BaseEntityService<SocketRoomEntity> {
     setElectionRoomOrganizer(electionId: number, organizerSocket: OrganizerSocket) {
         const room = this._electionRooms.get(electionId)
         if (room) room.organizerSocketId = organizerSocket.id
+
+        const electionRoom = this.getRoom(electionId)
+        if (electionRoom) {
+            organizerSocket.emit(Events.server.election.voterConnected, electionRoom.connectedVoters)
+        }
     }
 
     removeElectionRoomOrganizer(electionId: number) {
@@ -157,20 +170,7 @@ export class SocketRoomService extends BaseEntityService<SocketRoomEntity> {
         await clientSocket.join(electionCodeString)
         socketServer.to(clientSocket.id).send(`You have joined election room: ${electionCodeString}`)
 
-        const connectedVoters = socketServer.of('/').adapter.rooms.get(clientSocket.electionCode.toString())?.size
-        console.log(this._electionRooms.get(clientSocket.electionCode))
-
-        const organizerSocket = (await socketServer.sockets.allSockets()).entries().next().value[0]
-        console.log(organizerSocket)
-
-        console.log(this._electionRooms)
-        const orgRoom = SocketRoomService.getInstance().getRoom(clientSocket.electionCode)?.organizerSocketId
-        console.log(orgRoom)
-
-        socketServer
-            .to(SocketRoomService.getInstance().getOrganizerSocketIdForElection(clientSocket.electionCode) as string)
-            .emit(Events.server.election.voterConnected, connectedVoters)
-        console.log(socketServer.sockets.allSockets())
+        this.setAndEmitConnectedVoters(socketServer, clientSocket.electionCode)
     }
 
     /**
@@ -180,5 +180,18 @@ export class SocketRoomService extends BaseEntityService<SocketRoomEntity> {
      */
     removeUserFromRoom(clientSocket: VoterSocket, socketServer: Server) {
         // TODO fill in rest of logic
+        this.setAndEmitConnectedVoters(socketServer, clientSocket.electionCode)
+    }
+
+    private setAndEmitConnectedVoters(socketServer: Server, electionId: number) {
+        const connectedVoters = socketServer.of('/').adapter.rooms.get(electionId.toString())?.size
+
+        const electionRoom = this.getRoom(electionId)
+        if (electionRoom) {
+            electionRoom.connectedVoters = connectedVoters ? connectedVoters : 0
+            socketServer
+                .to(this.getOrganizerSocketIdForElection(electionId) as string)
+                .emit(Events.server.election.voterConnected, connectedVoters)
+        }
     }
 }

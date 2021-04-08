@@ -168,20 +168,22 @@ export class SocketRoomService extends BaseEntityService<SocketRoomEntity> {
         await clientSocket.join(electionCodeString)
         socketServer.to(clientSocket.id).send(`You have joined election room: ${electionCodeString}`)
 
-        this.setAndEmitConnectedVoters(socketServer, clientSocket.electionCode)
+        this.setAndEmitConnectedVoters(socketServer, clientSocket.electionCode, Events.server.election.voterConnected)
     }
 
     /**
-     * TODO make this method complete
      * @param clientSocket The client socket connection
      * @param socketServer The socket server
      */
     removeUserFromRoom(clientSocket: VoterSocket, socketServer: Server) {
-        // TODO fill in rest of logic
-        this.setAndEmitConnectedVoters(socketServer, clientSocket.electionCode)
+        this.setAndEmitConnectedVoters(
+            socketServer,
+            clientSocket.electionCode,
+            Events.server.election.voterDisconnected
+        )
     }
 
-    private setAndEmitConnectedVoters(socketServer: Server, electionId: number) {
+    private setAndEmitConnectedVoters(socketServer: Server, electionId: number, connectedEvent: string) {
         const connectedVoters = socketServer.of('/').adapter.rooms.get(electionId.toString())?.size
 
         const electionRoom = this.getRoom(electionId)
@@ -189,7 +191,7 @@ export class SocketRoomService extends BaseEntityService<SocketRoomEntity> {
             electionRoom.connectedVoters = connectedVoters ? connectedVoters : 0
             socketServer
                 .to(this.getOrganizerSocketIdForElection(electionId) as string)
-                .emit(Events.server.election.voterConnected, connectedVoters)
+                .emit(connectedEvent, connectedVoters)
         }
     }
 }

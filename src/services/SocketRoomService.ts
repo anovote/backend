@@ -119,11 +119,9 @@ export class SocketRoomService extends BaseEntityService<SocketRoomEntity> {
      */
     setElectionRoomOrganizer(electionId: number, organizerSocket: OrganizerSocket) {
         const room = this._electionRooms.get(electionId)
-        if (room) room.organizerSocketId = organizerSocket.id
-
-        const electionRoom = this.getRoom(electionId)
-        if (electionRoom) {
-            organizerSocket.emit(Events.server.election.voterConnected, electionRoom.connectedVoters)
+        if (room) {
+            room.organizerSocketId = organizerSocket.id
+            organizerSocket.emit(Events.server.election.voterConnected, room.connectedVoters)
         }
     }
 

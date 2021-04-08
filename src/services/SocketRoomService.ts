@@ -168,7 +168,8 @@ export class SocketRoomService extends BaseEntityService<SocketRoomEntity> {
         await clientSocket.join(electionCodeString)
         socketServer.to(clientSocket.id).send(`You have joined election room: ${electionCodeString}`)
 
-        this.setAndEmitConnectedVoters(socketServer, clientSocket.electionCode, Events.server.election.voterConnected)
+        this.setConnectedVoters(socketServer, clientSocket.electionCode)
+        this.emitConnectedVoters(socketServer, clientSocket.electionCode, Events.server.election.voterConnected)
     }
 
     /**
@@ -176,22 +177,25 @@ export class SocketRoomService extends BaseEntityService<SocketRoomEntity> {
      * @param socketServer The socket server
      */
     removeUserFromRoom(clientSocket: VoterSocket, socketServer: Server) {
-        this.setAndEmitConnectedVoters(
-            socketServer,
-            clientSocket.electionCode,
-            Events.server.election.voterDisconnected
-        )
+        this.setConnectedVoters(socketServer, clientSocket.electionCode)
+        this.emitConnectedVoters(socketServer, clientSocket.electionCode, Events.server.election.voterDisconnected)
     }
 
-    private setAndEmitConnectedVoters(socketServer: Server, electionId: number, connectedEvent: string) {
+    private emitConnectedVoters(socketServer: Server, electionId: number, connectedEvent: string) {
+        const electionRoom = this.getRoom(electionId)
+        if (electionRoom) {
+            socketServer
+                .to(this.getOrganizerSocketIdForElection(electionId) as string)
+                .emit(connectedEvent, electionRoom.connectedVoters)
+        }
+    }
+
+    private setConnectedVoters(socketServer: Server, electionId: number) {
         const connectedVoters = socketServer.of('/').adapter.rooms.get(electionId.toString())?.size
 
         const electionRoom = this.getRoom(electionId)
         if (electionRoom) {
             electionRoom.connectedVoters = connectedVoters ? connectedVoters : 0
-            socketServer
-                .to(this.getOrganizerSocketIdForElection(electionId) as string)
-                .emit(connectedEvent, connectedVoters)
         }
     }
 }

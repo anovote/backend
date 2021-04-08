@@ -121,7 +121,7 @@ export class SocketRoomService extends BaseEntityService<SocketRoomEntity> {
         const room = this._electionRooms.get(electionId)
         if (room) {
             room.organizerSocketId = organizerSocket.id
-            organizerSocket.emit(Events.server.election.voterConnected, room.connectedVoters)
+            organizerSocket.volatile.emit(Events.server.election.voterConnected, room.connectedVoters)
         }
     }
 
@@ -186,7 +186,7 @@ export class SocketRoomService extends BaseEntityService<SocketRoomEntity> {
         if (electionRoom) {
             socketServer
                 .to(this.getOrganizerSocketIdForElection(electionId) as string)
-                .emit(connectedEvent, electionRoom.connectedVoters)
+                .volatile.emit(connectedEvent, electionRoom.connectedVoters)
         }
     }
 

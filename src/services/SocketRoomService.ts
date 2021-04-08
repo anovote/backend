@@ -114,10 +114,6 @@ export class SocketRoomService extends BaseEntityService<SocketRoomEntity> {
         if (room) room.organizerSocketId = organizerSocket.id
     }
 
-    /**
-     * Assigns an organizer socket to a room, and set it as owner of the room
-     * @param organizerSocket an organizer that we want to assign as owner of the room
-     */
     removeElectionRoomOrganizer(electionId: number) {
         this._electionRooms.delete(electionId)
     }
@@ -156,12 +152,25 @@ export class SocketRoomService extends BaseEntityService<SocketRoomEntity> {
             )
             return
         }
-
         const electionCodeString = clientSocket.electionCode!.toString()
         logger.info(`${socketId} was added to election room ${electionCodeString}`)
         await clientSocket.join(electionCodeString)
         socketServer.to(clientSocket.id).send(`You have joined election room: ${electionCodeString}`)
-        socketServer.emit(Events.server.election.voterConnected, electionCodeString)
+
+        const connectedVoters = socketServer.of('/').adapter.rooms.get(clientSocket.electionCode.toString())?.size
+        console.log(this._electionRooms.get(clientSocket.electionCode))
+
+        const organizerSocket = (await socketServer.sockets.allSockets()).entries().next().value[0]
+        console.log(organizerSocket)
+
+        console.log(this._electionRooms)
+        const orgRoom = SocketRoomService.getInstance().getRoom(clientSocket.electionCode)?.organizerSocketId
+        console.log(orgRoom)
+
+        socketServer
+            .to(SocketRoomService.getInstance().getOrganizerSocketIdForElection(clientSocket.electionCode) as string)
+            .emit(Events.server.election.voterConnected, connectedVoters)
+        console.log(socketServer.sockets.allSockets())
     }
 
     /**
@@ -171,7 +180,5 @@ export class SocketRoomService extends BaseEntityService<SocketRoomEntity> {
      */
     removeUserFromRoom(clientSocket: VoterSocket, socketServer: Server) {
         // TODO fill in rest of logic
-        const electionCodeString = clientSocket.electionCode!.toString()
-        socketServer.emit(Events.server.election.voterConnected, electionCodeString)
     }
 }

@@ -3,6 +3,7 @@ import { OrganizerSocket, VoterSocket } from '@/lib/websocket/AnoSocket'
 import { EventHandlerAcknowledges } from '@/lib/websocket/EventHandler'
 import { EventErrorMessage, EventMessage } from '@/lib/websocket/EventResponse'
 import { database } from '@/loaders'
+import { logger } from '@/loaders/logger'
 import { ElectionOrganizer } from '@/models/ElectionOrganizer/ElectionOrganizerEntity'
 import { BallotService } from '@/services/BallotService'
 import { ElectionService } from '@/services/ElectionService'
@@ -52,6 +53,7 @@ export const pushBallot: EventHandlerAcknowledges<{ ballotId: number; electionId
         }
         event.acknowledgement(EventMessage({}))
     } catch (err) {
+        logger.error(err)
         event.acknowledgement(EventErrorMessage(err))
     }
 }

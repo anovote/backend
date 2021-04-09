@@ -13,7 +13,7 @@ export class Vote implements IVote {
     @PrimaryGeneratedColumn()
     id!: number
 
-    @ManyToOne(() => Candidate, (candidate) => candidate.id, { nullable: true })
+    @ManyToOne(() => Candidate, (candidate) => candidate.id, { nullable: true, eager: true })
     candidate!: number | null
 
     @CreateDateColumn()

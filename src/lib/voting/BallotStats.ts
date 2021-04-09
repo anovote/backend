@@ -1,5 +1,6 @@
 import { Ballot } from '@/models/Ballot/BallotEntity'
 import { BallotType } from '@/models/Ballot/BallotType'
+import { Candidate } from '@/models/Candidate/CandidateEntity'
 import { IVote } from '@/models/Vote/IVote'
 
 /**
@@ -43,7 +44,7 @@ export class CandidateVote {
 export class BallotVoteStats {
     // The ballot we are providing stats for
     private _ballot: Ballot
-    private _total = 0
+    private _total = 0 // combination of votes and blank
     private _votes = 0
     private _blank = 0
 
@@ -110,13 +111,26 @@ export class BallotVoteStats {
      * @param vote the vote to do vote stat work of
      */
     private setVoteStat(vote: IVote) {
-        if (vote.candidate && typeof vote.candidate === 'number') {
+        if (!vote.candidate) {
+            throw new Error('The candidate is wrong')
+        }
+
+        if (typeof vote.candidate === 'number') {
             const candidate = this._candidateVotes.get(vote.candidate)
             if (candidate) {
                 candidate.incrementVote()
                 this.incrementVotes()
             }
-        } else {
+        }
+
+        if (vote.candidate instanceof Candidate) {
+            const candidate = this._candidateVotes.get(vote.candidate.id)
+            if (candidate) {
+                candidate.incrementVote()
+                this.incrementVotes()
+            }
+        }
+        if ('blank' === vote.candidate) {
             this.incrementBlank()
         }
     }

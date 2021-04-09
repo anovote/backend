@@ -111,8 +111,13 @@ export class BallotVoteStats {
      * @param vote the vote to do vote stat work of
      */
     private setVoteStat(vote: IVote) {
-        if (!vote.candidate) {
-            throw new Error('The candidate is wrong')
+        if (
+            vote.candidate !== null &&
+            !(vote.candidate instanceof Candidate) &&
+            typeof vote.candidate !== 'number' &&
+            vote.candidate !== 'blank'
+        ) {
+            throw new Error('The candidate is wrong type')
         }
 
         if (typeof vote.candidate === 'number') {
@@ -130,7 +135,7 @@ export class BallotVoteStats {
                 this.incrementVotes()
             }
         }
-        if ('blank' === vote.candidate) {
+        if (null === vote.candidate || vote.candidate === 'blank') {
             this.incrementBlank()
         }
     }

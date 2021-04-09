@@ -1,5 +1,4 @@
 import { VoterSocket } from '@/lib/websocket/AnoSocket'
-import { SocketRoomService } from '@/services/SocketRoomService'
 import { Events } from 'lib/websocket/events'
 import { Server } from 'socket.io'
 import { submitVote } from './submitVote'

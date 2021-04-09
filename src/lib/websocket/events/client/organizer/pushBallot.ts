@@ -25,12 +25,7 @@ export const pushBallot: EventHandlerAcknowledges<{ ballotId: number; electionId
         const room = socketRoomService.getRoom(electionId)
         const ballot = await ballotService.getById(ballotId)
         if (room && ballot) {
-            if (!room.ballots.has(ballotId)) {
-                // Create ballot stats and voter set for the new ballot
-                room.ballots.set(ballotId, { stats: new BallotVoteStats(ballot), voters: new Set() })
-                // Broadcast to all since this ballot has not been created before now
-                event.server.to(electionId.toString()).emit(Events.server.ballot.push, ballot)
-            } else {
+            if (room.ballots.has(ballotId)) {
                 // All voters that has voted on this ballot
                 const ballotVotes = room.ballots.get(ballotId)?.voters
                 if (ballotVotes?.size == 0) {
@@ -48,6 +43,11 @@ export const pushBallot: EventHandlerAcknowledges<{ ballotId: number; electionId
                         }
                     })
                 }
+            } else {
+                // Create ballot stats and voter set for the new ballot
+                room.ballots.set(ballotId, { stats: new BallotVoteStats(ballot), voters: new Set() })
+                // Broadcast to all since this ballot has not been created before now
+                event.server.to(electionId.toString()).emit(Events.server.ballot.push, ballot)
             }
         }
         event.acknowledgement(EventMessage({}))

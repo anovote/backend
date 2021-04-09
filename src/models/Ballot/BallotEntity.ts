@@ -10,6 +10,7 @@ import {
     PrimaryGeneratedColumn,
     UpdateDateColumn
 } from 'typeorm'
+import { Vote } from '../Vote/VoteEntity'
 import { BallotResultDisplay } from './BallotResultDisplay'
 import { BallotStatus } from './BallotStatus'
 import { BallotType } from './BallotType'
@@ -71,6 +72,10 @@ export class Ballot implements IBallot {
 
     @UpdateDateColumn()
     updatedAt!: Date
+
+    // Lazy votes relation. This is only loaded when accessed
+    @OneToMany(() => Vote, (vote) => vote.ballot, { lazy: true })
+    votes?: Promise<Vote[]>
 
     @OneToMany(() => Candidate, (candidate) => candidate.ballot, {
         cascade: true,

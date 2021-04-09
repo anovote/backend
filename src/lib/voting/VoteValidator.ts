@@ -15,7 +15,7 @@ export class VoteValidator {
         this.database = db
     }
 
-    public async doVoteValidation(vote: IVote) {
+    public async validateVote(vote: IVote) {
         const { ballot, voter, candidate } = vote
 
         await this.checkIfBallotExists(ballot)

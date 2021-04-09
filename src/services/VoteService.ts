@@ -1,11 +1,6 @@
 import { NotFoundError } from '@/lib/errors/http/NotFoundError'
 import { ServerErrorMessage } from '@/lib/errors/messages/ServerErrorMessages'
 import { VoteValidator } from '@/lib/voting/VoteValidator'
-import { Ballot } from '@/models/Ballot/BallotEntity'
-import { Candidate } from '@/models/Candidate/CandidateEntity'
-import { Election } from '@/models/Election/ElectionEntity'
-import { ElectionStatus } from '@/models/Election/ElectionStatus'
-import { EligibleVoter } from '@/models/EligibleVoter/EligibleVoterEntity'
 import { IVote } from '@/models/Vote/IVote'
 import { Vote } from '@/models/Vote/VoteEntity'
 import { VoteRepository } from '@/models/Vote/VoteRepository'
@@ -42,7 +37,7 @@ export class VoteService extends BaseEntityService<Vote> {
     private async createAndSaveVote(vote: IVote): Promise<Vote | undefined> {
         const voteValidator = new VoteValidator(this._database)
 
-        await voteValidator.doVoteValidation(vote)
+        await voteValidator.validateVote(vote)
 
         const voteCreated = this._voteRepository.createVote(vote)
 

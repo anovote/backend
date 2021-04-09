@@ -155,5 +155,5 @@ it('Should not be able to vote when election is not started', async () => {
         voter
     }
 
-    await expect(voteService.create(electionStatusNotValidVote)).rejects.toThrowError(Error)
+    await expect(voteService.create(electionStatusNotValidVote)).rejects.toThrowError()
 })

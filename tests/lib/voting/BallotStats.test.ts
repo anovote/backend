@@ -2,11 +2,9 @@ import { BallotVoteStats } from '@/lib/voting/BallotStats'
 import { Ballot } from '@/models/Ballot/BallotEntity'
 import { BallotType } from '@/models/Ballot/BallotType'
 import { Candidate } from '@/models/Candidate/CandidateEntity'
-import { ICandidate } from '@/models/Candidate/ICandidate'
 import { Election } from '@/models/Election/ElectionEntity'
 import { ElectionOrganizer } from '@/models/ElectionOrganizer/ElectionOrganizerEntity'
 import { IVote } from '@/models/Vote/IVote'
-import { Vote } from '@/models/Vote/VoteEntity'
 import { Connection } from 'typeorm'
 import { getTestDatabase } from '../../helpers/database'
 import { createDummyBallot } from '../../helpers/seed/ballot'
@@ -43,9 +41,18 @@ it('should only increment votes and total', () => {
     expect(ballotStats.getStats().stats.total).toBe(1)
 })
 
-it('should only increment blank and total', () => {
+it('should only increment blank and total when candidate is null', () => {
     const ballotStats = new BallotVoteStats(ballot)
     const vote: IVote = { ballot: ballot.id, candidate: null, submitted: new Date(), voter: 1 }
+    ballotStats.addVotes([vote])
+    expect(ballotStats.getStats().stats.blank).toBe(1)
+    expect(ballotStats.getStats().stats.votes).toBe(0)
+    expect(ballotStats.getStats().stats.total).toBe(1)
+})
+
+it('should only increment blank and total when candidate is set to "blank"', () => {
+    const ballotStats = new BallotVoteStats(ballot)
+    const vote: IVote = { ballot: ballot.id, candidate: 'blank', submitted: new Date(), voter: 1 }
     ballotStats.addVotes([vote])
     expect(ballotStats.getStats().stats.blank).toBe(1)
     expect(ballotStats.getStats().stats.votes).toBe(0)

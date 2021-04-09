@@ -28,3 +28,27 @@ export const deleteDummyElections = async (connection: Connection, elections: Ar
     const repository = connection.getRepository(Election)
     await repository.remove(elections)
 }
+
+export const createStartedDummyElection = async (
+    connection: Connection,
+    organizer: ElectionOrganizer
+): Promise<Election> => {
+    const repository = connection.getRepository(Election)
+    const hashService = new HashService()
+
+    const election = repository.create({
+        title: 'Election yes',
+        password: await hashService.hash('password'),
+        status: ElectionStatus.Started,
+        electionOrganizer: organizer,
+        description: 'Long description',
+        image: 'img.png',
+        openDate: new Date(),
+        closeDate: new Date(),
+        isLocked: true,
+        isAutomatic: false,
+        eligibleVoters: []
+    })
+
+    return await repository.save(election)
+}

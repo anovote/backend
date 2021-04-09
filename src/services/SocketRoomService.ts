@@ -148,7 +148,7 @@ export class SocketRoomService extends BaseEntityService<SocketRoomEntity> {
      * @param clientSocket The client socket connection
      * @param socketServer The socket server
      */
-    async addUserToRoom(clientSocket: VoterSocket) {
+    async addUserToRoom(clientSocket: VoterSocket, socketServer: Server) {
         const socketId = chalk.blue(clientSocket.id)
         if (!clientSocket.electionCode) {
             logger.info(

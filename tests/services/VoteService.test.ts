@@ -4,17 +4,15 @@ import { Ballot } from '@/models/Ballot/BallotEntity'
 import { Candidate } from '@/models/Candidate/CandidateEntity'
 import { Election } from '@/models/Election/ElectionEntity'
 import { ElectionStatus } from '@/models/Election/ElectionStatus'
-import { IElection } from '@/models/Election/IElection'
 import { ElectionOrganizer } from '@/models/ElectionOrganizer/ElectionOrganizerEntity'
 import { IVote } from '@/models/Vote/IVote'
 import { Vote } from '@/models/Vote/VoteEntity'
-import { ElectionService } from '@/services/ElectionService'
 import { HashService } from '@/services/HashService'
 import { VoteService } from '@/services/VoteService'
 import { Connection } from 'typeorm'
 import { createDummyBallot } from '../helpers/seed/ballot'
 import { createDummyCandidate } from '../helpers/seed/candidate'
-import { createDummyElection } from '../helpers/seed/election'
+import { createStartedDummyElection } from '../helpers/seed/election'
 import { createDummyOrganizer } from '../helpers/seed/organizer'
 import setupConnection from '../helpers/setupTestDB'
 import { clearDatabaseEntityTable } from '../Tests.utils'
@@ -31,7 +29,7 @@ let seedDTO: IVote
 beforeAll(async () => {
     database = await setupConnection()
     organizer = await createDummyOrganizer(database)
-    election = await createDummyElection(database, organizer)
+    election = await createStartedDummyElection(database, organizer)
     ballot = await createDummyBallot(database, election)
     candidate = await createDummyCandidate(database, ballot)
 

@@ -3,6 +3,7 @@ import { OrganizerSocket, VoterSocket } from '@/lib/websocket/AnoSocket'
 import { Events } from '@/lib/websocket/events'
 import { database } from '@/loaders'
 import { logger } from '@/loaders/logger'
+import { ElectionBaseDTO } from '@/models/Election/ElectionBaseDTO'
 import { SocketRoomEntity, SocketRoomState } from '@/models/SocketRoom/SocketRoomEntity'
 import chalk, { Instance } from 'chalk'
 import { Server } from 'socket.io'
@@ -147,7 +148,7 @@ export class SocketRoomService extends BaseEntityService<SocketRoomEntity> {
      * @param clientSocket The client socket connection
      * @param socketServer The socket server
      */
-    async addUserToRoom(clientSocket: VoterSocket, socketServer: Server) {
+    async addUserToRoom(clientSocket: VoterSocket) {
         const socketId = chalk.blue(clientSocket.id)
         if (!clientSocket.electionCode) {
             logger.info(

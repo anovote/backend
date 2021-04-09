@@ -13,7 +13,6 @@ export const enterElection: EventHandler<{ electionCode: ElectionCode; voterId: 
     const voterSocket = event.client as VoterSocket
     voterSocket.electionCode = event.data.electionCode
     voterSocket.voterId = event.data.voterId
-    await SocketRoomService.getInstance().addUserToRoom(voterSocket, event.server)
-    // TODO Send out election details
+    await SocketRoomService.getInstance().addUserToRoom(voterSocket)
     eventRegistration({ client: event.client as VoterSocket, server: event.server })
 }

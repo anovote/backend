@@ -2,11 +2,13 @@ import { Ballot } from '@/models/Ballot/BallotEntity'
 import { BallotType } from '@/models/Ballot/BallotType'
 import { Candidate } from '@/models/Candidate/CandidateEntity'
 import { IVote } from '@/models/Vote/IVote'
+import { IBallotStats } from '@/services/IBallotStats'
+import { ICandidateStats } from '@/services/ICandidateStats'
 
 /**
  * Vote statistics for a candidate
  */
-export class CandidateVote {
+export class CandidateVote implements ICandidateStats {
     // The candidate ID from relation
     private _id: number
     /**
@@ -147,7 +149,7 @@ export class BallotVoteStats {
      * Returns the stats for this ballot as a JS object
      * @returns returns stats as object
      */
-    getStats() {
+    getStats(): IBallotStats {
         const candidates = []
         for (const [_, candidate] of this._candidateVotes.entries()) {
             candidates.push({

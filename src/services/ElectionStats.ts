@@ -17,7 +17,7 @@ export class ElectionStatsService {
         this.database = database
         this.owner = owner
     }
-    async getElectionStats(electionId: number) {
+    async getElectionStats(electionId: number): Promise<IBallotStats[]> {
         const election = await new ElectionService(this.database, this.owner).getById(electionId)
         if (!election) {
             throw new NotFoundError({ message: ServerErrorMessage.notFound('Election') })

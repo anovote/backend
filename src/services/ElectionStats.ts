@@ -6,6 +6,7 @@ import { ElectionOrganizer } from '@/models/ElectionOrganizer/ElectionOrganizerE
 import { Vote } from '@/models/Vote/VoteEntity'
 import { Connection } from 'typeorm'
 import { ElectionService } from './ElectionService'
+import { IBallotStats } from './IBallotStats'
 import { VoteService } from './VoteService'
 
 export class ElectionStatsService {
@@ -39,19 +40,4 @@ export class ElectionStatsService {
         stats.addVotes(votes)
         return stats.getStats()
     }
-}
-
-interface IBallotStats {
-    ballotId: number
-    stats: {
-        total: number
-        votes: number
-        blank: number
-        candidates: Array<ICandidateStats>
-    }
-}
-
-interface ICandidateStats {
-    id: number
-    votes: number
 }

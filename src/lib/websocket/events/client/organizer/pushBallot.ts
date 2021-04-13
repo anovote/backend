@@ -7,7 +7,7 @@ import { ElectionOrganizer } from '@/models/ElectionOrganizer/ElectionOrganizerE
 import { BallotService } from '@/services/BallotService'
 import { ElectionService } from '@/services/ElectionService'
 import { SocketRoomService } from '@/services/SocketRoomService'
-import { Events } from 'lib/websocket/events'
+import { Events } from '@/lib/websocket/events'
 
 /**
  * Responsible for pushing a ballot to all voters in a election.

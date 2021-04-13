@@ -1,4 +1,5 @@
 import { BallotVoteStats } from '@/lib/voting/BallotStats'
+import { VoterId } from '@/lib/voting/VoterId'
 import { OrganizerSocket, VoterSocket } from '@/lib/websocket/AnoSocket'
 import { Events } from '@/lib/websocket/events'
 import { database } from '@/loaders'
@@ -17,6 +18,7 @@ export interface IElectionRoom {
     // the socket id of the organizer that organizes the election.
     organizerSocketId: string | undefined
     // Vote stats for all ballots in the election, the KEY is the ballot ID
+
     ballotVoteStats: Map<number, BallotVoteStats>
 
     connectedVoters: number
@@ -49,14 +51,26 @@ export class SocketRoomService extends BaseEntityService<SocketRoomEntity> {
         const elections = await electionService.getAllStartedAndNonStarted()
         for (const election of elections) {
             const ballotMap = new Map()
-
             for (const ballot of election.ballots) {
-                ballotMap.set(ballot.id, new BallotVoteStats(ballot))
+                // Load all votes for ballot
+                const votes = await ballot.votes
+                const votersVotedOnBallot = new Set()
+                if (votes) {
+                    // Add all voters voted on ballot to set
+                    for (const vote of votes) {
+                        votersVotedOnBallot.add(vote.voter)
+                    }
+                }
+                ballotMap.set(ballot.id, {
+                    stats: new BallotVoteStats(ballot),
+                    voters: votersVotedOnBallot
+                })
             }
             this._electionRooms.set(election.id, {
                 organizerSocketId: undefined,
                 ballotVoteStats: ballotMap,
                 connectedVoters: 0
+
             })
         }
     }
@@ -104,8 +118,10 @@ export class SocketRoomService extends BaseEntityService<SocketRoomEntity> {
         if (!room) {
             this._electionRooms.set(electionId, {
                 organizerSocketId: undefined,
+
                 ballotVoteStats: new Map(),
                 connectedVoters: 0
+
             })
         }
     }
@@ -170,6 +186,7 @@ export class SocketRoomService extends BaseEntityService<SocketRoomEntity> {
 
         this.setConnectedVoters(socketServer, clientSocket.electionCode)
         this.emitConnectedVoters(socketServer, clientSocket.electionCode, Events.server.election.voterConnected)
+
     }
 
     /**

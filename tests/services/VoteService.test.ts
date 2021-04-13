@@ -3,14 +3,16 @@ import { NotFoundError } from '@/lib/errors/http/NotFoundError'
 import { Ballot } from '@/models/Ballot/BallotEntity'
 import { Candidate } from '@/models/Candidate/CandidateEntity'
 import { Election } from '@/models/Election/ElectionEntity'
+import { ElectionStatus } from '@/models/Election/ElectionStatus'
 import { ElectionOrganizer } from '@/models/ElectionOrganizer/ElectionOrganizerEntity'
 import { IVote } from '@/models/Vote/IVote'
 import { Vote } from '@/models/Vote/VoteEntity'
+import { HashService } from '@/services/HashService'
 import { VoteService } from '@/services/VoteService'
 import { Connection } from 'typeorm'
 import { createDummyBallot } from '../helpers/seed/ballot'
 import { createDummyCandidate } from '../helpers/seed/candidate'
-import { createDummyElection } from '../helpers/seed/election'
+import { createStartedDummyElection } from '../helpers/seed/election'
 import { createDummyOrganizer } from '../helpers/seed/organizer'
 import setupConnection from '../helpers/setupTestDB'
 import { clearDatabaseEntityTable } from '../Tests.utils'
@@ -27,7 +29,7 @@ let seedDTO: IVote
 beforeAll(async () => {
     database = await setupConnection()
     organizer = await createDummyOrganizer(database)
-    election = await createDummyElection(database, organizer)
+    election = await createStartedDummyElection(database, organizer)
     ballot = await createDummyBallot(database, election)
     candidate = await createDummyCandidate(database, ballot)
 
@@ -76,7 +78,7 @@ it('Should throw error when ballot id do not exist', async () => {
     seedVote = (await voteService.create(seedDTO)) as Vote
     const vote = deepCopy<IVote>(seedVote)
     vote.ballot = 1034
-    await expect(voteService.create(vote)).rejects.toThrowError()
+    await expect(voteService.create(vote)).rejects.toThrowError(NotFoundError)
 })
 
 it('Should not be able to vote on a candidate that has already been voted on', async () => {
@@ -116,4 +118,42 @@ test('that a candidate cast as null is registered as null in database', async ()
     expect.assertions(2)
     expect(saveVote!.voter === voter).toBeTruthy()
     expect(saveVote!.candidate === null).toBeTruthy()
+})
+
+it('Should not be able to vote on a candidate that does not exists', async () => {
+    const voter = 1
+    const candidateNotExistVote: IVote = { ballot: ballot.id, candidate: 32902, submitted: new Date(), voter }
+    await expect(voteService.create(candidateNotExistVote)).rejects.toThrowError(NotFoundError)
+})
+
+it('Should not be able to vote when election is not started', async () => {
+    const electionRepository = database.getRepository(Election)
+    const hashService = new HashService()
+
+    const notStartedElection = electionRepository.create({
+        title: 'Election yes',
+        password: await hashService.hash('password'),
+        status: ElectionStatus.NotStarted,
+        electionOrganizer: organizer,
+        description: 'Long description',
+        image: 'img.png',
+        openDate: new Date(),
+        closeDate: new Date(),
+        isLocked: true,
+        isAutomatic: false,
+        eligibleVoters: []
+    })
+
+    const createdElection = await electionRepository.save(notStartedElection)
+    const testBallot = await createDummyBallot(database, createdElection)
+
+    const voter = 1
+    const electionStatusNotValidVote: IVote = {
+        ballot: testBallot.id,
+        candidate: null,
+        submitted: new Date(),
+        voter
+    }
+
+    await expect(voteService.create(electionStatusNotValidVote)).rejects.toThrowError()
 })

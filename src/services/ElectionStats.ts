@@ -1,5 +1,6 @@
+import { NotFoundError } from '@/lib/errors/http/NotFoundError'
+import { ServerErrorMessage } from '@/lib/errors/messages/ServerErrorMessages'
 import { BallotVoteStats } from '@/lib/voting/BallotStats'
-import { logger } from '@/loaders/logger'
 import { Ballot } from '@/models/Ballot/BallotEntity'
 import { ElectionOrganizer } from '@/models/ElectionOrganizer/ElectionOrganizerEntity'
 import { Vote } from '@/models/Vote/VoteEntity'
@@ -18,7 +19,7 @@ export class ElectionStatsService {
     async getElectionStats(electionId: number) {
         const election = await new ElectionService(this.database, this.owner).getById(electionId)
         if (!election) {
-            throw new Error('No election')
+            throw new NotFoundError({ message: ServerErrorMessage.notFound('Election') })
         }
         const { ballots } = election
 

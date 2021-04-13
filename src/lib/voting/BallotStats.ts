@@ -120,24 +120,27 @@ export class BallotVoteStats {
             throw new Error('The candidate is wrong type')
         }
 
-        if (typeof vote.candidate === 'number') {
-            const candidate = this._candidateVotes.get(vote.candidate)
-            if (candidate) {
-                candidate.incrementVote()
-                this.incrementVotes()
-            }
-        }
-
-        if (vote.candidate instanceof Candidate) {
-            const candidate = this._candidateVotes.get(vote.candidate.id)
-            if (candidate) {
-                candidate.incrementVote()
-                this.incrementVotes()
-            }
-        }
-        if (null === vote.candidate || vote.candidate === 'blank') {
+        const candidate = this._candidateVotes.get(this.getVoteCandidateId(vote))
+        if (candidate) {
+            candidate.incrementVote()
+            this.incrementVotes()
+        } else if (null === vote.candidate || vote.candidate === 'blank') {
             this.incrementBlank()
         }
+    }
+
+    /**
+     * Returns the id of the candidate in the vote, or -1 if there are candidate id present.
+     * @param vote vote to get candidate id from
+     * @returns return the id of the candidate, or -1 of not ids
+     */
+    private getVoteCandidateId(vote: IVote) {
+        let candidateId = -1
+
+        if (typeof vote.candidate === 'number') candidateId = vote.candidate
+        else if (vote.candidate instanceof Candidate) candidateId = vote.candidate.id
+
+        return candidateId
     }
 
     /**

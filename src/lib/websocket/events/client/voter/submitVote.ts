@@ -41,14 +41,15 @@ export const submitVote: EventHandlerAcknowledges<IVote> = async (event) => {
             const room = socketRoomService.getRoom(voterSocket.electionCode)
 
             if (room) {
-                const ballotStats = room.ballotVoteStats.get(submittedVote.ballot)
-                ballotStats?.addVotes([submittedVote])
+                const ballot = room.ballots.get(submittedVote.ballot)
+                ballot?.stats.addVotes([submittedVote])
+                ballot?.voters.add(voterSocket.voterId)
                 // If organizer is connected, we can get the socket id here to broadcast
                 if (room.organizerSocketId) {
                     // Volatile so events do not stack, we only want to send the last one
                     event.server.volatile
                         .to(room.organizerSocketId)
-                        .emit(Events.server.vote.newVote, ballotStats!.getStats())
+                        .emit(Events.server.vote.newVote, ballot!.stats.getStats())
                 }
                 event.acknowledgement({
                     statusCode: StatusCodes.OK,

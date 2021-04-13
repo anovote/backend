@@ -1,8 +1,9 @@
 import { BallotVoteStats } from '@/lib/voting/BallotStats'
-import { OrganizerSocket } from '@/lib/websocket/AnoSocket'
+import { OrganizerSocket, VoterSocket } from '@/lib/websocket/AnoSocket'
 import { EventHandlerAcknowledges } from '@/lib/websocket/EventHandler'
 import { EventErrorMessage, EventMessage } from '@/lib/websocket/EventResponse'
 import { database } from '@/loaders'
+import { logger } from '@/loaders/logger'
 import { ElectionOrganizer } from '@/models/ElectionOrganizer/ElectionOrganizerEntity'
 import { BallotService } from '@/services/BallotService'
 import { ElectionService } from '@/services/ElectionService'
@@ -25,13 +26,34 @@ export const pushBallot: EventHandlerAcknowledges<{ ballotId: number; electionId
         const room = socketRoomService.getRoom(electionId)
         const ballot = await ballotService.getById(ballotId)
         if (room && ballot) {
-            if (!room.ballotVoteStats.has(ballotId)) {
-                room.ballotVoteStats.set(ballotId, new BallotVoteStats(ballot))
+            if (room.ballots.has(ballotId)) {
+                // All voters that has voted on this ballot
+                const ballotVotes = room.ballots.get(ballotId)?.voters
+                if (ballotVotes?.size == 0) {
+                    // Send to all as no one has voted on the ballot
+                    event.server.to(electionId.toString()).emit(Events.server.ballot.push, ballot)
+                } else {
+                    // Get all socket IDs for the socket room that the ballot belongs to
+                    const roomSocketIds = event.server.of('/').adapter.rooms.get(electionId.toString())
+                    roomSocketIds?.forEach((socketId) => {
+                        const socket = event.server.sockets.sockets.get(socketId) as VoterSocket | undefined
+                        // If the voter socket exist and the voter id for that socket has not voted on the ballot yet
+                        if (socket && ballotVotes && !ballotVotes.has(socket.voterId)) {
+                            // Emit the ballot only to those that has not voter on the ballot yet
+                            socket.emit(Events.server.ballot.push, ballot)
+                        }
+                    })
+                }
+            } else {
+                // Create ballot stats and voter set for the new ballot
+                room.ballots.set(ballotId, { stats: new BallotVoteStats(ballot), voters: new Set() })
+                // Broadcast to all since this ballot has not been created before now
+                event.server.to(electionId.toString()).emit(Events.server.ballot.push, ballot)
             }
         }
-        event.server.to(electionId.toString()).emit(Events.server.ballot.push, ballot)
         event.acknowledgement(EventMessage({}))
     } catch (err) {
+        logger.error(err)
         event.acknowledgement(EventErrorMessage(err))
     }
 }

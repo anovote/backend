@@ -54,15 +54,27 @@ export class VoteValidator {
         }
     }
 
-    private async checkIfCandidateExists(candidate: number | 'blank' | null) {
+    private async checkIfCandidateExists(candidate: number | 'blank' | null | Candidate) {
         const candidateRepository = this.database.getRepository(Candidate)
 
         if (!(candidate === 'blank' || candidate === null)) {
-            const candidateExists: Candidate | undefined = await candidateRepository.findOne(candidate)
+            const candidateExists = await candidateRepository.findOne(this.getCandidateId(candidate))
+
             if (!candidateExists) {
                 throw new NotFoundError({ message: ServerErrorMessage.notFound('Candidate') })
             }
         }
+    }
+
+    private getCandidateId(candidate: number | Candidate) {
+        if (typeof candidate === 'number') {
+            return candidate
+        }
+        if (candidate instanceof Candidate) {
+            return candidate.id
+        }
+
+        return undefined
     }
 
     private async checkIfVoteExists(voter: number, ballot: number) {

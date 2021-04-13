@@ -8,6 +8,7 @@ import { ElectionBaseDTO } from '@/models/Election/ElectionBaseDTO'
 import { SocketRoomEntity, SocketRoomState } from '@/models/SocketRoom/SocketRoomEntity'
 import chalk from 'chalk'
 import { classToClass } from 'class-transformer'
+import { Server } from 'socket.io'
 import { Connection, getConnection } from 'typeorm'
 import BaseEntityService, { CrudOptions } from './BaseEntityService'
 import { ElectionService } from './ElectionService'
@@ -20,7 +21,14 @@ export interface IElectionRoom {
     organizerSocketId: string | undefined
     // Vote stats for all ballots in the election, the KEY is the ballot ID
     ballots: Map<number, { stats: BallotVoteStats; voters: Set<VoterId> }>
+    ballotVoteStats: Map<number, BallotVoteStats>
+
+    connectedVoters: number
 }
+
+/**
+ * This is singleton
+ */
 export class SocketRoomService extends BaseEntityService<SocketRoomEntity> {
     // electionId: number
     private static instance: SocketRoomService
@@ -62,6 +70,8 @@ export class SocketRoomService extends BaseEntityService<SocketRoomEntity> {
             }
             this._electionRooms.set(election.id, {
                 organizerSocketId: undefined,
+                ballotVoteStats: ballotMap,
+                connectedVoters: 0,
                 ballots: ballotMap
             })
         }
@@ -110,6 +120,9 @@ export class SocketRoomService extends BaseEntityService<SocketRoomEntity> {
         if (!room) {
             this._electionRooms.set(electionId, {
                 organizerSocketId: undefined,
+
+                ballotVoteStats: new Map(),
+                connectedVoters: 0,
                 ballots: new Map()
             })
         }
@@ -124,13 +137,12 @@ export class SocketRoomService extends BaseEntityService<SocketRoomEntity> {
      */
     setElectionRoomOrganizer(electionId: number, organizerSocket: OrganizerSocket) {
         const room = this._electionRooms.get(electionId)
-        if (room) room.organizerSocketId = organizerSocket.id
+        if (room) {
+            room.organizerSocketId = organizerSocket.id
+            organizerSocket.volatile.emit(Events.server.election.voterConnected, room.connectedVoters)
+        }
     }
 
-    /**
-     * Assigns an organizer socket to a room, and set it as owner of the room
-     * @param organizerSocket an organizer that we want to assign as owner of the room
-     */
     removeElectionRoomOrganizer(electionId: number) {
         this._electionRooms.delete(electionId)
     }
@@ -153,7 +165,7 @@ export class SocketRoomService extends BaseEntityService<SocketRoomEntity> {
      * @param clientSocket The client socket connection
      * @param socketServer The socket server
      */
-    async addUserToRoom(clientSocket: VoterSocket) {
+    async addUserToRoom(clientSocket: VoterSocket, socketServer: Server) {
         const socketId = chalk.blue(clientSocket.id)
         if (!clientSocket.electionCode) {
             logger.info(
@@ -173,7 +185,37 @@ export class SocketRoomService extends BaseEntityService<SocketRoomEntity> {
         const electionCodeString = clientSocket.electionCode!.toString()
         logger.info(`${socketId} was added to election room ${electionCodeString}`)
         await clientSocket.join(electionCodeString)
+
+        this.setConnectedVoters(socketServer, clientSocket.electionCode)
+        this.emitConnectedVoters(socketServer, clientSocket.electionCode, Events.server.election.voterConnected)
         await this.pushElectionToVoter(clientSocket)
+    }
+
+    /**
+     * @param clientSocket The client socket connection
+     * @param socketServer The socket server
+     */
+    removeUserFromRoom(clientSocket: VoterSocket, socketServer: Server) {
+        this.setConnectedVoters(socketServer, clientSocket.electionCode)
+        this.emitConnectedVoters(socketServer, clientSocket.electionCode, Events.server.election.voterDisconnected)
+    }
+
+    private emitConnectedVoters(socketServer: Server, electionId: number, connectedEvent: string) {
+        const electionRoom = this.getRoom(electionId)
+        if (electionRoom) {
+            socketServer
+                .to(this.getOrganizerSocketIdForElection(electionId) as string)
+                .volatile.emit(connectedEvent, electionRoom.connectedVoters)
+        }
+    }
+
+    private setConnectedVoters(socketServer: Server, electionId: number) {
+        const connectedVoters = socketServer.of('/').adapter.rooms.get(electionId.toString())?.size
+
+        const electionRoom = this.getRoom(electionId)
+        if (electionRoom) {
+            electionRoom.connectedVoters = connectedVoters ? connectedVoters : 0
+        }
     }
 
     /**

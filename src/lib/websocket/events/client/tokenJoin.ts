@@ -18,6 +18,7 @@ export const tokenJoin: EventHandlerAcknowledges<ITokenJoinPayload> = (event) =>
             if (decoded) {
                 if (decoded.organizer) {
                     organizerJoin({ ...event, data: decoded })
+                    event.acknowledgement(EventMessage({}))
                 } else {
                     const voterSocket = event.client as VoterSocket
                     if (!voterSocket.electionCode && decoded.electionId) {

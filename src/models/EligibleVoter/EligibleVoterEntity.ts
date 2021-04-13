@@ -1,4 +1,3 @@
-import { Exclude } from 'class-transformer'
 import { IsEmail } from 'class-validator'
 import { BeforeInsert, BeforeUpdate, Column, Entity, ManyToMany, PrimaryGeneratedColumn } from 'typeorm'
 import { Election } from '../Election/ElectionEntity'

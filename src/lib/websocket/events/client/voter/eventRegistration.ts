@@ -11,7 +11,7 @@ export const eventRegistration = ({ client, server }: { client: VoterSocket; ser
     client.on(Events.client.vote.submit, (data, acknowledgement) =>
         submitVote({ client, server, data, acknowledgement })
     )
-    client.on(Events.standard.socket.disconnect, () => {
-        voterDisconnect(client, server)
+    client.on(Events.standard.socket.disconnect, (event) => {
+        voterDisconnect({ ...event, data: { server, client } })
     })
 }

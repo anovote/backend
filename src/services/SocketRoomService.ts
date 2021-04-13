@@ -4,8 +4,10 @@ import { OrganizerSocket, VoterSocket } from '@/lib/websocket/AnoSocket'
 import { Events } from '@/lib/websocket/events'
 import { database } from '@/loaders'
 import { logger } from '@/loaders/logger'
+import { ElectionBaseDTO } from '@/models/Election/ElectionBaseDTO'
 import { SocketRoomEntity, SocketRoomState } from '@/models/SocketRoom/SocketRoomEntity'
 import chalk from 'chalk'
+import { classToClass } from 'class-transformer'
 import { Server } from 'socket.io'
 import { Connection, getConnection } from 'typeorm'
 import BaseEntityService, { CrudOptions } from './BaseEntityService'
@@ -18,7 +20,7 @@ export interface IElectionRoom {
     // the socket id of the organizer that organizes the election.
     organizerSocketId: string | undefined
     // Vote stats for all ballots in the election, the KEY is the ballot ID
-
+    ballots: Map<number, { stats: BallotVoteStats; voters: Set<VoterId> }>
     ballotVoteStats: Map<number, BallotVoteStats>
 
     connectedVoters: number
@@ -69,8 +71,8 @@ export class SocketRoomService extends BaseEntityService<SocketRoomEntity> {
             this._electionRooms.set(election.id, {
                 organizerSocketId: undefined,
                 ballotVoteStats: ballotMap,
-                connectedVoters: 0
-
+                connectedVoters: 0,
+                ballots: ballotMap
             })
         }
     }
@@ -120,8 +122,8 @@ export class SocketRoomService extends BaseEntityService<SocketRoomEntity> {
                 organizerSocketId: undefined,
 
                 ballotVoteStats: new Map(),
-                connectedVoters: 0
-
+                connectedVoters: 0,
+                ballots: new Map()
             })
         }
     }
@@ -179,14 +181,14 @@ export class SocketRoomService extends BaseEntityService<SocketRoomEntity> {
             )
             return
         }
+
         const electionCodeString = clientSocket.electionCode!.toString()
         logger.info(`${socketId} was added to election room ${electionCodeString}`)
         await clientSocket.join(electionCodeString)
-        socketServer.to(clientSocket.id).send(`You have joined election room: ${electionCodeString}`)
 
         this.setConnectedVoters(socketServer, clientSocket.electionCode)
         this.emitConnectedVoters(socketServer, clientSocket.electionCode, Events.server.election.voterConnected)
-
+        await this.pushElectionToVoter(clientSocket)
     }
 
     /**
@@ -214,5 +216,17 @@ export class SocketRoomService extends BaseEntityService<SocketRoomEntity> {
         if (electionRoom) {
             electionRoom.connectedVoters = connectedVoters ? connectedVoters : 0
         }
+    }
+
+    /**
+     * Push the election registered to the socket back to the voter owning the socket
+     * @param clientSocket socket to send election to
+     */
+    private async pushElectionToVoter(clientSocket: VoterSocket) {
+        // Gets the election, transform it and emits it to the voter
+        const electionRoom = (await SocketRoomService.getInstance().getById(
+            clientSocket.electionCode
+        )) as SocketRoomEntity
+        clientSocket.emit(Events.server.election.push, classToClass<ElectionBaseDTO>(electionRoom.election))
     }
 }

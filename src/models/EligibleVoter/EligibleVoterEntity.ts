@@ -22,7 +22,6 @@ export class EligibleVoter implements IEligibleVoter {
 
     @Column({ type: 'varchar', length: 255 })
     @IsEmail()
-    @Exclude()
     identification!: string
 
     @Column({ type: 'date', nullable: true })

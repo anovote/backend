@@ -313,11 +313,6 @@ it('should be able to save an election with a socket room ', async () => {
 })
 
 describe('Duplication', () => {
-    // beforeEach(async () => {
-    //     const repo = db.getRepository(Election)
-    //     await clearDatabaseEntityTable(repo)
-    // })
-
     it('should not allow duplicate entries from same owner', async () => {
         const election = db.getRepository(Election).create()
         election.title = 'dup'

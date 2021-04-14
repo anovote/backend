@@ -1,21 +1,21 @@
+import { deepCopy } from '@/helpers/object'
 import { NotFoundError } from '@/lib/errors/http/NotFoundError'
+import { ValidationError } from '@/lib/errors/validation/ValidationError'
 import { Ballot } from '@/models/Ballot/BallotEntity'
 import { BallotResultDisplay } from '@/models/Ballot/BallotResultDisplay'
 import { BallotType } from '@/models/Ballot/BallotType'
 import { IBallot } from '@/models/Ballot/IBallot'
+import { Candidate } from '@/models/Candidate/CandidateEntity'
 import { Election } from '@/models/Election/ElectionEntity'
 import { ElectionOrganizer } from '@/models/ElectionOrganizer/ElectionOrganizerEntity'
 import { BallotService } from '@/services/BallotService'
+import { CrudOptions } from '@/services/BaseEntityService'
 import { ElectionService } from '@/services/ElectionService'
 import { Connection } from 'typeorm'
-import { deepCopy } from '@/helpers/object'
+import { getTestDatabase } from '../helpers/database'
 import { createDummyElection } from '../helpers/seed/election'
 import { createDummyOrganizer } from '../helpers/seed/organizer'
-import { ValidationError } from '@/lib/errors/validation/ValidationError'
-import setupConnection from '../helpers/setupTestDB'
-import { CrudOptions } from '@/services/BaseEntityService'
 import { clearDatabaseEntityTable } from '../Tests.utils'
-import { Candidate } from '@/models/Candidate/CandidateEntity'
 
 let db: Connection
 let organizer: ElectionOrganizer
@@ -25,7 +25,7 @@ let seedBallot: Ballot
 
 beforeAll(async () => {
     try {
-        db = await setupConnection()
+        db = await getTestDatabase()
         organizer = await createDummyOrganizer(db)
 
         ballotService = new BallotService(db, new ElectionService(db, organizer), organizer)

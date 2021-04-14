@@ -9,8 +9,8 @@ import { ElectionOrganizer } from '@/models/ElectionOrganizer/ElectionOrganizerE
 import { SocketRoomEntity, SocketRoomState } from '@/models/SocketRoom/SocketRoomEntity'
 import { ElectionService } from '@/services/ElectionService'
 import { Connection } from 'typeorm'
+import { getTestDatabase } from '../helpers/database'
 import { createDummyOrganizer, deleteDummyOrganizer } from '../helpers/seed/organizer'
-import setupConnection from '../helpers/setupTestDB'
 import { clearDatabaseEntityTable } from '../Tests.utils'
 
 let db: Connection
@@ -20,8 +20,7 @@ let seedElection: Election
 let seedDTO: IElection
 
 beforeAll(async () => {
-    db = await setupConnection()
-    // db = await getTestDatabase()
+    db = await getTestDatabase()
     organizer = await createDummyOrganizer(db)
 
     seedDTO = {

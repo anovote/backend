@@ -33,7 +33,8 @@ export default {
         port: process.env.DB_PORT,
         db: process.env.POSTGRES_DB,
         user: process.env.POSTGRES_USER,
-        password: process.env.POSTGRES_PASSWORD
+        password: process.env.POSTGRES_PASSWORD,
+        dropSchema: environment === environments.test ? true : false
     },
     http: {
         port: process.env.HTTP_PORT

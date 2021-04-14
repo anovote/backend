@@ -1,8 +1,8 @@
 import { strip } from '@/helpers/sanitize'
 import { validateEntity } from '@/helpers/validateEntity'
 import { IHasOwner } from '@/interfaces/IHasOwner'
-import { BadRequestError } from '@/lib/errors/http/BadRequestError'
 import { ForbiddenError } from '@/lib/errors/http/ForbiddenError'
+import { NotAcceptableError } from '@/lib/errors/http/NotAcceptableError'
 import { NotFoundError } from '@/lib/errors/http/NotFoundError'
 import { ServerErrorMessage } from '@/lib/errors/messages/ServerErrorMessages'
 import { Election } from '@/models/Election/ElectionEntity'
@@ -114,7 +114,7 @@ export class ElectionService extends BaseEntityService<Election> implements IHas
         }
 
         if (await this.isDuplicate(electionDTO)) {
-            throw new BadRequestError({ message: 'Election already exists' })
+            throw new NotAcceptableError({ message: 'Election already exists' })
         }
 
         const election = this.manager.create(electionDTO)
@@ -163,17 +163,11 @@ export class ElectionService extends BaseEntityService<Election> implements IHas
     }
 
     async isDuplicate(election: IElection): Promise<boolean> {
-        const { title, description, image, openDate, closeDate, status, isLocked, isAutomatic } = election
+        const { title } = election
         const duplicate = await this.manager.find({
             where: {
                 title,
-                description,
-                image,
-                openDate,
-                closeDate,
-                status,
-                isLocked,
-                isAutomatic
+                electionOrganizer: this.owner
             }
         })
         return duplicate.length > 0

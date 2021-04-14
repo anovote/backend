@@ -5,12 +5,12 @@ import { Ballot } from '@/models/Ballot/BallotEntity'
 import { BallotResultDisplay } from '@/models/Ballot/BallotResultDisplay'
 import { Election } from '@/models/Election/ElectionEntity'
 import { Connection, Repository } from 'typeorm'
-import setupConnection from '../helpers/setupTestDB'
+import { getTestDatabase } from '../helpers/database'
 
 let repo: Repository<Ballot>
 let db: Connection
 beforeAll(async () => {
-    db = await setupConnection()
+    db = await getTestDatabase()
     repo = db.getRepository(Ballot)
 })
 

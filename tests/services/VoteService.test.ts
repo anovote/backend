@@ -10,11 +10,11 @@ import { Vote } from '@/models/Vote/VoteEntity'
 import { HashService } from '@/services/HashService'
 import { VoteService } from '@/services/VoteService'
 import { Connection } from 'typeorm'
+import { getTestDatabase } from '../helpers/database'
 import { createDummyBallot } from '../helpers/seed/ballot'
 import { createDummyCandidate } from '../helpers/seed/candidate'
 import { createStartedDummyElection } from '../helpers/seed/election'
 import { createDummyOrganizer } from '../helpers/seed/organizer'
-import setupConnection from '../helpers/setupTestDB'
 import { clearDatabaseEntityTable } from '../Tests.utils'
 
 let database: Connection
@@ -27,7 +27,7 @@ let seedVote: Vote
 let seedDTO: IVote
 
 beforeAll(async () => {
-    database = await setupConnection()
+    database = await getTestDatabase()
     organizer = await createDummyOrganizer(database)
     election = await createStartedDummyElection(database, organizer)
     ballot = await createDummyBallot(database, election)

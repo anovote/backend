@@ -27,10 +27,10 @@ export interface ElectionBody {
 export class ElectionService extends BaseEntityService<Election> implements IHasOwner<Election> {
     private manager: Repository<Election>
     private readonly hashService: HashService
-    owner: ElectionOrganizer | undefined
+    owner: ElectionOrganizer
     private _eligibleVoterService: EligibleVoterService
 
-    constructor(db: Connection, owner?: ElectionOrganizer) {
+    constructor(db: Connection, owner: ElectionOrganizer) {
         super(db, Election)
         this.owner = owner
         this.manager = db.getRepository(Election)
@@ -45,9 +45,11 @@ export class ElectionService extends BaseEntityService<Election> implements IHas
     async create(dto: IElection): Promise<Election | undefined> {
         return classToClass(await this.createElection(dto))
     }
+
     async update(id: number, dto: Election): Promise<Election | undefined> {
         return classToClass(await this.updateElectionById(id, dto))
     }
+
     async delete(id: number): Promise<void> {
         return classToClass(await this.deleteElectionById(id))
     }
@@ -107,6 +109,10 @@ export class ElectionService extends BaseEntityService<Election> implements IHas
             electionDTO.eligibleVoters = this._eligibleVoterService.correctListOfEligibleVoters(
                 electionDTO.eligibleVoters
             )
+        }
+
+        if (!electionDTO.electionOrganizer) {
+            electionDTO.electionOrganizer = this.owner
         }
 
         if (electionDTO.password) {

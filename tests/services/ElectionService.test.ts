@@ -11,6 +11,8 @@ import { Connection } from 'typeorm'
 import { createDummyOrganizer, deleteDummyOrganizer } from '../helpers/seed/organizer'
 import { clearDatabaseEntityTable } from '../Tests.utils'
 import { SocketRoomEntity, SocketRoomState } from '@/models/SocketRoom/SocketRoomEntity'
+import { NotAcceptableError } from '@/lib/errors/http/NotAcceptableError'
+import { ElectionOrganizerService } from '@/services/ElectionOrganizerService'
 
 let db: Connection
 let organizer: ElectionOrganizer
@@ -45,8 +47,8 @@ beforeEach(async () => {
 afterAll(async () => {
     try {
         const repo = db.getRepository(Election)
-        await clearDatabaseEntityTable(repo)
-        await deleteDummyOrganizer(db, organizer)
+        // await clearDatabaseEntityTable(repo)
+        // await deleteDummyOrganizer(db, organizer)
         await db.close()
     } catch (err) {
         console.error(err)
@@ -308,4 +310,50 @@ it('should be able to save an election with a socket room ', async () => {
     expect(savedElection).toBeDefined()
     expect(savedElection?.socketRoom).toBeDefined()
     expect(savedElection?.socketRoom.roomState).toBe(SocketRoomState.CLOSE)
+})
+
+describe('Duplication', () => {
+    // beforeEach(async () => {
+    //     const repo = db.getRepository(Election)
+    //     await clearDatabaseEntityTable(repo)
+    // })
+
+    fit('should not allow duplicate entries from same owner', async () => {
+        const election = db.getRepository(Election).create()
+        election.title = 'dup'
+        election.description = 'this is a duplicate'
+        election.electionOrganizer = organizer
+
+        await expect(electionService.create(election)).resolves.toBeDefined()
+        await expect(electionService.create(election)).rejects.toThrow(NotAcceptableError)
+    })
+
+    fit('should accept duplicate entries from different owners', async () => {
+        const election = db.getRepository(Election).create()
+        election.title = 'dup'
+        election.description = 'this is a duplicate'
+
+        await expect(electionService.create(election)).resolves.toBeDefined()
+
+        const owner2 = new ElectionOrganizer()
+        owner2.email = 'user2@gmail.com'
+        owner2.firstName = 'user'
+        owner2.lastName = '2'
+
+        const savedOwner2 = await new ElectionOrganizerService(db).create(owner2)
+        expect(savedOwner2).toBeDefined()
+
+        // await expect(new ElectionService(db, savedOwner2!).create(election)).resolves.toBeDefined()
+    })
+})
+
+describe('Owner', () => {
+    fit('should make sure that an election has an organizer', async () => {
+        const election = db.getRepository(Election).create()
+        election.title = 'dup'
+        election.description = 'this is a duplicate'
+        const createdElection = await electionService.create(election)
+        expect(createdElection).toBeDefined()
+        expect(createdElection?.electionOrganizer).toBeDefined()
+    })
 })

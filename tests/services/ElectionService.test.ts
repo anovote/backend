@@ -1,18 +1,17 @@
 import { deepCopy } from '@/helpers/object'
 import { validateEntity } from '@/helpers/validateEntity'
+import { NotAcceptableError } from '@/lib/errors/http/NotAcceptableError'
 import { NotFoundError } from '@/lib/errors/http/NotFoundError'
-import setupConnection from '../helpers/setupTestDB'
 import { Election } from '@/models/Election/ElectionEntity'
 import { ElectionStatus } from '@/models/Election/ElectionStatus'
 import { IElection } from '@/models/Election/IElection'
 import { ElectionOrganizer } from '@/models/ElectionOrganizer/ElectionOrganizerEntity'
+import { SocketRoomEntity, SocketRoomState } from '@/models/SocketRoom/SocketRoomEntity'
 import { ElectionService } from '@/services/ElectionService'
 import { Connection } from 'typeorm'
 import { createDummyOrganizer, deleteDummyOrganizer } from '../helpers/seed/organizer'
+import setupConnection from '../helpers/setupTestDB'
 import { clearDatabaseEntityTable } from '../Tests.utils'
-import { SocketRoomEntity, SocketRoomState } from '@/models/SocketRoom/SocketRoomEntity'
-import { NotAcceptableError } from '@/lib/errors/http/NotAcceptableError'
-import { ElectionOrganizerService } from '@/services/ElectionOrganizerService'
 
 let db: Connection
 let organizer: ElectionOrganizer
@@ -22,6 +21,7 @@ let seedDTO: IElection
 
 beforeAll(async () => {
     db = await setupConnection()
+    // db = await getTestDatabase()
     organizer = await createDummyOrganizer(db)
 
     seedDTO = {
@@ -47,8 +47,8 @@ beforeEach(async () => {
 afterAll(async () => {
     try {
         const repo = db.getRepository(Election)
-        // await clearDatabaseEntityTable(repo)
-        // await deleteDummyOrganizer(db, organizer)
+        await clearDatabaseEntityTable(repo)
+        await deleteDummyOrganizer(db, organizer)
         await db.close()
     } catch (err) {
         console.error(err)
@@ -183,7 +183,7 @@ it('should accept object if both dates are the same', async () => {
     await expect(validateEntity(election)).resolves.toBe(undefined)
 })
 
-it('it should resolve when closing date is after opening date', async () => {
+it('should resolve when closing date is after opening date', async () => {
     const repo = db.getRepository(Election)
     const election = repo.create()
     election.id = 1
@@ -318,7 +318,7 @@ describe('Duplication', () => {
     //     await clearDatabaseEntityTable(repo)
     // })
 
-    fit('should not allow duplicate entries from same owner', async () => {
+    it('should not allow duplicate entries from same owner', async () => {
         const election = db.getRepository(Election).create()
         election.title = 'dup'
         election.description = 'this is a duplicate'
@@ -328,7 +328,7 @@ describe('Duplication', () => {
         await expect(electionService.create(election)).rejects.toThrow(NotAcceptableError)
     })
 
-    fit('should accept duplicate entries from different owners', async () => {
+    it('should accept duplicate entries from different owners', async () => {
         const election = db.getRepository(Election).create()
         election.title = 'dup'
         election.description = 'this is a duplicate'
@@ -339,16 +339,17 @@ describe('Duplication', () => {
         owner2.email = 'user2@gmail.com'
         owner2.firstName = 'user'
         owner2.lastName = '2'
+        owner2.password = 'password'
 
-        const savedOwner2 = await new ElectionOrganizerService(db).create(owner2)
+        const savedOwner2 = await db.getRepository(ElectionOrganizer).save(owner2)
         expect(savedOwner2).toBeDefined()
 
-        // await expect(new ElectionService(db, savedOwner2!).create(election)).resolves.toBeDefined()
+        await expect(new ElectionService(db, savedOwner2!).create(election)).resolves.toBeDefined()
     })
 })
 
 describe('Owner', () => {
-    fit('should make sure that an election has an organizer', async () => {
+    it('should make sure that an election has an organizer', async () => {
         const election = db.getRepository(Election).create()
         election.title = 'dup'
         election.description = 'this is a duplicate'

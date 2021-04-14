@@ -10,7 +10,7 @@ import { SocketRoomEntity, SocketRoomState } from '@/models/SocketRoom/SocketRoo
 import { ElectionService } from '@/services/ElectionService'
 import { Connection } from 'typeorm'
 import { getTestDatabase } from '../helpers/database'
-import { createDummyOrganizer } from '../helpers/seed/organizer'
+import { createDummyOrganizer, deleteDummyOrganizer } from '../helpers/seed/organizer'
 import { clearDatabaseEntityTable } from '../Tests.utils'
 
 let db: Connection

@@ -27,10 +27,10 @@ export interface ElectionBody {
 export class ElectionService extends BaseEntityService<Election> implements IHasOwner<Election> {
     private manager: Repository<Election>
     private readonly hashService: HashService
-    owner: ElectionOrganizer
+    owner: ElectionOrganizer | undefined
     private _eligibleVoterService: EligibleVoterService
 
-    constructor(db: Connection, owner: ElectionOrganizer) {
+    constructor(db: Connection, owner?: ElectionOrganizer) {
         super(db, Election)
         this.owner = owner
         this.manager = db.getRepository(Election)
@@ -111,8 +111,12 @@ export class ElectionService extends BaseEntityService<Election> implements IHas
             )
         }
 
+        if (!electionDTO.electionOrganizer && !this.owner) {
+            throw new Error('No owner')
+        }
+
         if (!electionDTO.electionOrganizer) {
-            electionDTO.electionOrganizer = this.owner
+            electionDTO.electionOrganizer = this.owner!
         }
 
         if (electionDTO.password) {

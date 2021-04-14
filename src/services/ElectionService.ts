@@ -102,7 +102,7 @@ export class ElectionService extends BaseEntityService<Election> implements IHas
         return await this.manager.findOne(id)
     }
 
-    async createElection(electionDTO: IElection): Promise<Election | undefined> {
+    private async createElection(electionDTO: IElection): Promise<Election | undefined> {
         if (electionDTO.eligibleVoters) {
             electionDTO.eligibleVoters = this._eligibleVoterService.correctListOfEligibleVoters(
                 electionDTO.eligibleVoters

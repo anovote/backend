@@ -13,6 +13,7 @@ export default async () => {
         username: config.database.user,
         password: config.database.password,
         database: config.database.db,
+        dropSchema: config.database.dropSchema,
         synchronize: true,
         logging: false,
         entities: [`${config.src}/models/**/*.{ts,js}`],

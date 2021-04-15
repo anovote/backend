@@ -1,11 +1,14 @@
 import { Ballot } from '@/models/Ballot/BallotEntity'
 import { BallotType } from '@/models/Ballot/BallotType'
+import { Candidate } from '@/models/Candidate/CandidateEntity'
 import { IVote } from '@/models/Vote/IVote'
+import { IBallotStats } from '@/services/IBallotStats'
+import { ICandidateStats } from '@/services/ICandidateStats'
 
 /**
  * Vote statistics for a candidate
  */
-export class CandidateVote {
+export class CandidateVote implements ICandidateStats {
     // The candidate ID from relation
     private _id: number
     /**
@@ -43,7 +46,7 @@ export class CandidateVote {
 export class BallotVoteStats {
     // The ballot we are providing stats for
     private _ballot: Ballot
-    private _total = 0
+    private _total = 0 // combination of votes and blank
     private _votes = 0
     private _blank = 0
 
@@ -110,22 +113,43 @@ export class BallotVoteStats {
      * @param vote the vote to do vote stat work of
      */
     private setVoteStat(vote: IVote) {
-        if (vote.candidate && typeof vote.candidate === 'number') {
-            const candidate = this._candidateVotes.get(vote.candidate)
-            if (candidate) {
-                candidate.incrementVote()
-                this.incrementVotes()
-            }
-        } else {
+        if (
+            vote.candidate !== null &&
+            !(vote.candidate instanceof Candidate) &&
+            typeof vote.candidate !== 'number' &&
+            vote.candidate !== 'blank'
+        ) {
+            throw new Error('The candidate is wrong type')
+        }
+
+        const candidate = this._candidateVotes.get(this.getVoteCandidateId(vote))
+        if (candidate) {
+            candidate.incrementVote()
+            this.incrementVotes()
+        } else if (null === vote.candidate || vote.candidate === 'blank') {
             this.incrementBlank()
         }
+    }
+
+    /**
+     * Returns the id of the candidate in the vote, or -1 if there are candidate id present.
+     * @param vote vote to get candidate id from
+     * @returns return the id of the candidate, or -1 of not ids
+     */
+    private getVoteCandidateId(vote: IVote) {
+        let candidateId = -1
+
+        if (typeof vote.candidate === 'number') candidateId = vote.candidate
+        else if (vote.candidate instanceof Candidate) candidateId = vote.candidate.id
+
+        return candidateId
     }
 
     /**
      * Returns the stats for this ballot as a JS object
      * @returns returns stats as object
      */
-    getStats() {
+    getStats(): IBallotStats {
         const candidates = []
         for (const [_, candidate] of this._candidateVotes.entries()) {
             candidates.push({

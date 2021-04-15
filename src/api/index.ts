@@ -10,6 +10,7 @@ import morgan from 'morgan'
 import { errorHandler } from './middleware/errorHandler'
 import { rateLimits } from './middleware/rateLimits'
 import voterElectionRoutes from './routes/voter/election'
+import electionStatsRouter from './routes/elections/ElectionStatsRoute'
 
 const publicRoutes = Router()
 publicRoutes.use('/auth/login', rateLimits.loginLimiter)
@@ -27,6 +28,7 @@ organizerRoutes.use(checkAuth)
 organizerRoutes.use('/elections', electionRoutes)
 organizerRoutes.use('/electionOrganizer', electionOrganizerRoutes)
 organizerRoutes.use('/elections/:electionId/ballots', ballotRoutes)
+organizerRoutes.use('/elections/:electionId/stats', electionStatsRouter)
 
 export default Router()
     .use(morgan('dev'))

@@ -30,6 +30,10 @@ export class VoteService extends BaseEntityService<Vote> {
         return this.getVoteById(id)
     }
 
+    async getByBallotId(ballotId: number) {
+        return await this._voteRepository.find({ where: { ballot: ballotId } })
+    }
+
     async create(dto: IVote): Promise<Vote | undefined> {
         return await this.createAndSaveVote(dto)
     }

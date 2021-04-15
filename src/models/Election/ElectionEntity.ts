@@ -80,7 +80,8 @@ export class Election implements IElection {
     updatedAt!: Date
 
     @ManyToMany(() => EligibleVoter, (eligibleVoter) => eligibleVoter.elections, {
-        cascade: true
+        cascade: true,
+        eager: true
     })
     @JoinTable()
     eligibleVoters!: EligibleVoter[]

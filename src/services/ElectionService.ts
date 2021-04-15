@@ -111,14 +111,10 @@ export class ElectionService extends BaseEntityService<Election> implements IHas
             )
         }
 
-        if (!electionDTO.electionOrganizer && !this.owner) {
-            throw new Error('No owner')
+        if (!this.owner) {
+            throw new ForbiddenError()
         }
-
-        if (!electionDTO.electionOrganizer) {
-            electionDTO.electionOrganizer = this.owner!
-        }
-
+        electionDTO.electionOrganizer = this.owner!
         if (electionDTO.password) {
             await this.hashEntityPassword(electionDTO)
         }

@@ -11,9 +11,9 @@ import { ErrorCode } from './ErrorCodes'
 export class BaseError extends Error {
     private _httpStatus: number = StatusCodes.INTERNAL_SERVER_ERROR
     // More specific error code
-    private _code: string = ErrorCode.UNEXPECTED
+    private _code: ErrorCode = 'UNEXPECTED'
 
-    constructor({ message, httpStatus, code }: { message?: string; httpStatus?: StatusCodes; code?: string } = {}) {
+    constructor({ message, httpStatus, code }: { message?: string; httpStatus?: StatusCodes; code?: ErrorCode } = {}) {
         super(message ? message : ServerErrorMessage.unexpected())
         if (httpStatus) this._httpStatus = httpStatus
         if (code) this._code = code

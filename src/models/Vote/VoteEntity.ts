@@ -14,7 +14,7 @@ export class Vote implements IVote {
     id!: number
 
     @ManyToOne(() => Candidate, (candidate) => candidate.id, { nullable: true, eager: true })
-    candidate!: number | null | Candidate
+    candidate!: number | null | Candidate | 'blank'
 
     @CreateDateColumn()
     submitted!: Date

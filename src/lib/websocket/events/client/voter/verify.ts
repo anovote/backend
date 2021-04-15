@@ -40,7 +40,7 @@ export const verify: EventHandlerAcknowledges<{ code: string }> = async (event) 
         const decodedCode = verificationService.decodeVerificationCode(code)
         // Early exit if we do not have a decoded token object
         if (!decodedCode) {
-            const errorCode = code ? ErrorCode.VERIFICATION_CODE_INVALID : ErrorCode.VERIFICATION_CODE_MISSING
+            const errorCode: ErrorCode = code ? 'VERIFICATION_CODE_INVALID' : 'VERIFICATION_CODE_MISSING'
             const message = code
                 ? ServerErrorMessage.invalidVerificationCode()
                 : ServerErrorMessage.isMissing('Verification code')
@@ -62,7 +62,7 @@ export const verify: EventHandlerAcknowledges<{ code: string }> = async (event) 
         // Handle missing voter/ election
         if (!voter || !election) {
             const entity = voter ? 'Election' : 'Voter'
-            const code = voter ? ErrorCode.ELECTION_NOT_EXIST : ErrorCode.VOTER_NOT_EXIST
+            const code: ErrorCode = voter ? 'ELECTION_NOT_EXIST' : 'VOTER_NOT_EXIST'
             return event.acknowledgement(
                 EventErrorMessage(new NotFoundError({ message: ServerErrorMessage.notFound(entity), code }))
             )
@@ -74,7 +74,7 @@ export const verify: EventHandlerAcknowledges<{ code: string }> = async (event) 
                 EventErrorMessage(
                     new BadRequestError({
                         message: ServerErrorMessage.electionFinished(),
-                        code: ErrorCode.ELECTION_FINISHED
+                        code: 'ELECTION_FINISHED'
                     })
                 )
             )
@@ -86,7 +86,7 @@ export const verify: EventHandlerAcknowledges<{ code: string }> = async (event) 
                 EventErrorMessage(
                     new ForbiddenError({
                         message: ServerErrorMessage.alreadyVerified(),
-                        code: ErrorCode.ALREADY_VERIFIED
+                        code: 'ALREADY_VERIFIED'
                     })
                 )
             )

@@ -1,8 +1,8 @@
 import { strip } from '@/helpers/sanitize'
 import { validateEntity } from '@/helpers/validateEntity'
 import { IHasOwner } from '@/interfaces/IHasOwner'
+import { BadRequestError } from '@/lib/errors/http/BadRequestError'
 import { ForbiddenError } from '@/lib/errors/http/ForbiddenError'
-import { NotAcceptableError } from '@/lib/errors/http/NotAcceptableError'
 import { NotFoundError } from '@/lib/errors/http/NotFoundError'
 import { ServerErrorMessage } from '@/lib/errors/messages/ServerErrorMessages'
 import { Election } from '@/models/Election/ElectionEntity'
@@ -124,7 +124,7 @@ export class ElectionService extends BaseEntityService<Election> implements IHas
         }
 
         if (await this.isDuplicate(electionDTO)) {
-            throw new NotAcceptableError({ message: 'Election already exists' })
+            throw new BadRequestError({ message: 'Election already exists' })
         }
 
         const election = this.manager.create(electionDTO)

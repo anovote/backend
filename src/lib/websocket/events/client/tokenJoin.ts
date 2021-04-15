@@ -1,3 +1,4 @@
+import { BaseError } from '@/lib/errors/BaseError'
 import { EventHandlerAcknowledges } from '@/lib/websocket/EventHandler'
 import { EventErrorMessage, EventMessage } from '@/lib/websocket/EventResponse'
 import { AuthenticationService } from '@/services/AuthenticationService'
@@ -30,8 +31,10 @@ export const tokenJoin: EventHandlerAcknowledges<ITokenJoinPayload> = (event) =>
                 // return error
             }
         }
-    } catch (err) {
+    } catch (error) {
         //TODO handle other errors and convert to response error format
-        event.acknowledgement(EventErrorMessage(err))
+        if (error instanceof BaseError) {
+            event.acknowledgement(EventErrorMessage(error))
+        }
     }
 }

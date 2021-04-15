@@ -1,8 +1,9 @@
 import config from '@/config'
 import { UnauthorizedError } from '@/lib/errors/http/UnauthorizedError'
 import { ServerErrorMessage } from '@/lib/errors/messages/ServerErrorMessages'
+import { logger } from '@/loaders/logger'
 import { ElectionOrganizer } from '@/models/ElectionOrganizer/ElectionOrganizerEntity'
-import { sign, verify } from 'jsonwebtoken'
+import { JsonWebTokenError, sign, verify } from 'jsonwebtoken'
 import { getRepository } from 'typeorm'
 import { HashService } from './HashService'
 
@@ -97,11 +98,19 @@ export class AuthenticationService {
 
         if (!token) throw new UnauthorizedError({ message: ServerErrorMessage.invalidTokenFormat() })
 
-        const decoded = verify(token, config.secret!) as DecodedTokenValue
+        try {
+            const decoded = verify(token, config.secret!) as DecodedTokenValue
 
-        if (!decoded) throw new UnauthorizedError({ message: ServerErrorMessage.invalidToken() })
+            if (!decoded) throw new UnauthorizedError({ message: ServerErrorMessage.invalidToken() })
 
-        return decoded
+            return decoded
+        } catch (err) {
+            if (err instanceof JsonWebTokenError) {
+                throw new UnauthorizedError({ message: ServerErrorMessage.invalidTokenFormat() })
+            }
+            logger.error(err)
+            throw err
+        }
     }
 
     /**

@@ -41,9 +41,18 @@ it('should only increment votes and total', () => {
     expect(ballotStats.getStats().stats.total).toBe(1)
 })
 
-it('should only increment blank and total', () => {
+it('should only increment blank and total when candidate is null', () => {
     const ballotStats = new BallotVoteStats(ballot)
     const vote: IVote = { ballot: ballot.id, candidate: null, submitted: new Date(), voter: 1 }
+    ballotStats.addVotes([vote])
+    expect(ballotStats.getStats().stats.blank).toBe(1)
+    expect(ballotStats.getStats().stats.votes).toBe(0)
+    expect(ballotStats.getStats().stats.total).toBe(1)
+})
+
+it('should only increment blank and total when candidate is set to "blank"', () => {
+    const ballotStats = new BallotVoteStats(ballot)
+    const vote: IVote = { ballot: ballot.id, candidate: 'blank', submitted: new Date(), voter: 1 }
     ballotStats.addVotes([vote])
     expect(ballotStats.getStats().stats.blank).toBe(1)
     expect(ballotStats.getStats().stats.votes).toBe(0)

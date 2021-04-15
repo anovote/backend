@@ -1,4 +1,3 @@
-import { Exclude } from 'class-transformer'
 import { IsEmail } from 'class-validator'
 import { BeforeInsert, BeforeUpdate, Column, Entity, ManyToMany, PrimaryGeneratedColumn } from 'typeorm'
 import { Election } from '../Election/ElectionEntity'
@@ -22,7 +21,6 @@ export class EligibleVoter implements IEligibleVoter {
 
     @Column({ type: 'varchar', length: 255 })
     @IsEmail()
-    @Exclude()
     identification!: string
 
     @Column({ type: 'date', nullable: true })

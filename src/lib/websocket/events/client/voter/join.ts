@@ -38,7 +38,7 @@ export const join: EventHandlerAcknowledges<{ email: string; electionCode: strin
             // Handle missing voter/ election
             if (!voter || !election) {
                 const entity = voter ? 'Election' : 'Voter'
-                const code = voter ? ErrorCode.ELECTION_NOT_EXIST : ErrorCode.VOTER_NOT_EXIST
+                const code: ErrorCode = voter ? 'ELECTION_NOT_EXIST' : 'VOTER_NOT_EXIST'
                 return event.acknowledgement(
                     EventErrorMessage(new NotFoundError({ message: ServerErrorMessage.notFound(entity), code }))
                 )
@@ -49,7 +49,7 @@ export const join: EventHandlerAcknowledges<{ email: string; electionCode: strin
                     EventErrorMessage(
                         new BadRequestError({
                             message: ServerErrorMessage.electionFinished(),
-                            code: ErrorCode.ELECTION_FINISHED
+                            code: 'ELECTION_FINISHED'
                         })
                     )
                 )
@@ -60,7 +60,7 @@ export const join: EventHandlerAcknowledges<{ email: string; electionCode: strin
                     EventErrorMessage(
                         new ForbiddenError({
                             message: ServerErrorMessage.alreadyVerified(),
-                            code: ErrorCode.ALREADY_VERIFIED
+                            code: 'ALREADY_VERIFIED'
                         })
                     )
                 )
@@ -80,7 +80,7 @@ export const join: EventHandlerAcknowledges<{ email: string; electionCode: strin
             })
         } else {
             const entity = event.data.email ? 'Election code' : 'Email'
-            const code = event.data.email ? ErrorCode.ELECTION_CODE_MISSING : ErrorCode.VOTER_IDENTIFICATION_MISSING
+            const code = event.data.email ? 'ELECTION_CODE_MISSING' : 'VOTER_IDENTIFICATION_MISSING'
             event.acknowledgement(
                 EventErrorMessage(new BadRequestError({ message: ServerErrorMessage.isMissing(entity), code }))
             )

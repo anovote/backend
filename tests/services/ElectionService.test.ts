@@ -1,16 +1,17 @@
 import { deepCopy } from '@/helpers/object'
 import { validateEntity } from '@/helpers/validateEntity'
+import { BadRequestError } from '@/lib/errors/http/BadRequestError'
 import { NotFoundError } from '@/lib/errors/http/NotFoundError'
-import setupConnection from '../helpers/setupTestDB'
 import { Election } from '@/models/Election/ElectionEntity'
 import { ElectionStatus } from '@/models/Election/ElectionStatus'
 import { IElection } from '@/models/Election/IElection'
 import { ElectionOrganizer } from '@/models/ElectionOrganizer/ElectionOrganizerEntity'
+import { SocketRoomEntity, SocketRoomState } from '@/models/SocketRoom/SocketRoomEntity'
 import { ElectionService } from '@/services/ElectionService'
 import { Connection } from 'typeorm'
+import { getTestDatabase } from '../helpers/database'
 import { createDummyOrganizer, deleteDummyOrganizer } from '../helpers/seed/organizer'
 import { clearDatabaseEntityTable } from '../Tests.utils'
-import { SocketRoomEntity, SocketRoomState } from '@/models/SocketRoom/SocketRoomEntity'
 
 let db: Connection
 let organizer: ElectionOrganizer
@@ -19,7 +20,7 @@ let seedElection: Election
 let seedDTO: IElection
 
 beforeAll(async () => {
-    db = await setupConnection()
+    db = await getTestDatabase()
     organizer = await createDummyOrganizer(db)
 
     seedDTO = {
@@ -181,7 +182,7 @@ it('should accept object if both dates are the same', async () => {
     await expect(validateEntity(election)).resolves.toBe(undefined)
 })
 
-it('it should resolve when closing date is after opening date', async () => {
+it('should resolve when closing date is after opening date', async () => {
     const repo = db.getRepository(Election)
     const election = repo.create()
     election.id = 1
@@ -308,4 +309,46 @@ it('should be able to save an election with a socket room ', async () => {
     expect(savedElection).toBeDefined()
     expect(savedElection?.socketRoom).toBeDefined()
     expect(savedElection?.socketRoom.roomState).toBe(SocketRoomState.CLOSE)
+})
+
+describe('Duplication', () => {
+    it('should not allow duplicate entries from same owner', async () => {
+        const election = db.getRepository(Election).create()
+        election.title = 'dup'
+        election.description = 'this is a duplicate'
+        election.electionOrganizer = organizer
+
+        await expect(electionService.create(election)).resolves.toBeDefined()
+        await expect(electionService.create(election)).rejects.toThrow(BadRequestError)
+    })
+
+    it('should accept duplicate entries from different owners', async () => {
+        const election = db.getRepository(Election).create()
+        election.title = 'dup'
+        election.description = 'this is a duplicate'
+
+        await expect(electionService.create(election)).resolves.toBeDefined()
+
+        const owner2 = new ElectionOrganizer()
+        owner2.email = 'user2@gmail.com'
+        owner2.firstName = 'user'
+        owner2.lastName = '2'
+        owner2.password = 'password'
+
+        const savedOwner2 = await db.getRepository(ElectionOrganizer).save(owner2)
+        expect(savedOwner2).toBeDefined()
+
+        await expect(new ElectionService(db, savedOwner2!).create(election)).resolves.toBeDefined()
+    })
+})
+
+describe('Owner', () => {
+    it('should make sure that an election has an organizer', async () => {
+        const election = db.getRepository(Election).create()
+        election.title = 'dup'
+        election.description = 'this is a duplicate'
+        const createdElection = await electionService.create(election)
+        expect(createdElection).toBeDefined()
+        expect(createdElection?.electionOrganizer).toBeDefined()
+    })
 })

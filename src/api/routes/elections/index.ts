@@ -24,7 +24,7 @@ router.post('/', async (request, response, next) => {
 
         electionDTO.electionOrganizer = request.electionOrganizer
 
-        const election: Election | undefined = await electionService.createElection(electionDTO)
+        const election: Election | undefined = await electionService.create(electionDTO)
         if (election) {
             socketRoomService.createRoom(election.id)
         }

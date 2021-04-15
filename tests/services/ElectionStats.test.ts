@@ -2,15 +2,15 @@ import { NotFoundError } from '@/lib/errors/http/NotFoundError'
 import { ElectionOrganizer } from '@/models/ElectionOrganizer/ElectionOrganizerEntity'
 import { ElectionStatsService } from '@/services/ElectionStats'
 import { Connection } from 'typeorm'
+import { getTestDatabase } from '../helpers/database'
 import { createDummyOrganizer } from '../helpers/seed/organizer'
-import setupConnection from '../helpers/setupTestDB'
 
 let statService: ElectionStatsService
 let database: Connection
 let organizer: ElectionOrganizer
 
 beforeAll(async () => {
-    database = await setupConnection()
+    database = await getTestDatabase()
     organizer = await createDummyOrganizer(database)
     statService = new ElectionStatsService(database, organizer)
 })

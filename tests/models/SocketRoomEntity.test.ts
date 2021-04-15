@@ -1,27 +1,25 @@
-import config from '@/config'
 import { Election } from '@/models/Election/ElectionEntity'
 import { ElectionStatus } from '@/models/Election/ElectionStatus'
 import { ElectionOrganizer } from '@/models/ElectionOrganizer/ElectionOrganizerEntity'
 import { SocketRoomEntity, SocketRoomState } from '@/models/SocketRoom/SocketRoomEntity'
-import { getConnection, getConnectionManager, Repository } from 'typeorm'
-import setupConnection from '../helpers/setupTestDB'
+import { Connection, Repository } from 'typeorm'
+import { getTestDatabase } from '../helpers/database'
 import { clearDatabaseEntityTable } from '../Tests.utils'
 
 let repo: Repository<SocketRoomEntity>
-
+let db: Connection
 beforeAll(async () => {
-    await setupConnection()
-    repo = getConnection(config.environment).getRepository(SocketRoomEntity)
+    db = await getTestDatabase()
+    repo = db.getRepository(SocketRoomEntity)
 })
 
 beforeEach(async () => {
-    repo = getConnection(config.environment).getRepository(SocketRoomEntity)
+    repo = db.getRepository(SocketRoomEntity)
     await clearDatabaseEntityTable(repo)
 })
 
 afterAll(async () => {
-    const conn = getConnection(config.environment)
-    return await conn.close()
+    return await db.close()
 })
 
 it('should be initialized with Room state as open by default', async () => {
@@ -54,7 +52,7 @@ it('should contain an election and election should be in the database', async ()
 
     expect(savedRoom.election).toBeDefined()
     expect(savedRoom.election.title).toBe('I have a socket room')
-    const electionRepo = getConnectionManager().get('test').getRepository(Election)
+    const electionRepo = db.getRepository(Election)
     // await electionRepo.save(election)
     expect((await electionRepo.find()).length).toBeGreaterThan(0)
 })

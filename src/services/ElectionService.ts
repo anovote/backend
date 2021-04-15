@@ -1,6 +1,7 @@
 import { strip } from '@/helpers/sanitize'
 import { validateEntity } from '@/helpers/validateEntity'
 import { IHasOwner } from '@/interfaces/IHasOwner'
+import { ErrorCode } from '@/lib/errors/ErrorCodes'
 import { BadRequestError } from '@/lib/errors/http/BadRequestError'
 import { ForbiddenError } from '@/lib/errors/http/ForbiddenError'
 import { NotFoundError } from '@/lib/errors/http/NotFoundError'
@@ -45,9 +46,11 @@ export class ElectionService extends BaseEntityService<Election> implements IHas
     async create(dto: IElection): Promise<Election | undefined> {
         return classToClass(await this.createElection(dto))
     }
+
     async update(id: number, dto: Election): Promise<Election | undefined> {
         return classToClass(await this.updateElectionById(id, dto))
     }
+
     async delete(id: number): Promise<void> {
         return classToClass(await this.deleteElectionById(id))
     }
@@ -102,19 +105,23 @@ export class ElectionService extends BaseEntityService<Election> implements IHas
         return await this.manager.findOne(id)
     }
 
-    async createElection(electionDTO: IElection): Promise<Election | undefined> {
+    private async createElection(electionDTO: IElection): Promise<Election | undefined> {
         if (electionDTO.eligibleVoters) {
             electionDTO.eligibleVoters = this._eligibleVoterService.correctListOfEligibleVoters(
                 electionDTO.eligibleVoters
             )
         }
 
+        if (!this.owner) {
+            throw new ForbiddenError()
+        }
+        electionDTO.electionOrganizer = this.owner!
         if (electionDTO.password) {
             await this.hashEntityPassword(electionDTO)
         }
 
         if (await this.isDuplicate(electionDTO)) {
-            throw new BadRequestError({ message: 'Election already exists' })
+            throw new BadRequestError({ message: 'Election already exists', code: ErrorCode.ELECTION_DUPLICATE })
         }
 
         const election = this.manager.create(electionDTO)
@@ -163,17 +170,11 @@ export class ElectionService extends BaseEntityService<Election> implements IHas
     }
 
     async isDuplicate(election: IElection): Promise<boolean> {
-        const { title, description, image, openDate, closeDate, status, isLocked, isAutomatic } = election
+        const { title } = election
         const duplicate = await this.manager.find({
             where: {
                 title,
-                description,
-                image,
-                openDate,
-                closeDate,
-                status,
-                isLocked,
-                isAutomatic
+                electionOrganizer: this.owner
             }
         })
         return duplicate.length > 0

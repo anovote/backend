@@ -5,7 +5,7 @@ import { IElection } from '@/models/Election/IElection'
 import { ElectionOrganizer } from '@/models/ElectionOrganizer/ElectionOrganizerEntity'
 import { validate, ValidatorOptions } from 'class-validator'
 import { Connection, Repository } from 'typeorm'
-import setupConnection from '../helpers/setupTestDB'
+import { getTestDatabase } from '../helpers/database'
 import { clearDatabaseEntityTable } from '../Tests.utils'
 
 let electionRepository: Repository<Election>
@@ -13,7 +13,7 @@ let connection: Connection
 
 beforeAll(async () => {
     try {
-        connection = await setupConnection()
+        connection = await getTestDatabase()
     } catch (err) {
         console.error(err)
     }

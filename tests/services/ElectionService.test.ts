@@ -1,6 +1,6 @@
 import { deepCopy } from '@/helpers/object'
 import { validateEntity } from '@/helpers/validateEntity'
-import { NotAcceptableError } from '@/lib/errors/http/NotAcceptableError'
+import { BadRequestError } from '@/lib/errors/http/BadRequestError'
 import { NotFoundError } from '@/lib/errors/http/NotFoundError'
 import { Election } from '@/models/Election/ElectionEntity'
 import { ElectionStatus } from '@/models/Election/ElectionStatus'
@@ -319,7 +319,7 @@ describe('Duplication', () => {
         election.electionOrganizer = organizer
 
         await expect(electionService.create(election)).resolves.toBeDefined()
-        await expect(electionService.create(election)).rejects.toThrow(NotAcceptableError)
+        await expect(electionService.create(election)).rejects.toThrow(BadRequestError)
     })
 
     it('should accept duplicate entries from different owners', async () => {

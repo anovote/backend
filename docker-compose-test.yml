@@ -1,13 +1,13 @@
-version: "3.9"
+version: '3.9'
 services:
-  testdb:
-    container_name: "test_database"
-    image: postgres
-    networks:
-      - anovote_backend
-    environment:
-      TZ: "Europe/Oslo"
-    env_file:
-      - ".env.test"
-    ports:
-      - "${DB_PORT}:5432"
+    testdb:
+        container_name: 'test_database'
+        image: postgres
+        networks:
+            - anovote_backend
+        environment:
+            TZ: 'Europe/Oslo'
+        env_file:
+            - '.env.test'
+        ports:
+            - '${DB_PORT}:5432'

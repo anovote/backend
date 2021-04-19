@@ -9,6 +9,7 @@
     "private": true,
     "scripts": {
         "dev": "ts-node-dev -r tsconfig-paths/register --respawn --inspect=0.0.0.0:9229 ./src/index.ts",
+        "dev:docker": "docker-compose -f docker-compose.yml -f docker-compose-dev.yml up -d db && ts-node-dev -r tsconfig-paths/register --respawn --inspect=0.0.0.0:9229 ./src/index.ts",
         "build": "NODE_ENV=production tsc --project ./tsconfig.prod.json && tsc-alias",
         "prod": "NODE_ENV=production node dist/index.js",
         "test": "jest",

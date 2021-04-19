@@ -15,3 +15,11 @@ services:
             - '.env'
         ports:
             - '${DB_PORT}:5432'
+    nginx:
+        image: nginx:latest
+        container_name: anovote_nginx
+        volumes:
+            - './etc/conf.d:/etc/nginx/conf.d'
+        ports:
+            - '80:80'
+            - '443:443'

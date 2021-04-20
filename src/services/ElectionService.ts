@@ -165,6 +165,11 @@ export class ElectionService extends BaseEntityService<Election> implements IHas
         if (!election) {
             throw new NotFoundError({ message: ServerErrorMessage.notFound('Election') })
         }
+
+        if (election.status === ElectionStatus.Started) {
+            throw new BadRequestError({ message: 'Cannot delete an election while its running' })
+        }
+
         await this.manager.remove(election)
     }
 

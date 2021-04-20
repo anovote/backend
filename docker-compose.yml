@@ -23,6 +23,19 @@ services:
             - anovote_backend
         environment:
             TZ: 'Europe/Oslo'
+    nginx:
+        image: nginx:latest
+        container_name: anovote_proxy
+        volumes:
+            - ./nginx:/etc/nginx/
+        ports:
+            - 80:80
+            - 443:443
+        depends_on:
+            - app
+        networks:
+            - anovote_backend
+
 volumes:
     anovote-data:
 networks:

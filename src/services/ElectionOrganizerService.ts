@@ -22,7 +22,7 @@ export class ElectionOrganizerService extends BaseEntityService<ElectionOrganize
     }
 
     get(): Promise<ElectionOrganizer[] | undefined> {
-        throw new NotFoundError({ message: 'Not found' }) // TODO #127 replace with ServerResponse
+        throw new NotFoundError({ message: ServerErrorMessage.notFound('Election organizer') })
     }
 
     async getById(id: number): Promise<ElectionOrganizer | undefined> {
@@ -86,6 +86,12 @@ export class ElectionOrganizerService extends BaseEntityService<ElectionOrganize
         return updatedElectionOrganizer
     }
 
+    /**
+     * Updates the email of an election organizer
+     * @param newEmail the new mail to change to
+     * @param id the id of the user who wants to change email
+     * @returns updated organizer
+     */
     async updateEmail(newEmail: string, id: number) {
         const electionOrganizer: ElectionOrganizer | undefined = await this._organizerRepository.findOne({
             id

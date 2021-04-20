@@ -8,6 +8,21 @@ import { logger } from '@/loaders/logger'
 const router = Router()
 const authenticationService = new AuthenticationService()
 
+router.get('/', async (request, response) => {
+    const electionOrganizerService = new ElectionOrganizerService(database)
+    try {
+        const token = request.headers.authorization
+        const id = authenticationService.verifyToken(token).id
+        const organizer = await electionOrganizerService.getById(id)
+
+        response.status(StatusCodes.OK)
+        response.send(organizer)
+    } catch (error) {
+        response.status(StatusCodes.BAD_REQUEST)
+        response.send()
+    }
+})
+
 router.put('/changePassword', async (request, response) => {
     const electionOrganizerService = new ElectionOrganizerService(database)
     try {

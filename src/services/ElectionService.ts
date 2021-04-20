@@ -157,6 +157,7 @@ export class ElectionService extends BaseEntityService<Election> implements IHas
         updatedElection.id = existingElection.id
 
         this.checkAndSetOpenDate(existingElection, updatedElection)
+        this.checkAndSetCloseDate(existingElection, updatedElection)
 
         await validateEntity(updatedElection, { strictGroups: true })
 
@@ -175,6 +176,17 @@ export class ElectionService extends BaseEntityService<Election> implements IHas
             !updatedElection.openDate
         ) {
             updatedElection.openDate = new Date()
+        }
+    }
+
+    private checkAndSetCloseDate(existingElection: Election, updatedElection: Election) {
+        if (
+            (existingElection.status === ElectionStatus.Started ||
+                existingElection.status === ElectionStatus.NotStarted) && // might be redundant
+            updatedElection.status === ElectionStatus.Finished &&
+            !updatedElection.closeDate
+        ) {
+            updatedElection.closeDate = new Date()
         }
     }
 

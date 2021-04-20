@@ -19,7 +19,7 @@ services:
         image: nginx:latest
         container_name: anovote_reverse_proxy
         volumes:
-            - './etc/conf.d:/etc/nginx/conf.d'
+            - './etc/nginx/conf.d:/etc/nginx/conf.d'
         ports:
             - '80:80'
             - '443:443'

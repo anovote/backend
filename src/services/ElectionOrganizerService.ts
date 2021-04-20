@@ -1,4 +1,6 @@
+import { isEmailValid } from '@/helpers/email'
 import { validateEntity } from '@/helpers/validateEntity'
+import { BadRequestError } from '@/lib/errors/http/BadRequestError'
 import { NotFoundError } from '@/lib/errors/http/NotFoundError'
 import { ServerErrorMessage } from '@/lib/errors/messages/ServerErrorMessages'
 import { ElectionOrganizer } from '@/models/ElectionOrganizer/ElectionOrganizerEntity'
@@ -82,6 +84,27 @@ export class ElectionOrganizerService extends BaseEntityService<ElectionOrganize
         electionOrganizer.password = await encryptionService.hash(newPassword)
         const updatedElectionOrganizer = await this._organizerRepository.save(electionOrganizer)
         return updatedElectionOrganizer
+    }
+
+    async updateEmail(newEmail: string, id: number) {
+        const electionOrganizer: ElectionOrganizer | undefined = await this._organizerRepository.findOne({
+            id
+        })
+
+        if (!electionOrganizer) {
+            throw new NotFoundError({ message: ServerErrorMessage.notFound('Election organizer') })
+        }
+        const noExistingWithMail: ElectionOrganizer | undefined = await this._organizerRepository.findOne({
+            email: newEmail
+        })
+
+        if (!isEmailValid(newEmail) || noExistingWithMail) {
+            throw new BadRequestError({ message: ServerErrorMessage.invalidData() })
+        }
+
+        electionOrganizer.email = newEmail
+        const updatedOrganizer = await this._organizerRepository.save(electionOrganizer)
+        return updatedOrganizer
     }
 
     /**

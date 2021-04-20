@@ -160,7 +160,7 @@ export class ElectionService extends BaseEntityService<Election> implements IHas
         return await this.manager.save(updatedElection)
     }
 
-    async deleteElectionById(id: number): Promise<void> {
+    private async deleteElectionById(id: number): Promise<void> {
         const election = await this.manager.findOne(id, { where: { electionOrganizer: this.owner } })
         if (!election) {
             throw new NotFoundError({ message: ServerErrorMessage.notFound('Election') })

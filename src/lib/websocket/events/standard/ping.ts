@@ -1,6 +1,7 @@
-import { logger } from '@/loaders/logger'
-import { Events } from '..'
 import { EventHandler } from '@/lib/websocket/EventHandler'
+import { logger } from '@/loaders/logger'
+import chalk from 'chalk'
+import { Events } from '..'
 
 /**
  * Receives and sends a ping to the client
@@ -9,8 +10,8 @@ import { EventHandler } from '@/lib/websocket/EventHandler'
  */
 export const ping: EventHandler<string> = (event) => {
     const socketId = event.client.id
-    const ping = Events.standard.manager
+    const { ping, pong } = Events.standard.manager
 
-    logger.info(`Got ${ping} from ${socketId}, responding with ${ping}`)
-    event.client.send(ping)
+    logger.info(`Got ${chalk.yellow(ping)} from ${chalk.blue(socketId)}, responding with ${chalk.redBright(pong)}`)
+    event.client.send(pong)
 }

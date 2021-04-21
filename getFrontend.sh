@@ -6,5 +6,5 @@ git clone https://github.com/anovote/frontend.git
 cd frontend
 echo "*.yml
 src" > ".eslintignore"
-# yarn
-# yarn build
+yarn
+yarn build

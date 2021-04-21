@@ -1,6 +1,5 @@
 import { OrganizerSocket } from '@/lib/websocket/AnoSocket'
 import { EventHandler } from '@/lib/websocket/EventHandler'
-import { EventMessage } from '@/lib/websocket/EventResponse'
 import { DecodedTokenValue } from '@/services/AuthenticationService'
 import { eventRegistration } from './eventRegistration'
 

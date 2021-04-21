@@ -31,7 +31,7 @@ export const endElection: EventHandlerAcknowledges<{ id: number; forceEnd?: bool
             // mark election as complete
             const closedElection = await electionService.markElectionClosed(election)
             // close the socket room
-            await socketRoomService.closeRoom(electionId)
+            const res = await socketRoomService.closeRoom(electionId)
 
             if (closedElection) {
                 event.acknowledgement(EventMessage({ finished: true, needForceEnd: false, election: closedElection }))

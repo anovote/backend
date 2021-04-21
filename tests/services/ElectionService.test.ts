@@ -8,6 +8,7 @@ import { IElection } from '@/models/Election/IElection'
 import { ElectionOrganizer } from '@/models/ElectionOrganizer/ElectionOrganizerEntity'
 import { SocketRoomEntity, SocketRoomState } from '@/models/SocketRoom/SocketRoomEntity'
 import { ElectionService } from '@/services/ElectionService'
+import { isSameHour } from 'date-fns'
 import { Connection } from 'typeorm'
 import { getTestDatabase } from '../helpers/database'
 import { createDummyOrganizer, deleteDummyOrganizer } from '../helpers/seed/organizer'
@@ -309,6 +310,26 @@ it('should be able to save an election with a socket room ', async () => {
     expect(savedElection).toBeDefined()
     expect(savedElection?.socketRoom).toBeDefined()
     expect(savedElection?.socketRoom.roomState).toBe(SocketRoomState.CLOSE)
+})
+
+it('should mark election as closed when the organizer tries to close it', async () => {
+    const election = db.getRepository(Election).create()
+    election.title = 'I want to be closed'
+    election.description = 'by organizer'
+    election.isAutomatic = false
+    election.isLocked = false
+    election.electionOrganizer = new ElectionOrganizer()
+    election.eligibleVoters = []
+    election.status = ElectionStatus.Started
+    election.id = -1
+    election.socketRoom = new SocketRoomEntity()
+
+    const savedElection = await electionService.create(election)
+    const closedElection = await electionService.markElectionClosed(savedElection!)
+
+    expect(closedElection?.isLocked).toBeTruthy()
+    expect(closedElection?.status).toBe(ElectionStatus.Finished)
+    expect(isSameHour(new Date(closedElection!.closeDate!), new Date())).toBeTrue()
 })
 
 describe('Duplication', () => {

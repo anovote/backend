@@ -17,7 +17,7 @@ import { logger } from './logger'
 export default async (expressApp: Application) => {
     const httpServer = http.createServer(expressApp)
     const socketServer = new Server(httpServer, {
-        // cors: { origin: '*' }
+        cors: { origin: '*' }
     })
 
     const socketRoomService = SocketRoomService.getInstance()

@@ -5,7 +5,6 @@ import { EventHandlerAcknowledges } from '@/lib/websocket/EventHandler'
 import { EventErrorMessage, EventMessage } from '@/lib/websocket/EventResponse'
 import { database } from '@/loaders'
 import { logger } from '@/loaders/logger'
-import { ElectionStatus } from '@/models/Election/ElectionStatus'
 import { ElectionOrganizerService } from '@/services/ElectionOrganizerService'
 import { ElectionService } from '@/services/ElectionService'
 import { SocketRoomService } from '@/services/SocketRoomService'
@@ -30,8 +29,9 @@ export const endElection: EventHandlerAcknowledges<{ id: number; forceEnd?: bool
         } else {
             // mark election as complete
             const closedElection = await electionService.markElectionClosed(election)
-            // close the socket room
-            const res = await socketRoomService.closeRoom(electionId)
+            // close and delete the socket room
+            await socketRoomService.closeRoom(electionId)
+            await socketRoomService.deleteRoom(electionId)
 
             if (closedElection) {
                 event.acknowledgement(EventMessage({ finished: true, needForceEnd: false, election: closedElection }))

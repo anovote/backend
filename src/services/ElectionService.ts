@@ -197,4 +197,17 @@ export class ElectionService extends BaseEntityService<Election> implements IHas
             throw new ForbiddenError()
         }
     }
+
+    /**
+     * Marks an election closed.
+     * Performs the necessary steps to satisfy the closed election criteria
+     * @param entity the election entity to close
+     */
+    async markElectionClosed(entity: Election) {
+        entity.closeDate = new Date()
+        entity.status = ElectionStatus.Finished
+        entity.isLocked = true
+
+        return await this.updateElectionById(entity.id, entity)
+    }
 }

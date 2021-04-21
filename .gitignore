@@ -45,3 +45,6 @@ logs
 # yarn
 yarn-error.log
 .env.docker
+
+www/
+tempBuild/

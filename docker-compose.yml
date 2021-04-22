@@ -29,6 +29,8 @@ services:
         volumes:
             - ./nginx:/etc/nginx/
             - ./tempBuild/frontend/build:/www/
+            - ./ssl:/etc/nginx/ssl
+            - ./snippets:/etc/nginx/snippets
         ports:
             - 80:80
             - 443:443
@@ -42,8 +44,8 @@ services:
         container_name: anovote_certbot
         restart: unless-stopped
         volumes:
-            - ./certbot/conf:/etc/letsencrypt/
-            - ./certbot/www:/var/www/certbot/
+            - ./ssl:/etc/letsencrypt
+            - ./www/.well-known:/var/www/.well-known
         entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
 
 volumes:

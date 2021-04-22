@@ -1,28 +1,28 @@
 version: '3.9'
 services:
-    app:
-        container_name: 'anovote_backend'
-        image: anovote:backend
-        build: .
-        ports:
-            - '${HTTP_PORT}:${HTTP_PORT}'
-        volumes:
-            - './logs:/app/logs'
-        networks:
-            - anovote_backend
-        depends_on:
-            - 'db'
-        env_file:
-            - '.env'
-    db:
-        container_name: 'anovote_database'
-        image: postgres
-        volumes:
-            - anovote-data:/var/lib/postgresql
-        networks:
-            - anovote_backend
-        environment:
-            TZ: 'Europe/Oslo'
+    # app:
+    #     container_name: 'anovote_backend'
+    #     image: anovote:backend
+    #     build: .
+    #     ports:
+    #         - '${HTTP_PORT}:${HTTP_PORT}'
+    #     volumes:
+    #         - './logs:/app/logs'
+    #     networks:
+    #         - anovote_backend
+    #     depends_on:
+    #         - 'db'
+    #     env_file:
+    #         - '.env'
+    # db:
+    #     container_name: 'anovote_database'
+    #     image: postgres
+    #     volumes:
+    #         - anovote-data:/var/lib/postgresql
+    #     networks:
+    #         - anovote_backend
+    #     environment:
+    #         TZ: 'Europe/Oslo'
     nginx:
         image: nginx:1.15-alpine
         ports:

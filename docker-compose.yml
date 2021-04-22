@@ -38,7 +38,6 @@ services:
             - app
         networks:
             - anovote_backend
-        command: '/bin/sh -c ''while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g "daemon off;"'''
     certbot:
         image: certbot/certbot
         container_name: anovote_certbot
@@ -46,7 +45,7 @@ services:
         volumes:
             - ./ssl:/etc/letsencrypt
             - ./www/.well-known:/var/www/.well-known
-        entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
+        command: ['renew']
 
 volumes:
     anovote-data:

@@ -27,7 +27,7 @@ export class Ballot implements IBallot {
     @PrimaryGeneratedColumn()
     id!: number
 
-    @ManyToOne(() => Election, (election) => election.id)
+    @ManyToOne(() => Election, (election) => election.id, { onDelete: 'CASCADE' })
     @IsNotEmptyObject()
     @ValidateNested()
     election!: Election

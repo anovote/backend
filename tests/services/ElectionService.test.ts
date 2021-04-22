@@ -132,12 +132,12 @@ it('should delete a election which exists', async () => {
         eligibleVoters: [],
         ballots: []
     })
-    await expect(electionService.deleteElectionById(election!.id)).resolves.toBeUndefined()
+    await expect(electionService.delete(election!.id)).resolves.toBeUndefined()
 })
 
 it('should throw not found error when deleting a election which do not exist', async () => {
     try {
-        await expect(electionService.deleteElectionById(99999999)).rejects.toThrowError(NotFoundError)
+        await expect(electionService.delete(99999999)).rejects.toThrowError(NotFoundError)
     } catch (error) {
         console.error(error)
     }

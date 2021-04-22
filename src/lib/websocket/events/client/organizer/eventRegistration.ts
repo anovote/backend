@@ -2,6 +2,7 @@ import { OrganizerSocket } from '@/lib/websocket/AnoSocket'
 import { Server } from 'socket.io'
 import { Events } from '../..'
 import { administrateElection } from './administrateElection'
+import { closeElection } from './closeElection'
 import { pushBallot } from './pushBallot'
 
 /**
@@ -15,4 +16,6 @@ export const eventRegistration = ({ client, server }: { client: OrganizerSocket;
     client.on(Events.client.election.administrate, (data) => {
         administrateElection({ client, server, data })
     })
+
+    client.on(Events.client.election.close, (data) => closeElection({ client, server, data }))
 }

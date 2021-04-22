@@ -31,8 +31,6 @@ export class ElectionStatsService {
             const ballotVotes = await voteService.getByBallotId(ballot.id)
             stats.push(this.summarizeVotes(ballotVotes, ballot))
         }
-        // console.log(stats)
-
         return stats
     }
 

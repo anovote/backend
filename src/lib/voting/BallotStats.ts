@@ -134,14 +134,10 @@ export class BallotVoteStats {
         }
 
         const candidate = this._candidateVotes.get(this.getVoteCandidateId(vote))
-        console.log(candidate)
-
         if (candidate) {
             candidate.incrementVote()
             this.incrementVotes()
         } else if (null === vote.candidate || vote.candidate === 'blank') {
-            console.log('increment blank')
-
             this.incrementBlank()
         }
     }

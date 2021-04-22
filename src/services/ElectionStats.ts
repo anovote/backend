@@ -23,7 +23,6 @@ export class ElectionStatsService {
             throw new NotFoundError({ message: ServerErrorMessage.notFound('Election') })
         }
         const { ballots } = election
-
         const stats: IBallotStats[] = []
 
         const voteService = new VoteService(this.database)
@@ -32,12 +31,13 @@ export class ElectionStatsService {
             const ballotVotes = await voteService.getByBallotId(ballot.id)
             stats.push(this.summarizeVotes(ballotVotes, ballot))
         }
+        // console.log(stats)
+
         return stats
     }
 
     private summarizeVotes(votes: Vote[], ballot: Ballot) {
-        const stats: BallotVoteStats = new BallotVoteStats(ballot)
-        stats.addVotes(votes)
+        const stats: BallotVoteStats = new BallotVoteStats(ballot, votes)
         return stats.getStats()
     }
 }

@@ -53,9 +53,20 @@ export class BallotVoteStats {
     // Contains the vote stats for each candidate, the KEY is the candidate ID
     private _candidateVotes: Map<number, CandidateVote> = new Map()
 
-    constructor(ballot: Ballot) {
+    constructor(ballot: Ballot, votes?: Array<IVote>) {
         this._ballot = ballot
         this.setCandidates()
+        if (votes) this.initializeVotes(votes)
+    }
+
+    /**
+     * Initialize this ballot vote stats with votes.
+     * @param votes the votes to initialize the ballot stats with
+     */
+    private initializeVotes(votes: Array<IVote>) {
+        for (const vote of votes) {
+            this.setVoteStat(vote)
+        }
     }
 
     /**
@@ -123,10 +134,14 @@ export class BallotVoteStats {
         }
 
         const candidate = this._candidateVotes.get(this.getVoteCandidateId(vote))
+        console.log(candidate)
+
         if (candidate) {
             candidate.incrementVote()
             this.incrementVotes()
         } else if (null === vote.candidate || vote.candidate === 'blank') {
+            console.log('increment blank')
+
             this.incrementBlank()
         }
     }

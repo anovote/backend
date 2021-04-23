@@ -1,3 +1,7 @@
+import { strip } from '@/helpers/sanitize'
+import { validateEntity } from '@/helpers/validateEntity'
+import { NotFoundError } from '@/lib/errors/http/NotFoundError'
+import { ServerErrorMessage } from '@/lib/errors/messages/ServerErrorMessages'
 import { BallotVoteStats } from '@/lib/voting/BallotStats'
 import { VoterId } from '@/lib/voting/VoterId'
 import { OrganizerSocket, VoterSocket } from '@/lib/websocket/AnoSocket'
@@ -107,8 +111,17 @@ export class SocketRoomService extends BaseEntityService<SocketRoomEntity> {
         throw new Error('Method not implemented.')
     }
 
-    update(id: number, dto: SocketRoomEntity): Promise<SocketRoomEntity | undefined> {
-        throw new Error('Method not implemented.')
+    async update(id: number, dto: SocketRoomEntity): Promise<SocketRoomEntity | undefined> {
+        const existingRoom = await this.repository.findOne(id)
+
+        if (!existingRoom) throw new NotFoundError({ message: ServerErrorMessage.notFound('Socket room') })
+
+        const strippedRoom = strip(dto, ['id'])
+        const updatedRoom = this.repository.create(strippedRoom!)
+        updatedRoom.id = existingRoom.id
+        await validateEntity(updatedRoom, { strictGroups: true })
+
+        return await this.repository.save(updatedRoom)
     }
 
     delete(id: number): Promise<void> {
@@ -130,6 +143,15 @@ export class SocketRoomService extends BaseEntityService<SocketRoomEntity> {
 
     deleteRoom(electionId: number) {
         this._electionRooms.delete(electionId)
+    }
+
+    async closeRoom(electionId: number) {
+        const room = await this.getById(electionId)
+        if (room) {
+            room.roomState = SocketRoomState.CLOSE
+            return await this.update(room.id, room)
+        }
+        return undefined
     }
     /**
      * Assigns an organizer socket to a room, and set it as owner of the room

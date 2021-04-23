@@ -17,5 +17,7 @@ export const eventRegistration = ({ client, server }: { client: OrganizerSocket;
         administrateElection({ client, server, data })
     })
 
-    client.on(Events.client.election.close, (data) => closeElection({ client, server, data }))
+    client.on(Events.client.election.close, (data, acknowledgement) =>
+        closeElection({ client, server, data, acknowledgement })
+    )
 }

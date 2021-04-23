@@ -49,8 +49,8 @@ taskDone
 printf " \n\n--- BUILDING FRONTEND\n\n"
 
 # FRONTEND BUILD
-git checkout feature/add-docker-scripts
-# ./anovote prod --build
+git checkout feature/add-docker-scripts # THIS IS VERY TEMPORARY
+./anovote prod --build
 # Go back from frontend path
 cd ../backend
 

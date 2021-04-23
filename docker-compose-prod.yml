@@ -2,3 +2,28 @@ version: '3.9'
 services:
     app:
         build: .
+    nginx:
+        container_name: 'anovote_proxy'
+        image: nginx:1.15-alpine
+        ports:
+            - '80:80'
+            - '443:443'
+        volumes:
+            - ../frontend/build:/www/
+            - ../http/nginx:/etc/nginx/conf.d
+            - ../http/certbot/conf:/etc/letsencrypt
+            - ../http/certbot/www:/var/www/certbot
+        networks:
+            # Comes from main docker-compose
+            - anovote_proxy
+        command: '/bin/sh -c ''while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g "daemon off;"'''
+    certbot:
+        container_name: 'anovote_certbot'
+        image: certbot/certbot
+        volumes:
+            - ../http/certbot/conf:/etc/letsencrypt
+            - ../http/certbot/www:/var/www/certbot
+        networks:
+            # Comes from main docker-compose
+            - anovote_proxy
+        entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"

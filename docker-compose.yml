@@ -4,12 +4,11 @@ services:
         container_name: 'anovote_backend'
         image: anovote:backend
         build: .
-        ports:
-            - '${HTTP_PORT}:${HTTP_PORT}'
         volumes:
             - './logs:/app/logs'
         networks:
             - anovote_backend
+            - anovote_proxy
         depends_on:
             - 'db'
         env_file:
@@ -23,28 +22,10 @@ services:
             - anovote_backend
         environment:
             TZ: 'Europe/Oslo'
-    nginx:
-        image: nginx:1.15-alpine
-        ports:
-            - '80:80'
-            - '443:443'
-        volumes:
-            - ./tempBuild/frontend/build:/www/
-            - ./data/nginx:/etc/nginx/conf.d
-            - ./data/certbot/conf:/etc/letsencrypt
-            - ./data/certbot/www:/var/www/certbot
-        networks:
-            - anovote_backend
-        command: '/bin/sh -c ''while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g "daemon off;"'''
-    certbot:
-        image: certbot/certbot
-        volumes:
-            - ./data/certbot/conf:/etc/letsencrypt
-            - ./data/certbot/www:/var/www/certbot
-        networks:
-            - anovote_backend
-        entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
+        env_file:
+            - '.env'
 volumes:
     anovote-data:
 networks:
     anovote_backend:
+    anovote_proxy:

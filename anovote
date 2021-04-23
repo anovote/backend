@@ -43,7 +43,6 @@ else
         echo "====== DEVELOPMENT ======="
         echo "$compose"
         composes="-f ./docker-compose.yml -f ./docker-compose-dev.yml"
-        bash getFrontend.sh
         docker $2
     elif [[ "$1" == "test" ]]; then
         echo "====== TEST ======="

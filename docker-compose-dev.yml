@@ -9,20 +9,14 @@ services:
             - './src:/app/src'
         ports:
             - '9229:9229'
+            # Comes from main docker-compose
+            - '${HTTP_PORT}:${HTTP_PORT}'
             - '${WS_PORT}:${WS_PORT}'
+        env_file:
+            - '.env'
     db:
         env_file:
             - '.env'
         ports:
+            # Comes from main docker-compose
             - '${DB_PORT}:5432'
-
-    # certbot:
-    #     image: certbot/certbot
-    #     container_name: certbot
-    #     depends_on:
-    #         - nginx-proxy
-    #     volumes:
-    #         - ./ssl:/etc/letsencrypt
-    #         - ./ssl-log:/var/log/letsencrypt
-    #         - ./wwl/.well-known:/var/www/.well-known
-    #     command: ['renew']

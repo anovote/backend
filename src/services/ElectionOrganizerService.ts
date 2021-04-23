@@ -1,4 +1,5 @@
 import { isEmailValid } from '@/helpers/email'
+import { strip } from '@/helpers/sanitize'
 import { validateEntity } from '@/helpers/validateEntity'
 import { BadRequestError } from '@/lib/errors/http/BadRequestError'
 import { NotFoundError } from '@/lib/errors/http/NotFoundError'
@@ -9,6 +10,7 @@ import { IElectionOrganizer } from '@/models/ElectionOrganizer/IElectionOrganize
 import { classToClass } from 'class-transformer'
 import { Connection, getCustomRepository } from 'typeorm'
 import BaseEntityService from './BaseEntityService'
+import { EncryptionService } from './EncryptionService'
 import { HashService } from './HashService'
 
 export class ElectionOrganizerService extends BaseEntityService<ElectionOrganizer> {
@@ -34,7 +36,7 @@ export class ElectionOrganizerService extends BaseEntityService<ElectionOrganize
     }
 
     async update(id: number, dto: ElectionOrganizer): Promise<ElectionOrganizer | undefined> {
-        return classToClass(await this.updatePassword(dto.password, id))
+        return classToClass(await this.updateById(dto, id))
     }
 
     /**
@@ -66,51 +68,30 @@ export class ElectionOrganizerService extends BaseEntityService<ElectionOrganize
     }
 
     /**
-     * Updates the password of a election organizer
-     * @param newPassword The password we want to change to
-     * @param id The id of the election organizer who is changing its password
+     * Updates the election organizer data for the database
+     * @param organizerDTO the new organizer data transfer object to update
+     * @param id the id of the organizer
+     * @returns The updated election organizer
      */
-    async updatePassword(newPassword: string, id: number) {
+    async updateById(organizerDTO: IElectionOrganizer, id: number): Promise<ElectionOrganizer> {
         const encryptionService = new HashService()
 
-        const electionOrganizer: ElectionOrganizer | undefined = await this._organizerRepository.findOne({
-            id
-        })
-
-        if (!electionOrganizer) {
-            throw new NotFoundError({ message: ServerErrorMessage.notFound('Election organizer') })
+        const strippedOrganizer = strip(organizerDTO, ['id', 'createdAt', 'updatedAt'])
+        if (strippedOrganizer?.password) {
+            const hashedPassword = await encryptionService.hash(organizerDTO.password)
+            strippedOrganizer.password = hashedPassword
         }
 
-        electionOrganizer.password = await encryptionService.hash(newPassword)
-        const updatedElectionOrganizer = await this._organizerRepository.save(electionOrganizer)
-        return updatedElectionOrganizer
-    }
-
-    /**
-     * Updates the email of an election organizer
-     * @param newEmail the new mail to change to
-     * @param id the id of the user who wants to change email
-     * @returns updated organizer
-     */
-    async updateEmail(newEmail: string, id: number) {
-        const electionOrganizer: ElectionOrganizer | undefined = await this._organizerRepository.findOne({
-            id
-        })
-
-        if (!electionOrganizer) {
-            throw new NotFoundError({ message: ServerErrorMessage.notFound('Election organizer') })
-        }
-        const noExistingWithMail: ElectionOrganizer | undefined = await this._organizerRepository.findOne({
-            email: newEmail
-        })
-
-        if (!isEmailValid(newEmail) || noExistingWithMail) {
+        if (!isEmailValid(strippedOrganizer!.email)) {
             throw new BadRequestError({ message: ServerErrorMessage.invalidData() })
         }
 
-        electionOrganizer.email = newEmail
-        const updatedOrganizer = await this._organizerRepository.save(electionOrganizer)
-        return updatedOrganizer
+        const updatedOrganizer = this.repository.create(strippedOrganizer!)
+
+        updatedOrganizer.id = id
+        await validateEntity(updatedOrganizer, { strictGroups: true })
+
+        return await this.repository.save(updatedOrganizer)
     }
 
     /**

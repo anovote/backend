@@ -1,9 +1,9 @@
-import { Router } from 'express'
-import { ElectionOrganizerService } from '@/services/ElectionOrganizerService'
-import { StatusCodes } from 'http-status-codes'
-import { AuthenticationService } from '@/services/AuthenticationService'
 import { database } from '@/loaders'
 import { logger } from '@/loaders/logger'
+import { AuthenticationService } from '@/services/AuthenticationService'
+import { ElectionOrganizerService } from '@/services/ElectionOrganizerService'
+import { Router } from 'express'
+import { StatusCodes } from 'http-status-codes'
 
 const router = Router()
 const authenticationService = new AuthenticationService()
@@ -23,35 +23,25 @@ router.get('/', async (request, response) => {
     }
 })
 
-router.put('/changePassword', async (request, response) => {
+router.put('/:id', async (request, response) => {
     const electionOrganizerService = new ElectionOrganizerService(database)
     try {
-        const token = request.headers.authorization
-        const id = authenticationService.verifyToken(token).id
-        const newPassword = request.body.newPassword
-        await electionOrganizerService.updatePassword(newPassword, id)
-        response.status(StatusCodes.OK)
-        response.send('Password was updated')
-    } catch (e) {
-        response.status(StatusCodes.BAD_REQUEST)
-        response.send('Election organizer not found')
-        logger.error('update of password for election organizer failed')
-    }
-})
+        const organizerDTO = request.body
 
-router.put('/changeEmail', async (request, response) => {
-    const electionOrganizerService = new ElectionOrganizerService(database)
-    try {
-        const token = request.headers.authorization
-        const id = authenticationService.verifyToken(token).id
-        const newEmail = request.body.newEmail
-        await electionOrganizerService.updateEmail(newEmail, id)
-        response.status(StatusCodes.OK)
-        response.send('Email was updated')
-        logger.info('Email changed for organizer : ' + id)
+        let password
+        if (!organizerDTO.password) {
+            password = (await electionOrganizerService.getElectionOrganizerById(organizerDTO.id)).password
+        }
+
+        const dto = password ? { ...organizerDTO, password } : organizerDTO
+
+        const updatedOrganizer = await electionOrganizerService.update(request.electionOrganizer.id, dto)
+
+        response.status(StatusCodes.OK).json(updatedOrganizer)
+        logger.info('Organizer updated')
     } catch (e) {
         response.sendStatus(StatusCodes.BAD_REQUEST)
-        logger.error('Bad request for updating email ' + e)
+        logger.error('Bad request for updating organizer ' + e)
     }
 })
 

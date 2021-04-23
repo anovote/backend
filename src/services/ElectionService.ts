@@ -155,9 +155,39 @@ export class ElectionService extends BaseEntityService<Election> implements IHas
         if (strippedElection?.password) await this.hashEntityPassword(strippedElection)
         const updatedElection = this.manager.create(strippedElection!)
         updatedElection.id = existingElection.id
+
+        this.checkAndSetOpenDate(existingElection, updatedElection)
+        this.checkAndSetCloseDate(existingElection, updatedElection)
+
         await validateEntity(updatedElection, { strictGroups: true })
 
         return await this.manager.save(updatedElection)
+    }
+
+    /**
+     * Checks if the election is changing state from NotStarted to Started and sets the openDate to now if not already set
+     * @param existingElection The election already persisted in the database
+     * @param updatedElection The election with data to be updated
+     */
+    private checkAndSetOpenDate(existingElection: Election, updatedElection: Election) {
+        if (
+            existingElection.status === ElectionStatus.NotStarted &&
+            updatedElection.status === ElectionStatus.Started &&
+            !updatedElection.openDate
+        ) {
+            updatedElection.openDate = new Date()
+        }
+    }
+
+    private checkAndSetCloseDate(existingElection: Election, updatedElection: Election) {
+        if (
+            (existingElection.status === ElectionStatus.Started ||
+                existingElection.status === ElectionStatus.NotStarted) && // might be redundant
+            updatedElection.status === ElectionStatus.Finished &&
+            !updatedElection.closeDate
+        ) {
+            updatedElection.closeDate = new Date()
+        }
     }
 
     private async deleteElectionById(id: number): Promise<void> {

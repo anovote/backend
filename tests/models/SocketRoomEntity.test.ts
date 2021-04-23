@@ -2,19 +2,26 @@ import { Election } from '@/models/Election/ElectionEntity'
 import { ElectionStatus } from '@/models/Election/ElectionStatus'
 import { ElectionOrganizer } from '@/models/ElectionOrganizer/ElectionOrganizerEntity'
 import { SocketRoomEntity, SocketRoomState } from '@/models/SocketRoom/SocketRoomEntity'
-import { Connection, Repository } from 'typeorm'
+import { SocketRoomService } from '@/services/SocketRoomService'
+import { Connection, getRepository, Repository } from 'typeorm'
 import { getTestDatabase } from '../helpers/database'
 import { clearDatabaseEntityTable } from '../Tests.utils'
 
 let repo: Repository<SocketRoomEntity>
+let electionRepo: Repository<Election>
 let db: Connection
+let service: SocketRoomService
 beforeAll(async () => {
     db = await getTestDatabase()
     repo = db.getRepository(SocketRoomEntity)
+    electionRepo = db.getRepository(Election)
+    service = SocketRoomService.getInstance()
 })
 
 beforeEach(async () => {
     repo = db.getRepository(SocketRoomEntity)
+    electionRepo = db.getRepository(Election)
+    await clearDatabaseEntityTable(electionRepo)
     await clearDatabaseEntityTable(repo)
 })
 
@@ -52,7 +59,28 @@ it('should contain an election and election should be in the database', async ()
 
     expect(savedRoom.election).toBeDefined()
     expect(savedRoom.election.title).toBe('I have a socket room')
-    const electionRepo = db.getRepository(Election)
     // await electionRepo.save(election)
     expect((await electionRepo.find()).length).toBeGreaterThan(0)
+})
+
+it('should set the socket room status to closed when room is issued close', async () => {
+    const election = await electionRepo.create()
+    election.electionOrganizer = new ElectionOrganizer()
+    election.title = 'new test'
+    election.description = 'test election'
+    election.status = ElectionStatus.NotStarted
+    election.isAutomatic = true
+    election.isLocked = false
+    election.id = -1
+
+    const socketRoom = repo.create()
+    socketRoom.id = -1
+    socketRoom.election = election
+
+    const entity = await repo.save(socketRoom)
+
+    await service.createRoom(entity.election.id)
+    const closedRoom = await service.closeRoom(entity.election.id)
+
+    expect(closedRoom?.roomState).toBe(SocketRoomState.CLOSE)
 })

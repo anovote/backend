@@ -3,12 +3,14 @@ import { NotFoundError } from '@/lib/errors/http/NotFoundError'
 import { UnauthorizedError } from '@/lib/errors/http/UnauthorizedError'
 import { OrganizerSocket } from '@/lib/websocket/AnoSocket'
 import { EventHandlerAcknowledges } from '@/lib/websocket/EventHandler'
-import { Events } from '@/lib/websocket/events'
+import { EventErrorMessage, EventMessage } from '@/lib/websocket/EventResponse'
 import { database } from '@/loaders'
 import { logger } from '@/loaders/logger'
 import { ElectionOrganizerService } from '@/services/ElectionOrganizerService'
 import { ElectionService } from '@/services/ElectionService'
+import { SocketRoomService } from '@/services/SocketRoomService'
 import chalk from 'chalk'
+import { Events } from '../..'
 
 /**
  * Closes an election if the client socket is the owner of the election
@@ -17,27 +19,45 @@ import chalk from 'chalk'
  * @param server the socket server
  */
 export const closeElection: EventHandlerAcknowledges<ICloseElectionEventData> = async (event) => {
+    const socketRoomService = SocketRoomService.getInstance()
+    const organizerSocket = event.client as OrganizerSocket
+    const { electionId, forceEnd } = event.data
+
     try {
-        const { electionId } = event.data
+        logger.info(`election ${chalk.red(electionId)} is been closed by ${chalk.blue(event.client.id)}`)
 
         checkElectionIdType(electionId)
 
-        const client = event.client as OrganizerSocket
-        logger.info(`election ${chalk.red(electionId)} is been closed by ${chalk.blue(client.id)}`)
+        const { election, organizer } = await validateOwnership(organizerSocket.organizerId, electionId)
 
-        await validateOwnership(client.organizerId, electionId)
+        if (!forceEnd && election.closeDate) {
+            event.acknowledgement(EventMessage({ needForceEnd: true, finished: false, closeDate: election.closeDate }))
+        } else {
+            // mark election as complete
+            const electionService = new ElectionService(database, organizer)
+            const closedElection = await electionService.markElectionClosed(election)
+            // close and delete the socket room
+            await socketRoomService.closeRoom(electionId)
+            socketRoomService.deleteRoom(electionId)
 
-        logger.info(`emitting to room ${chalk.red(electionId)}`)
-        const server = event.server
-        server.to(electionId.toString()).emit(Events.server.election.close, 'election is closed')
+            if (closedElection) {
+                event.acknowledgement(EventMessage({ finished: true, needForceEnd: false, election: closedElection }))
+            }
+            logger.info(`emitting to room ${chalk.red(electionId)}`)
+            const server = event.server
+            server.to(electionId.toString()).emit(Events.server.election.close, 'election is closed')
+        }
+
+        // When all ballots are done/voted on : not implemented in this file
     } catch (err) {
         logger.error(err)
-        event.acknowledgement(err)
+        event.acknowledgement(EventErrorMessage(err))
     }
 }
 
 interface ICloseElectionEventData {
     electionId: number
+    forceEnd?: boolean
 }
 
 /**
@@ -56,8 +76,14 @@ async function validateOwnership(organizerId: number, electionId: number) {
     if (!election) {
         throw new UnauthorizedError({ message: 'organizer is not owner' })
     }
+
+    return { election, organizer }
 }
 
+/**
+ * Throws error if electionId is wrong type
+ * @param electionId sent with the socket event
+ */
 function checkElectionIdType(electionId: number) {
     if (!electionId || Number.isNaN(electionId) || !Number.isInteger(electionId)) {
         throw new BadRequestError({ message: 'data is missing' })

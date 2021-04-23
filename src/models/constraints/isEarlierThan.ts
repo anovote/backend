@@ -1,5 +1,5 @@
 import { registerDecorator, ValidationArguments, ValidationOptions } from 'class-validator'
-import { compareDesc } from 'date-fns'
+import { compareDesc, parseISO } from 'date-fns'
 
 export function IsEarlierThan(property: string, validationOptions?: ValidationOptions) {
     // eslint-disable-next-line @typescript-eslint/ban-types
@@ -18,7 +18,7 @@ export function IsEarlierThan(property: string, validationOptions?: ValidationOp
                     if (!value || !relatedValue) return true
 
                     // Compare the two dates and return -1 if the first date is after the second
-                    const compared = compareDesc(value, relatedValue)
+                    const compared = compareDesc(parseISO(value), parseISO(relatedValue))
 
                     return compared !== -1 // you can return a Promise<boolean> here as well, if you want to make async validation
                 }

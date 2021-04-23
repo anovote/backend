@@ -1,25 +1,47 @@
-import { Router } from 'express'
-import { ElectionOrganizerService } from '@/services/ElectionOrganizerService'
-import { StatusCodes } from 'http-status-codes'
-import { AuthenticationService } from '@/services/AuthenticationService'
 import { database } from '@/loaders'
+import { logger } from '@/loaders/logger'
+import { AuthenticationService } from '@/services/AuthenticationService'
+import { ElectionOrganizerService } from '@/services/ElectionOrganizerService'
+import { Router } from 'express'
+import { StatusCodes } from 'http-status-codes'
 
 const router = Router()
 const authenticationService = new AuthenticationService()
 
-router.put('/changePassword', async (request, response) => {
+router.get('/', async (request, response) => {
     const electionOrganizerService = new ElectionOrganizerService(database)
     try {
         const token = request.headers.authorization
         const id = authenticationService.verifyToken(token).id
-        const newPassword = request.body.newPassword
-        await electionOrganizerService.updatePassword(newPassword, id)
+        const organizer = await electionOrganizerService.getById(id)
+
         response.status(StatusCodes.OK)
-        response.send('Password was updated')
-    } catch (e) {
+        response.send(organizer)
+    } catch (error) {
         response.status(StatusCodes.BAD_REQUEST)
-        response.send('Election organizer not found')
-        console.log(e)
+        response.send()
+    }
+})
+
+router.put('/:id', async (request, response) => {
+    const electionOrganizerService = new ElectionOrganizerService(database)
+    try {
+        const organizerDTO = request.body
+
+        let password
+        if (!organizerDTO.password) {
+            password = (await electionOrganizerService.getElectionOrganizerById(organizerDTO.id)).password
+        }
+
+        const dto = password ? { ...organizerDTO, password } : organizerDTO
+
+        const updatedOrganizer = await electionOrganizerService.update(request.electionOrganizer.id, dto)
+
+        response.status(StatusCodes.OK).json(updatedOrganizer)
+        logger.info('Organizer updated')
+    } catch (e) {
+        response.sendStatus(StatusCodes.BAD_REQUEST)
+        logger.error('Bad request for updating organizer ' + e)
     }
 })
 

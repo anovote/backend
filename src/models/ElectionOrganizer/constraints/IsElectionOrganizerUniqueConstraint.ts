@@ -1,18 +1,24 @@
 import { ValidationErrorMessage } from '@/lib/errors/messages/ValidationErrorMessages'
 import {
     registerDecorator,
+    ValidationArguments,
     ValidationOptions,
     ValidatorConstraint,
     ValidatorConstraintInterface
 } from 'class-validator'
 import { getRepository } from 'typeorm'
-import { ElectionOrganizer } from '../ElectionOrganizerEntity'
+import { ElectionOrganizer } from '@/models/ElectionOrganizer/ElectionOrganizerEntity'
 
 @ValidatorConstraint({ async: true })
 export class IsElectionOrganizerUniqueConstraint implements ValidatorConstraintInterface {
-    async validate(email: string) {
+    async validate(email: string, args: ValidationArguments) {
+        const [relatedPropertyName] = args.constraints
+        const ownerId: number = (args.object as any)[relatedPropertyName]
+
         const electionOrganizer = await getRepository(ElectionOrganizer).findOne({ email: email })
-        if (electionOrganizer) return false
+
+        // if an election organizer was found, and the owner is not this organizer, return false
+        if (electionOrganizer && electionOrganizer.id != ownerId) return false
         return true
     }
 
@@ -21,7 +27,7 @@ export class IsElectionOrganizerUniqueConstraint implements ValidatorConstraintI
     }
 }
 
-export function IsElectionOrganizerUnique(validationOptions?: ValidationOptions) {
+export function IsElectionOrganizerUnique(property: string, validationOptions?: ValidationOptions) {
     // eslint-disable-next-line @typescript-eslint/ban-types
     return function (object: object, propertyName: string) {
         registerDecorator({
@@ -30,7 +36,7 @@ export function IsElectionOrganizerUnique(validationOptions?: ValidationOptions)
             target: object.constructor,
             propertyName: propertyName,
             options: validationOptions,
-            constraints: [],
+            constraints: [property],
             validator: IsElectionOrganizerUniqueConstraint
         })
     }

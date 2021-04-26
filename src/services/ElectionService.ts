@@ -12,7 +12,7 @@ import { ElectionOrganizer } from '@/models/ElectionOrganizer/ElectionOrganizerE
 import { SocketRoomEntity } from '@/models/SocketRoom/SocketRoomEntity'
 import { classToClass } from 'class-transformer'
 import { isAfter, isBefore } from 'date-fns'
-import { Connection, Repository } from 'typeorm'
+import { Connection, Raw, Repository } from 'typeorm'
 import BaseEntityService from './BaseEntityService'
 import { EligibleVoterService } from './EligibleVoterService'
 import { HashService } from './HashService'
@@ -92,6 +92,35 @@ export class ElectionService extends BaseEntityService<Election> implements IHas
         })
     }
 
+    /**
+     * Returns all elections that should be started but is currently not started.
+     * Determining whether an election should be started is done by checking the close date
+     * @returns elections that is active/started but should be started
+     */
+    async getAllElectionsThatShouldBeStarted() {
+        return await this.repository.find({
+            openDate: Raw((open) => `${open} < NOW()`),
+            status: ElectionStatus.NotStarted
+        })
+    }
+
+    /**
+     * Returns all elections that should be closed but is currently active/started.
+     * Determining whether an election should be closed is done by checking the close date
+     * @returns elections that is active/started but should be closed
+     */
+    async getAllElectionsThatShouldBeClosed() {
+        return await this.repository.find({
+            closeDate: Raw((close) => `${close} < NOW()`),
+            status: ElectionStatus.Started
+        })
+    }
+    async beginElection(election: Election) {
+        const updateElection = election
+        updateElection.status = ElectionStatus.Started
+        return await this.repository.save(updateElection)
+    }
+
     private async getElectionById(id: number): Promise<Election | undefined> {
         if (this.owner) {
             const election = await this.manager.findOne(id, {
@@ -103,7 +132,7 @@ export class ElectionService extends BaseEntityService<Election> implements IHas
 
             if (election) {
                 if (election.openDate || election.closeDate) {
-                    await this.checkElectionStatus(election)
+                    // await this.checkElectionStatus(election)
                 }
                 return election
             }
@@ -263,10 +292,12 @@ export class ElectionService extends BaseEntityService<Election> implements IHas
      * @param entity the election entity to close
      */
     async markElectionClosed(entity: Election) {
-        entity.closeDate = new Date()
+        if (!entity.closeDate) {
+            entity.closeDate = new Date()
+        }
         entity.status = ElectionStatus.Finished
         entity.isLocked = true
 
-        return await this.updateElectionById(entity.id, entity)
+        return await this.repository.save(entity)
     }
 }

@@ -40,7 +40,7 @@ taskDone
 # If build flag is provided or frontend does not exists we get the latest release of the frontend, and we build it.
 # If the build flag is not provided and frontend exsits, we assume that the frontend exists, and does not contain updates
 cd ..
-if [[ "$1" == "--build" ] || [ ! -d "./frontend" ]]; then
+if [[ "$1" == "--build" || ! -d "./frontend" ]]; then
     # Get the frontend from GitHub so we can build it
 
     printf " \n\n--- FETCHING FRONTEND\n\n"
@@ -69,9 +69,11 @@ if [[ "$1" == "--build" ] || [ ! -d "./frontend" ]]; then
         ./anovote prod --down
 
     taskDone
-fi
 # Go back from frontend path
-cd ../backend
+    cd ..
+fi
+# go back to backend
+cd backend
 
 ########################################################################
 

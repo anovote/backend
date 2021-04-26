@@ -115,8 +115,18 @@ export class ElectionService extends BaseEntityService<Election> implements IHas
             status: ElectionStatus.Started
         })
     }
+
+    /**
+     * Starts an election by performing the necessary steps
+     * @param election the election to start
+     * @returns the started election
+     */
     async beginElection(election: Election) {
         const updateElection = election
+        if (!updateElection.openDate) {
+            updateElection.openDate = new Date()
+        }
+        updateElection.isLocked = false
         updateElection.status = ElectionStatus.Started
         return await this.repository.save(updateElection)
     }

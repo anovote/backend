@@ -43,14 +43,21 @@ else
     cd frontend
 fi
 
+git checkout develop
+
 taskDone
 ########################################################################
 
 printf " \n\n--- BUILDING FRONTEND\n\n"
 
-# FRONTEND BUILD
-git checkout feature/add-docker-scripts # THIS IS VERY TEMPORARY
-./anovote prod --build
+./anovote prod --down
+
+if [[ "$1" == "--build" ]]; then
+    # FRONTEND BUILD
+    ./anovote prod --build
+    ./anovote prod --down
+fi
+
 # Go back from frontend path
 cd ../backend
 
@@ -66,6 +73,12 @@ taskDone
 ########################################################################
 printf " \n\n--- STARTING BACKEND\n\n"
 
-# BACKEND BUILD
-./anovote prod --build
+if [[ "$1" == "--build" ]]; then
+    # BACKEND BUILD
+    ./anovote prod --build
+else
+    # BACKEND BUILD
+    ./anovote prod -d
+fi
+
 printf " \n\n----- PRODUCTION STARTED\n\n"

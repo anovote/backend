@@ -23,7 +23,7 @@ export const join: EventHandlerAcknowledges<{ email: string; electionCode: strin
     const voterSocket = event.client as VoterSocket
     try {
         if (event.data.email && event.data.electionCode) {
-            const { email } = event.data
+            const email = event.data.email.toLowerCase()
             const electionCode: ElectionCode = Number.parseInt(event.data.electionCode)
             const eligibleVoterService = new EligibleVoterService(database)
             const voter = await eligibleVoterService.getVoterByIdentificationForElection(email, electionCode)

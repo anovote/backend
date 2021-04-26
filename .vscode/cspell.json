@@ -36,7 +36,10 @@
         "typeorm",
         "unhashed",
         "varchar",
-        "zwaldowski"
+        "zwaldowski",
+        "certbot",
+        "letsencrypt",
+        "entrypoint"
     ],
     "flagWords": [
         "hte"

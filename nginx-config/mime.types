@@ -4,4 +4,5 @@ types {
     image/gif                                        gif;
     image/jpeg                                       jpeg jpg;
     application/javascript                           js;
+    application/json                                 json;
 }

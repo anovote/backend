@@ -38,7 +38,7 @@ export class ElectionOrganizer {
 
     @Column({ type: 'varchar', length: 255 })
     @IsEmail()
-    @IsElectionOrganizerUnique()
+    @IsElectionOrganizerUnique('id')
     email!: string
 
     @Column({ type: 'varchar', length: 255 })

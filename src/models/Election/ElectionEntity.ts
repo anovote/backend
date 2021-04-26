@@ -86,7 +86,7 @@ export class Election implements IElection {
     @JoinTable()
     eligibleVoters!: EligibleVoter[]
 
-    @OneToMany(() => Ballot, (ballot) => ballot.election, { cascade: true, eager: true })
+    @OneToMany(() => Ballot, (ballot) => ballot.election, { cascade: true, onDelete: 'CASCADE', eager: true })
     @JoinTable()
     ballots!: Ballot[]
 

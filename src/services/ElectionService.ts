@@ -11,6 +11,7 @@ import { IElection } from '@/models/Election/IElection'
 import { ElectionOrganizer } from '@/models/ElectionOrganizer/ElectionOrganizerEntity'
 import { SocketRoomEntity } from '@/models/SocketRoom/SocketRoomEntity'
 import { classToClass } from 'class-transformer'
+import { isAfter, isBefore } from 'date-fns'
 import { Connection, Repository } from 'typeorm'
 import BaseEntityService from './BaseEntityService'
 import { EligibleVoterService } from './EligibleVoterService'
@@ -93,15 +94,38 @@ export class ElectionService extends BaseEntityService<Election> implements IHas
 
     private async getElectionById(id: number): Promise<Election | undefined> {
         if (this.owner) {
-            return await this.manager.findOne(id, {
+            const election = await this.manager.findOne(id, {
                 relations: ['electionOrganizer'],
                 where: {
                     electionOrganizer: this.owner
                 }
             })
+
+            if (election) {
+                if (election.openDate || election.closeDate) {
+                    await this.checkElectionStatus(election)
+                }
+                return election
+            }
         }
 
         return await this.manager.findOne(id)
+    }
+
+    /**
+     * Checks the election status for the given election if the dates suggests the status should be finished or started.
+     * After the checks the election will be updated for the db
+     * @param election Election entity that is stored in the dn
+     */
+    private async checkElectionStatus(election: Election) {
+        if (isAfter(new Date(), election.openDate!) || isBefore(new Date(), election.closeDate!)) {
+            election.status = ElectionStatus.Started
+            await this.updateElectionById(election.id, election)
+        }
+
+        if (isAfter(new Date(), election.closeDate!)) {
+            await this.markElectionClosed(election)
+        }
     }
 
     private async createElection(electionDTO: IElection): Promise<Election | undefined> {
@@ -155,16 +179,51 @@ export class ElectionService extends BaseEntityService<Election> implements IHas
         if (strippedElection?.password) await this.hashEntityPassword(strippedElection)
         const updatedElection = this.manager.create(strippedElection!)
         updatedElection.id = existingElection.id
+
+        this.checkAndSetOpenDate(existingElection, updatedElection)
+        this.checkAndSetCloseDate(existingElection, updatedElection)
+
         await validateEntity(updatedElection, { strictGroups: true })
 
         return await this.manager.save(updatedElection)
     }
 
-    async deleteElectionById(id: number): Promise<void> {
+    /**
+     * Checks if the election is changing state from NotStarted to Started and sets the openDate to now if not already set
+     * @param existingElection The election already persisted in the database
+     * @param updatedElection The election with data to be updated
+     */
+    private checkAndSetOpenDate(existingElection: Election, updatedElection: Election) {
+        if (
+            existingElection.status === ElectionStatus.NotStarted &&
+            updatedElection.status === ElectionStatus.Started &&
+            !updatedElection.openDate
+        ) {
+            updatedElection.openDate = new Date()
+        }
+    }
+
+    private checkAndSetCloseDate(existingElection: Election, updatedElection: Election) {
+        if (
+            (existingElection.status === ElectionStatus.Started ||
+                existingElection.status === ElectionStatus.NotStarted) && // might be redundant
+            updatedElection.status === ElectionStatus.Finished &&
+            !updatedElection.closeDate
+        ) {
+            updatedElection.closeDate = new Date()
+        }
+    }
+
+    private async deleteElectionById(id: number): Promise<void> {
         const election = await this.manager.findOne(id, { where: { electionOrganizer: this.owner } })
         if (!election) {
             throw new NotFoundError({ message: ServerErrorMessage.notFound('Election') })
         }
+
+        if (election.status === ElectionStatus.Started) {
+            throw new BadRequestError({ message: 'Cannot delete an election while its running' })
+        }
+
         await this.manager.remove(election)
     }
 
@@ -196,5 +255,18 @@ export class ElectionService extends BaseEntityService<Election> implements IHas
         if (entity.electionOrganizer !== this.owner) {
             throw new ForbiddenError()
         }
+    }
+
+    /**
+     * Marks an election closed.
+     * Performs the necessary steps to satisfy the closed election criteria
+     * @param entity the election entity to close
+     */
+    async markElectionClosed(entity: Election) {
+        entity.closeDate = new Date()
+        entity.status = ElectionStatus.Finished
+        entity.isLocked = true
+
+        return await this.updateElectionById(entity.id, entity)
     }
 }

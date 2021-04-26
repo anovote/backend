@@ -8,6 +8,7 @@ import { IElection } from '@/models/Election/IElection'
 import { ElectionOrganizer } from '@/models/ElectionOrganizer/ElectionOrganizerEntity'
 import { SocketRoomEntity, SocketRoomState } from '@/models/SocketRoom/SocketRoomEntity'
 import { ElectionService } from '@/services/ElectionService'
+import { isSameHour } from 'date-fns'
 import { Connection } from 'typeorm'
 import { getTestDatabase } from '../helpers/database'
 import { createDummyOrganizer, deleteDummyOrganizer } from '../helpers/seed/organizer'
@@ -132,12 +133,12 @@ it('should delete a election which exists', async () => {
         eligibleVoters: [],
         ballots: []
     })
-    await expect(electionService.deleteElectionById(election!.id)).resolves.toBeUndefined()
+    await expect(electionService.delete(election!.id)).resolves.toBeUndefined()
 })
 
 it('should throw not found error when deleting a election which do not exist', async () => {
     try {
-        await expect(electionService.deleteElectionById(99999999)).rejects.toThrowError(NotFoundError)
+        await expect(electionService.delete(99999999)).rejects.toThrowError(NotFoundError)
     } catch (error) {
         console.error(error)
     }
@@ -311,6 +312,26 @@ it('should be able to save an election with a socket room ', async () => {
     expect(savedElection?.socketRoom.roomState).toBe(SocketRoomState.CLOSE)
 })
 
+it('should mark election as closed when the organizer tries to close it', async () => {
+    const election = db.getRepository(Election).create()
+    election.title = 'I want to be closed'
+    election.description = 'by organizer'
+    election.isAutomatic = false
+    election.isLocked = false
+    election.electionOrganizer = new ElectionOrganizer()
+    election.eligibleVoters = []
+    election.status = ElectionStatus.Started
+    election.id = -1
+    election.socketRoom = new SocketRoomEntity()
+
+    const savedElection = await electionService.create(election)
+    const closedElection = await electionService.markElectionClosed(savedElection!)
+
+    expect(closedElection?.isLocked).toBeTruthy()
+    expect(closedElection?.status).toBe(ElectionStatus.Finished)
+    expect(isSameHour(new Date(closedElection!.closeDate!), new Date())).toBeTrue()
+})
+
 describe('Duplication', () => {
     it('should not allow duplicate entries from same owner', async () => {
         const election = db.getRepository(Election).create()
@@ -351,4 +372,27 @@ describe('Owner', () => {
         expect(createdElection).toBeDefined()
         expect(createdElection?.electionOrganizer).toBeDefined()
     })
+})
+
+it('should change the status to started when openDate is set and now() is after', async () => {
+    const election = db.getRepository(Election).create()
+    election.title = 'test status after open date'
+    election.description = 'if open date is before Now, change status to started'
+    election.openDate = new Date()
+    const createdElection = await electionService.create(election)
+
+    const entity = await electionService.getById(createdElection!.id)
+    expect(entity?.status).toBe(ElectionStatus.Started)
+})
+
+it('should change the status to closed when openDate is set and closeDate is after now()', async () => {
+    const election = db.getRepository(Election).create()
+    election.title = 'test status after open date'
+    election.description = 'if open date is before Now, change status to started'
+    election.openDate = new Date()
+    election.closeDate = new Date()
+    const createdElection = await electionService.create(election)
+
+    const entity = await electionService.getById(createdElection!.id)
+    expect(entity?.status).toBe(ElectionStatus.Finished)
 })

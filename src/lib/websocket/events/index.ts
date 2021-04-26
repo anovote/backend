@@ -19,7 +19,8 @@ export const Events = {
                 failed: 'reconnect_failed'
             },
             error: 'error',
-            ping: 'ping'
+            ping: 'ping',
+            pong: 'pong'
         }
     },
     client: {

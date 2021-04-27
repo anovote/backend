@@ -373,26 +373,3 @@ describe('Owner', () => {
         expect(createdElection?.electionOrganizer).toBeDefined()
     })
 })
-
-it('should change the status to started when openDate is set and now() is after', async () => {
-    const election = db.getRepository(Election).create()
-    election.title = 'test status after open date'
-    election.description = 'if open date is before Now, change status to started'
-    election.openDate = new Date()
-    const createdElection = await electionService.create(election)
-
-    const entity = await electionService.getById(createdElection!.id)
-    expect(entity?.status).toBe(ElectionStatus.Started)
-})
-
-it('should change the status to closed when openDate is set and closeDate is after now()', async () => {
-    const election = db.getRepository(Election).create()
-    election.title = 'test status after open date'
-    election.description = 'if open date is before Now, change status to started'
-    election.openDate = new Date()
-    election.closeDate = new Date()
-    const createdElection = await electionService.create(election)
-
-    const entity = await electionService.getById(createdElection!.id)
-    expect(entity?.status).toBe(ElectionStatus.Finished)
-})

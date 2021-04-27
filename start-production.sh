@@ -3,12 +3,30 @@ printf " \n - STARTING ANOVOTE PRODUCTION SETUP\n\n"
 
 # Script to start ANOVOTE PRODUCTION SERVER
 # Arguments:
-# --build  -> build the production server, and pulls/clones frontend and builds it 
+# --build / -b  -> build the production server, and pulls/clones frontend and builds it 
+# --cert / -c -> Create certificates 
 
 function taskDone()
 {
     printf " \n----- DONE";
 }
+
+build=false
+cert=false
+
+# Arguments parsing
+while [ "$1" != "" ]; do
+    case $1 in
+        -b | --build )
+            build=true;
+        ;;
+        -c | --cert )
+            cert=true;
+        ;;
+    esac
+    # Remove element from the arguments array
+    shift
+done
 
 ########################################################################
 # Stop all containers before we relaunch
@@ -30,17 +48,19 @@ taskDone
 
 # Start certificate generation. This will prompt to recreate or skip if certificates alreadt exists.
 
-printf " \n\n--- SETTING UP CERTIFICATES\n\n"
+if [ "$cert" = true ]; then
+    printf " \n\n--- SETTING UP CERTIFICATES\n\n"
 
-./init-letsencrypt.sh
-./anovote prod --down
+    ./init-letsencrypt.sh
+    ./anovote prod --down
+fi
 
 taskDone
 ########################################################################
 # If build flag is provided or frontend does not exists we get the latest release of the frontend, and we build it.
 # If the build flag is not provided and frontend exsits, we assume that the frontend exists, and does not contain updates
 cd ..
-if [[ "$1" == "--build" || ! -d "./frontend" ]]; then
+if [[ "$build" = true || ! -d "./frontend" ]]; then
     # Get the frontend from GitHub so we can build it
 
     printf " \n\n--- FETCHING FRONTEND\n\n"
@@ -87,12 +107,15 @@ taskDone
 printf " \n\n--- STARTING BACKEND\n\n"
 
 # Build backend if build flag is set, else start it detached
-if [[ "$1" == "--build" ]]; then
+if [ "$build" = true ]; then
+    # Get latest release 
+    git pull
     # BACKEND BUILD
     ./anovote prod --build
-else
-    # BACKEND BUILD
-    ./anovote prod -d
+    # REMOVE BUILD CONTAINERS
+    ./anovote prod --down
 fi
+# BACKEND START
+./anovote prod -d
 
 printf " \n\n----- PRODUCTION STARTED\n\n"

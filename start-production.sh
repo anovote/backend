@@ -32,7 +32,7 @@ done
 # Stop all containers before we relaunch
 printf " \n\n--- STOPING OLD SERVICES\n\n"
 
-./anovote prod --down
+./anovote prod --down-soft
 
 taskDone
 ########################################################################
@@ -52,7 +52,7 @@ if [ "$cert" = true ]; then
     printf " \n\n--- SETTING UP CERTIFICATES\n\n"
 
     ./init-letsencrypt.sh
-    ./anovote prod --down
+    ./anovote prod --down-soft
 fi
 
 taskDone
@@ -113,7 +113,7 @@ if [ "$build" = true ]; then
     # BACKEND BUILD
     ./anovote prod --build
     # REMOVE BUILD CONTAINERS
-    ./anovote prod --down
+    ./anovote prod --down-soft
 fi
 # BACKEND START
 ./anovote prod -d

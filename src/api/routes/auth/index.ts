@@ -1,3 +1,4 @@
+import { checkAuth } from '@/api/middleware/authentication'
 import { BadRequestError } from '@/lib/errors/http/BadRequestError'
 import { database } from '@/loaders'
 import { AuthenticationService } from '@/services/AuthenticationService'
@@ -24,6 +25,17 @@ router.post('/login', async (request, response, next) => {
         const token = await authService.login(request.body)
         if (!token) throw new BadRequestError({ message: 'Invalid email/password' })
         response.json({ token })
+    } catch (error) {
+        next(error)
+    }
+})
+
+/**
+ * Returns OK/200 if the checkAuth succeed
+ */
+router.use(checkAuth).get('/authenticated', (_, response, next) => {
+    try {
+        return response.status(StatusCodes.OK)
     } catch (error) {
         next(error)
     }

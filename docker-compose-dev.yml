@@ -1,17 +1,22 @@
-version: "3.9"
+version: '3.9'
 services:
-  app:
-    build:
-      context: .
-      dockerfile: Dockerfile
-      target: source
-    volumes:
-      - "./src:/app/src"
-    ports:
-      - "9229:9229"
-      - "${WS_PORT}:${WS_PORT}"
-  db:
-    env_file:
-      - ".env"
-    ports:
-      - "${DB_PORT}:5432"
+    app:
+        build:
+            context: .
+            dockerfile: Dockerfile
+            target: source
+        volumes:
+            - './src:/app/src'
+        ports:
+            - '9229:9229'
+            # Comes from main docker-compose
+            - '${HTTP_PORT}:${HTTP_PORT}'
+            - '${WS_PORT}:${WS_PORT}'
+        env_file:
+            - '.env'
+    db:
+        env_file:
+            - '.env'
+        ports:
+            # Comes from main docker-compose
+            - '${DB_PORT}:5432'

@@ -4,12 +4,11 @@ services:
         container_name: 'anovote_backend'
         image: anovote:backend
         build: .
-        ports:
-            - '${HTTP_PORT}:${HTTP_PORT}'
         volumes:
             - './logs:/app/logs'
         networks:
             - anovote_backend
+            - anovote_proxy
         depends_on:
             - 'db'
         env_file:
@@ -23,7 +22,10 @@ services:
             - anovote_backend
         environment:
             TZ: 'Europe/Oslo'
+        env_file:
+            - '.env'
 volumes:
     anovote-data:
 networks:
     anovote_backend:
+    anovote_proxy:

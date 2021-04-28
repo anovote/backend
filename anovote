@@ -17,12 +17,15 @@ docker()
         docker-compose  $composes up -d
     elif [[ "$1" == "--down" ]]; then 
         docker-compose  $composes down -v --remove-orphans
+    elif [[ "$1" == "--down-soft" ]]; then 
+        docker-compose  $composes down
     else 
         echo "Argument is unknown: $1"
         echo "Valid arguments are:"
         echo "--build for building"
         echo "--force to force recreation of containers"
         echo "--down clear environment"
+        echo "--down-soft stop environment without cleaning"
         echo "-d run detach"
         exit 2
     fi

@@ -30,9 +30,11 @@ organizerRoutes.use('/electionOrganizer', electionOrganizerRoutes)
 organizerRoutes.use('/elections/:electionId/ballots', ballotRoutes)
 organizerRoutes.use('/elections/:electionId/stats', electionStatsRouter)
 
-export default Router()
+const routes = Router()
     .use(morgan('dev'))
     .use('/public', publicRoutes)
     .use('/voter', voterRoutes)
     .use('/admin', organizerRoutes)
     .use(errorHandler)
+
+export default Router().use('/api', routes)

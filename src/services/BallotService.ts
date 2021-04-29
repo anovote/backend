@@ -21,9 +21,9 @@ export class BallotService extends BaseEntityService<Ballot> implements IHasOwne
     private _database: Connection
     private _ballotRepository: Repository<Ballot>
     private _electionService: ElectionService
-    owner: ElectionOrganizer
+    owner: ElectionOrganizer | undefined
 
-    constructor(database: Connection, electionService: ElectionService, owner: ElectionOrganizer) {
+    constructor(database: Connection, electionService: ElectionService, owner?: ElectionOrganizer) {
         super(database, Ballot)
         this.owner = owner
         this._database = database
@@ -100,8 +100,7 @@ export class BallotService extends BaseEntityService<Ballot> implements IHasOwne
 
     verifyOwner(ballot: Ballot) {
         const electionOrganizer: ElectionOrganizer = ballot.election.electionOrganizer
-
-        if (!ballot.election || electionOrganizer.id != this.owner.id) {
+        if (!ballot.election || electionOrganizer.id != this.owner?.id) {
             throw new ForbiddenError()
         }
     }
@@ -119,6 +118,19 @@ export class BallotService extends BaseEntityService<Ballot> implements IHasOwne
         if (!ballot) return undefined
 
         this.verifyOwner(ballot)
+        return classToClass(ballot)
+    }
+
+    /**
+     * Tries to get a ballot with the given ID, if the ballot exists return it,
+     * else return undefined.
+     * Throws error if database, or query fails
+     * @param id the id of the ballot to get
+     */
+    async getByIdWithoutOwner(id: number) {
+        const ballot = await this._ballotRepository.findOne(id, {
+            relations: ['election', 'election.electionOrganizer']
+        })
         return classToClass(ballot)
     }
 }

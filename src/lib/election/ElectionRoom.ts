@@ -47,6 +47,15 @@ export class ElectionRoom implements IElectionRoom {
     }
 
     /**
+     * Returns true if the vote information exists for the given ballot
+     * @param ballotId the id of the ballot to check for existence
+     * @returns true if vote stats exists else false
+     */
+    ballotVoteInformationExists(ballotId: number) {
+        return this._ballotVoteInformation.has(ballotId)
+    }
+
+    /**
      * Creates and insert a ballot vote information object for the provided ballot into this election
      * room.
      * @param ballot the ballot to create vote information object of
@@ -94,14 +103,15 @@ export class ElectionRoom implements IElectionRoom {
     }
 
     /**
-     * Returns a copy of voters for a given ballot id.
+     * Returns a copy of all voters that has voted on the given ballot id.
      * @param ballotId ballot id to get voters of
-     * @returns returns an copy of voters for a given ballot id
+     * @returns returns an copy of all voters that has voted
      */
     getBallotVoters(ballotId: number) {
         const ballotVoteInformation = this.getBallotVoteInformation(ballotId)
         // Returns a copy to prevent mutation of original
         if (ballotVoteInformation) return new Set(ballotVoteInformation.voters)
+        return new Set<number>()
     }
 
     get organizerSocketId() {

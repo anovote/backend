@@ -35,7 +35,7 @@ export const closeElection: EventHandlerAcknowledges<ICloseElectionEventData> = 
         } else {
             // mark election as complete
             const electionService = new ElectionService(database, organizer)
-            const closedElection = await electionService.markElectionClosed(election)
+            const closedElection = await electionService.markElectionClosed(election, true)
             // close and delete the socket room
             await socketRoomService.closeRoom(electionId)
             socketRoomService.deleteRoom(electionId)

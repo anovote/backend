@@ -158,7 +158,7 @@ export class ElectionService extends BaseEntityService<Election> implements IHas
         }
 
         if (isAfter(new Date(), election.closeDate!)) {
-            await this.markElectionClosed(election)
+            await this.markElectionClosed(election, false)
         }
     }
 
@@ -296,8 +296,8 @@ export class ElectionService extends BaseEntityService<Election> implements IHas
      * Performs the necessary steps to satisfy the closed election criteria
      * @param entity the election entity to close
      */
-    async markElectionClosed(entity: Election) {
-        if (!entity.closeDate) {
+    async markElectionClosed(entity: Election, forceClose: boolean) {
+        if (forceClose) {
             entity.closeDate = new Date()
         }
         entity.status = ElectionStatus.Finished

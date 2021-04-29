@@ -325,7 +325,7 @@ it('should mark election as closed when the organizer tries to close it', async 
     election.socketRoom = new SocketRoomEntity()
 
     const savedElection = await electionService.create(election)
-    const closedElection = await electionService.markElectionClosed(savedElection!)
+    const closedElection = await electionService.markElectionClosed(savedElection!, true)
 
     expect(closedElection?.isLocked).toBeTruthy()
     expect(closedElection?.status).toBe(ElectionStatus.Finished)

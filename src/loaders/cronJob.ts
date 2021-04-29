@@ -23,7 +23,7 @@ const cronWorkerLoader = (database: Connection) => {
         const electionsShouldBeClosed = await electionService.getAllElectionsThatShouldBeClosed()
 
         for (const election of electionsShouldBeClosed) {
-            await electionService.markElectionClosed(election)
+            await electionService.markElectionClosed(election, false)
             cronUpdatedCount++
         }
 

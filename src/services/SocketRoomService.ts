@@ -154,8 +154,9 @@ export class SocketRoomService extends BaseEntityService<SocketRoomEntity> {
         this._electionRooms.delete(electionId)
     }
 
-    getRoom(electionId: number) {
-        return this._electionRooms.get(electionId)
+    getRoom(electionId: number | string) {
+        const id = Number.isInteger(electionId) ? (electionId as number) : Number.parseInt(electionId as string)
+        return this._electionRooms.get(id)
     }
 
     /**

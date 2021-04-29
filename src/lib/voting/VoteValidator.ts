@@ -5,6 +5,7 @@ import { ElectionStatus } from '@/models/Election/ElectionStatus'
 import { IVote } from '@/models/Vote/IVote'
 import { Vote } from '@/models/Vote/VoteEntity'
 import { Connection } from 'typeorm'
+import { AlreadyVotedError } from '../errors/AlreadyVotedError'
 import { NotFoundError } from '../errors/http/NotFoundError'
 import { ServerErrorMessage } from '../errors/messages/ServerErrorMessages'
 
@@ -83,7 +84,7 @@ export class VoteValidator {
         const voteExists = await voteRepository.findOne({ voter, ballot })
 
         if (voteExists) {
-            throw new Error('I already exist')
+            throw new AlreadyVotedError()
         }
     }
 

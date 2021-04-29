@@ -12,3 +12,5 @@ export type ErrorCode =
     | 'ELECTION_NOT_EXIST'
     | 'ELECTION_CODE_MISSING'
     | 'ELECTION_DUPLICATE'
+    | 'ELECTION_ROOM_NOT_EXIST'
+    | 'BALLOT_NOT_EXIST'

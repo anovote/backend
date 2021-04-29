@@ -65,7 +65,8 @@ export const Events = {
             voterDisconnected: 'voter_disconnected'
         },
         ballot: {
-            push: 'push_ballot'
+            push: 'push_ballot',
+            update: 'update_ballot'
         },
         result: {
             push: 'push_result'

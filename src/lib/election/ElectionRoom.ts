@@ -68,6 +68,21 @@ export class ElectionRoom implements IElectionRoom {
     }
 
     /**
+     *  Returns true if all eligible voters for the given ballot id has
+     * voted on the ballot
+     * @param ballotId the ballot id to check for
+     * @returns returns true of all eligible voters have voter
+     */
+    haveAllVotedOnBallot(ballotId: number) {
+        let allVoted = false
+        const ballotVoteInformation = this.getBallotVoteInformation(ballotId)
+        if (ballotVoteInformation) {
+            allVoted = ballotVoteInformation.voters.size === this._totalEligibleVoters
+        }
+        return allVoted
+    }
+
+    /**
      * Returns the vote stats for the provided ballotId or undefined if the ballot information
      * does not exists.
      * @param ballotId the ballot id to get stats of

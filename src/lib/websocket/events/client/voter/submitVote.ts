@@ -20,7 +20,6 @@ export const submitVote: EventHandlerAcknowledges<IVote> = async (event) => {
     const socketRoomService = SocketRoomService.getInstance()
 
     // Todo: rewrite ERRORS
-    // Todo: verify that a voter has not voted already for the ballot
     // Todo: verify that the ballot is the current
     // Todo: send error if ballot does not exist
     // Todo: send error if ballot is not current (not sent, or ended)
@@ -39,17 +38,13 @@ export const submitVote: EventHandlerAcknowledges<IVote> = async (event) => {
             // Create vote first so we know it at least inserts into the database
             await voteService.create(submittedVote)
             const room = socketRoomService.getRoom(voterSocket.electionCode)
-
             if (room) {
-                const ballot = room.ballots.get(submittedVote.ballot)
-                ballot?.stats.addVotes([submittedVote])
-                ballot?.voters.add(voterSocket.voterId)
-                // If organizer is connected, we can get the socket id here to broadcast
+                room.addVote({ ballotId: submittedVote.ballot, voterId: voterSocket.voterId, votes: [submittedVote] })
                 if (room.organizerSocketId) {
                     // Volatile so events do not stack, we only want to send the last one
                     event.server.volatile
                         .to(room.organizerSocketId)
-                        .emit(Events.server.vote.newVote, ballot!.stats.getStats())
+                        .emit(Events.server.vote.newVote, room.getBallotStats(submittedVote.ballot))
                 }
                 event.acknowledgement({
                     statusCode: StatusCodes.OK,

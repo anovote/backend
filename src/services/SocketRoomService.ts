@@ -1,9 +1,9 @@
 import { strip } from '@/helpers/sanitize'
 import { validateEntity } from '@/helpers/validateEntity'
+import { BallotVoteInformation, ElectionRoom } from '@/lib/election/ElectionRoom'
 import { NotFoundError } from '@/lib/errors/http/NotFoundError'
 import { ServerErrorMessage } from '@/lib/errors/messages/ServerErrorMessages'
 import { BallotVoteStats } from '@/lib/voting/BallotStats'
-import { VoterId } from '@/lib/voting/VoterId'
 import { OrganizerSocket, VoterSocket } from '@/lib/websocket/AnoSocket'
 import { Events } from '@/lib/websocket/events'
 import { database } from '@/loaders'
@@ -18,19 +18,6 @@ import { Connection, getConnection } from 'typeorm'
 import BaseEntityService, { CrudOptions } from './BaseEntityService'
 import { ElectionService } from './ElectionService'
 
-//  Describes an election room for a given election. A room contains stats for all ballots for the
-// Election. The organizer socket id the ID of the organizer socket when the organizer has
-// joined the election room, will be undefined if organizer is not connected.
-export interface IElectionRoom {
-    // the socket id of the organizer that organizes the election.
-    organizerSocketId: string | undefined
-    // Vote stats for all ballots in the election, the KEY is the ballot ID
-    ballots: Map<number, { stats: BallotVoteStats; voters: Set<VoterId> }>
-    ballotVoteStats: Map<number, BallotVoteStats>
-    totalEligibleVoters: number
-    connectedVoters: number
-}
-
 /**
  * This is singleton
  */
@@ -42,7 +29,7 @@ export class SocketRoomService extends BaseEntityService<SocketRoomEntity> {
      * Contains a list of all election rooms with their organizer socket ID.
      * An election room can exist without an organizer socket.
      */
-    private _electionRooms: Map<number, IElectionRoom> = new Map()
+    private _electionRooms: Map<number, ElectionRoom> = new Map()
 
     private constructor(databaseConnection: Connection) {
         super(databaseConnection, SocketRoomEntity)
@@ -56,29 +43,29 @@ export class SocketRoomService extends BaseEntityService<SocketRoomEntity> {
         const electionService = new ElectionService(database)
         const elections = await electionService.getAllStartedAndNonStarted()
         for (const election of elections) {
-            const ballotMap = new Map()
+            const ballotVoteInformation: BallotVoteInformation = new Map()
             for (const ballot of election.ballots) {
                 // Load all votes for ballot
                 const votes = await ballot.votes
-                const votersVotedOnBallot = new Set()
+                const votersVotedOnBallot = new Set<number>()
                 if (votes) {
                     // Add all voters voted on ballot to set
                     for (const vote of votes) {
                         votersVotedOnBallot.add(vote.voter)
                     }
                 }
-                ballotMap.set(ballot.id, {
+                ballotVoteInformation.set(ballot.id, {
                     stats: new BallotVoteStats(ballot),
                     voters: votersVotedOnBallot
                 })
             }
-            this._electionRooms.set(election.id, {
-                organizerSocketId: undefined,
-                ballotVoteStats: ballotMap,
-                totalEligibleVoters: election.eligibleVoters.length,
-                connectedVoters: 0,
-                ballots: ballotMap
-            })
+            this._electionRooms.set(
+                election.id,
+                new ElectionRoom({
+                    totalEligibleVoters: election.eligibleVoters.length,
+                    ballotVoteInformation: ballotVoteInformation
+                })
+            )
         }
     }
 
@@ -132,13 +119,10 @@ export class SocketRoomService extends BaseEntityService<SocketRoomEntity> {
     createRoom(election: Election) {
         const room = this._electionRooms.get(election.id)
         if (!room) {
-            this._electionRooms.set(election.id, {
-                organizerSocketId: undefined,
-                totalEligibleVoters: election.eligibleVoters.length,
-                ballotVoteStats: new Map(),
-                connectedVoters: 0,
-                ballots: new Map()
-            })
+            this._electionRooms.set(
+                election.id,
+                new ElectionRoom({ totalEligibleVoters: election.eligibleVoters ? election.eligibleVoters.length : 0 })
+            )
         }
     }
 

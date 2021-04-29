@@ -60,6 +60,14 @@ export class BallotVoteStats {
     }
 
     /**
+     * Update the ballot for the vote stat instance
+     * @param ballot the ballot to insert
+     */
+    updateBallot(ballot: Ballot) {
+        this._ballot = { ...this._ballot, ...ballot }
+    }
+
+    /**
      * Initialize this ballot vote stats with votes.
      * @param votes the votes to initialize the ballot stats with
      */

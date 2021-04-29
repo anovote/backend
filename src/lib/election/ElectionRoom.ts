@@ -47,6 +47,19 @@ export class ElectionRoom implements IElectionRoom {
     }
 
     /**
+     * Updates the ballot for the ballot vote stats object with the
+     * same ballot id as the provided one. If no ballots are found it does nothing
+     * @param ballot the updated ballot
+     */
+    updateVoteInformationBallot(ballot: Ballot) {
+        if (!ballot) return
+        const ballotVoteInformation = this.getBallotVoteInformation(ballot.id)
+        if (ballotVoteInformation) {
+            ballotVoteInformation.stats.updateBallot(ballot)
+        }
+    }
+
+    /**
      * Returns true if the vote information exists for the given ballot
      * @param ballotId the id of the ballot to check for existence
      * @returns true if vote stats exists else false

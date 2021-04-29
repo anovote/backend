@@ -87,6 +87,8 @@ export const pushBallot: EventHandlerAcknowledges<{ ballotId: number; electionId
         }
 
         logger.info(`Ballot ${ballot.id} was pushed`)
+        // Update the ballot for the vote information stat
+        room.updateVoteInformationBallot(ballot)
         // Return updated ballot to organizer
         return event.acknowledgement(EventMessage({ ballot }))
     } catch (err) {

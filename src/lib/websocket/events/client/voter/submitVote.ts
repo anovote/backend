@@ -69,7 +69,10 @@ export const submitVote: EventHandlerAcknowledges<IVote> = async (event) => {
             ballot = await ballotService.getByIdWithoutOwner(ballotId)
             if (ballot) {
                 ballot.status = BallotStatus.IN_ARCHIVE
+                // submit the update to the database
                 await ballotService.update(ballotId, ballot)
+                // Update room ballot
+                room.updateVoteInformationBallot(ballot)
             }
         }
 

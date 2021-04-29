@@ -12,7 +12,7 @@ import { ElectionOrganizer } from '@/models/ElectionOrganizer/ElectionOrganizerE
 import { SocketRoomEntity } from '@/models/SocketRoom/SocketRoomEntity'
 import { classToClass } from 'class-transformer'
 import { isAfter, isBefore } from 'date-fns'
-import { Connection, Repository } from 'typeorm'
+import { Connection, Raw, Repository } from 'typeorm'
 import BaseEntityService from './BaseEntityService'
 import { EligibleVoterService } from './EligibleVoterService'
 import { HashService } from './HashService'
@@ -92,6 +92,45 @@ export class ElectionService extends BaseEntityService<Election> implements IHas
         })
     }
 
+    /**
+     * Returns all elections that should be started but is currently not started.
+     * Determining whether an election should be started is done by checking the close date
+     * @returns elections that is active/started but should be started
+     */
+    async getAllElectionsThatShouldBeStarted() {
+        return await this.repository.find({
+            openDate: Raw((open) => `${open} < NOW()`),
+            status: ElectionStatus.NotStarted
+        })
+    }
+
+    /**
+     * Returns all elections that should be closed but is currently active/started.
+     * Determining whether an election should be closed is done by checking the close date
+     * @returns elections that is active/started but should be closed
+     */
+    async getAllElectionsThatShouldBeClosed() {
+        return await this.repository.find({
+            closeDate: Raw((close) => `${close} < NOW()`),
+            status: ElectionStatus.Started
+        })
+    }
+
+    /**
+     * Starts an election by performing the necessary steps
+     * @param election the election to start
+     * @returns the started election
+     */
+    async beginElection(election: Election) {
+        const updateElection = election
+        if (!updateElection.openDate) {
+            updateElection.openDate = new Date()
+        }
+        updateElection.isLocked = false
+        updateElection.status = ElectionStatus.Started
+        return await this.repository.save(updateElection)
+    }
+
     private async getElectionById(id: number): Promise<Election | undefined> {
         if (this.owner) {
             const election = await this.manager.findOne(id, {
@@ -101,12 +140,7 @@ export class ElectionService extends BaseEntityService<Election> implements IHas
                 }
             })
 
-            if (election) {
-                if (election.openDate || election.closeDate) {
-                    await this.checkElectionStatus(election)
-                }
-                return election
-            }
+            return election
         }
 
         return await this.manager.findOne(id)
@@ -124,7 +158,7 @@ export class ElectionService extends BaseEntityService<Election> implements IHas
         }
 
         if (isAfter(new Date(), election.closeDate!)) {
-            await this.markElectionClosed(election)
+            await this.markElectionClosed(election, false)
         }
     }
 
@@ -262,11 +296,49 @@ export class ElectionService extends BaseEntityService<Election> implements IHas
      * Performs the necessary steps to satisfy the closed election criteria
      * @param entity the election entity to close
      */
-    async markElectionClosed(entity: Election) {
-        entity.closeDate = new Date()
+    async markElectionClosed(entity: Election, forceClose: boolean) {
+        if (forceClose) {
+            entity.closeDate = new Date()
+        }
         entity.status = ElectionStatus.Finished
         entity.isLocked = true
 
-        return await this.updateElectionById(entity.id, entity)
+        return await this.repository.save(entity)
+    }
+
+    /**
+     * Closes all elections in database that have an close date set, but where the status is not closed yet.
+     * @returns the updated elections result
+     */
+    async closeAllElectionsWithCloseDateStarted() {
+        return await this.repository
+            .createQueryBuilder()
+            .update(Election)
+            .set({
+                status: ElectionStatus.Finished,
+                isLocked: true,
+                closeDate: new Date()
+            })
+            .where('NOW() > closeDate')
+            .andWhere('status = :status', { status: ElectionStatus.Started })
+            .execute()
+    }
+
+    /**
+     * Starts all elections in database that have an open date set, but where the status is set to started yet.
+     * @returns the updated elections result
+     */
+    async startAllElectionsWhithOpenDateNotStarted() {
+        return await this.repository
+            .createQueryBuilder()
+            .update(Election)
+            .set({
+                openDate: new Date(),
+                isLocked: false,
+                status: ElectionStatus.Started
+            })
+            .where('NOW() < openDate')
+            .andWhere('status = :status', { status: ElectionStatus.NotStarted })
+            .execute()
     }
 }

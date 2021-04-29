@@ -13,6 +13,7 @@ import nodemailerLoader from '@/loaders/nodemailer'
 import config from '@/config'
 import { logger } from '@/loaders/logger'
 import { Connection } from 'typeorm/connection/Connection'
+import cronWorkerLoader from './cronJob'
 
 let database!: Connection
 
@@ -39,6 +40,10 @@ export const load = async ({ server }: { server: Application }) => {
     const websocket = websocketLoader(loadedExpress)
     logger.info('------- websocket loaded ✅')
     logger.info(`------- websocket listening on: ${process.env.WS_PORT} \n`)
+
+    logger.info('-- loading cron worker 🧹')
+    const cronWorker = cronWorkerLoader(database)
+    logger.info('------- cron worker loaded ✅')
 
     loaded = true
 

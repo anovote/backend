@@ -79,7 +79,7 @@ it('should set the socket room status to closed when room is issued close', asyn
 
     const entity = await repo.save(socketRoom)
 
-    await service.createRoom(entity.election.id)
+    await service.createRoom(entity.election)
     const closedRoom = await service.closeRoom(entity.election.id)
 
     expect(closedRoom?.roomState).toBe(SocketRoomState.CLOSE)

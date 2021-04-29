@@ -26,7 +26,7 @@ router.post('/', async (request, response, next) => {
 
         const election: Election | undefined = await electionService.create(electionDTO)
         if (election) {
-            socketRoomService.createRoom(election.id)
+            socketRoomService.createRoom(election)
         }
         response.status(StatusCodes.CREATED).json(election)
     } catch (error) {

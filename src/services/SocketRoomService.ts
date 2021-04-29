@@ -9,6 +9,7 @@ import { Events } from '@/lib/websocket/events'
 import { database } from '@/loaders'
 import { logger } from '@/loaders/logger'
 import { ElectionBaseDTO } from '@/models/Election/ElectionBaseDTO'
+import { Election } from '@/models/Election/ElectionEntity'
 import { SocketRoomEntity, SocketRoomState } from '@/models/SocketRoom/SocketRoomEntity'
 import chalk from 'chalk'
 import { classToClass } from 'class-transformer'
@@ -26,7 +27,7 @@ export interface IElectionRoom {
     // Vote stats for all ballots in the election, the KEY is the ballot ID
     ballots: Map<number, { stats: BallotVoteStats; voters: Set<VoterId> }>
     ballotVoteStats: Map<number, BallotVoteStats>
-
+    totalEligibleVoters: number
     connectedVoters: number
 }
 
@@ -52,7 +53,6 @@ export class SocketRoomService extends BaseEntityService<SocketRoomEntity> {
      * Loads all non-started and started elections to generate all rooms
      */
     async loadElections() {
-        // TODO: Load all votes for each ballots to get proper stats for the ballots
         const electionService = new ElectionService(database)
         const elections = await electionService.getAllStartedAndNonStarted()
         for (const election of elections) {
@@ -75,6 +75,7 @@ export class SocketRoomService extends BaseEntityService<SocketRoomEntity> {
             this._electionRooms.set(election.id, {
                 organizerSocketId: undefined,
                 ballotVoteStats: ballotMap,
+                totalEligibleVoters: election.eligibleVoters.length,
                 connectedVoters: 0,
                 ballots: ballotMap
             })
@@ -128,12 +129,12 @@ export class SocketRoomService extends BaseEntityService<SocketRoomEntity> {
         throw new Error('Method not implemented.')
     }
 
-    createRoom(electionId: number) {
-        const room = this._electionRooms.get(electionId)
+    createRoom(election: Election) {
+        const room = this._electionRooms.get(election.id)
         if (!room) {
-            this._electionRooms.set(electionId, {
+            this._electionRooms.set(election.id, {
                 organizerSocketId: undefined,
-
+                totalEligibleVoters: election.eligibleVoters.length,
                 ballotVoteStats: new Map(),
                 connectedVoters: 0,
                 ballots: new Map()

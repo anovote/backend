@@ -8,26 +8,20 @@ import { logger } from './logger'
  */
 const cronWorkerLoader = (database: Connection) => {
     Cron.schedule('* * * * *', async () => {
-        logger.info('🧹 | updating status for elections')
+        logger.info('🧹 | check date and status for elections')
 
         let cronUpdatedCount = 0
         const electionService = new ElectionService(database)
 
-        const electionsShouldBeStarted = await electionService.getAllElectionsThatShouldBeStarted()
+        const electionsStarted = await electionService.startAllElectionsWhithOpenDateNotStarted()
+        cronUpdatedCount += electionsStarted.affected!
 
-        for (const election of electionsShouldBeStarted) {
-            await electionService.beginElection(election)
-            cronUpdatedCount++
+        const electionsClosed = await electionService.closeAllElectionsWithCloseDateStarted()
+        cronUpdatedCount += electionsClosed.affected!
+
+        if (cronUpdatedCount > 0) {
+            logger.info(`--- updated status for ${cronUpdatedCount} elections`)
         }
-
-        const electionsShouldBeClosed = await electionService.getAllElectionsThatShouldBeClosed()
-
-        for (const election of electionsShouldBeClosed) {
-            await electionService.markElectionClosed(election, false)
-            cronUpdatedCount++
-        }
-
-        logger.info(`--- updated status for ${cronUpdatedCount} elections`)
         cronUpdatedCount = 0
     })
 }

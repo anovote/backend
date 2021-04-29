@@ -305,4 +305,40 @@ export class ElectionService extends BaseEntityService<Election> implements IHas
 
         return await this.repository.save(entity)
     }
+
+    /**
+     * Closes all elections in database that have an close date set, but where the status is not closed yet.
+     * @returns the updated elections result
+     */
+    async closeAllElectionsWithCloseDateStarted() {
+        return await this.repository
+            .createQueryBuilder()
+            .update(Election)
+            .set({
+                status: ElectionStatus.Finished,
+                isLocked: true,
+                closeDate: new Date()
+            })
+            .where('NOW() > closeDate')
+            .andWhere('status = :status', { status: ElectionStatus.Started })
+            .execute()
+    }
+
+    /**
+     * Starts all elections in database that have an open date set, but where the status is set to started yet.
+     * @returns the updated elections result
+     */
+    async startAllElectionsWhithOpenDateNotStarted() {
+        return await this.repository
+            .createQueryBuilder()
+            .update(Election)
+            .set({
+                openDate: new Date(),
+                isLocked: false,
+                status: ElectionStatus.Started
+            })
+            .where('NOW() < openDate')
+            .andWhere('status = :status', { status: ElectionStatus.NotStarted })
+            .execute()
+    }
 }

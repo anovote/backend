@@ -28,7 +28,6 @@ export const submitVote: EventHandlerAcknowledges<IVote> = async (event) => {
     const voteService = new VoteService(database)
     const socketRoomService = SocketRoomService.getInstance()
 
-    // Todo: verify that the ballot is the current
     // Todo: send error if ballot does not exist
     // Todo: send error if ballot is not current (not sent, or ended)
     // Todo: send error if candidate is not existing on ballot

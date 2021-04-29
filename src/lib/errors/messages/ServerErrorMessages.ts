@@ -12,5 +12,7 @@ export const ServerErrorMessage = {
     invalidVerificationCode: () => 'Verification code is invalid',
     unableToVerify: () => 'We were unable to verify you',
     alreadyVerified: () => 'You are already verified on another device',
-    electionFinished: () => 'Election is finished, and closed.'
+    electionFinished: () => 'Election is finished, and closed.',
+    alreadyVotedOnBallot: () => 'You have already voted on this ballot',
+    ballotArchived: () => 'The ballot is archived'
 }

@@ -1,9 +1,11 @@
 import { Ballot } from '@/models/Ballot/BallotEntity'
+import { BallotStatus } from '@/models/Ballot/BallotStatus'
 import { BallotType } from '@/models/Ballot/BallotType'
 import { Candidate } from '@/models/Candidate/CandidateEntity'
 import { IVote } from '@/models/Vote/IVote'
 import { IBallotStats } from '@/services/IBallotStats'
 import { ICandidateStats } from '@/services/ICandidateStats'
+import { BallotArchivedError } from '../errors/BallotArchivedError'
 
 /**
  * Vote statistics for a candidate
@@ -117,6 +119,7 @@ export class BallotVoteStats {
      * @param votes votes to add to the ballot stats
      */
     addVotes(votes: Array<IVote>) {
+        if (this._ballot.status === BallotStatus.IN_ARCHIVE) throw new BallotArchivedError()
         if (this._ballot.type === BallotType.SINGLE && votes?.length > 0) {
             this.setVoteStat(votes[0])
         } else if (votes?.length > 0) {

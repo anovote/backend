@@ -3,6 +3,7 @@
 
 import { Ballot } from '@/models/Ballot/BallotEntity'
 import { IVote } from '@/models/Vote/IVote'
+import { AlreadyVotedError } from '../errors/AlreadyVotedError'
 import { BallotVoteStats } from '../voting/BallotStats'
 
 export interface IElectionRoom {
@@ -83,10 +84,12 @@ export class ElectionRoom implements IElectionRoom {
      */
     addVote({ ballotId, voterId, votes }: { ballotId: number; voterId: number; votes: Array<IVote> }) {
         const ballotVoteInformation = this.getBallotVoteInformation(ballotId)
-        if (ballotVoteInformation) {
-            ballotVoteInformation.stats.addVotes(votes)
-            ballotVoteInformation.voters.add(voterId)
-        }
+
+        if (!ballotVoteInformation) return
+        if (ballotVoteInformation.voters.has(voterId)) throw new AlreadyVotedError()
+
+        ballotVoteInformation.stats.addVotes(votes)
+        ballotVoteInformation.voters.add(voterId)
     }
 
     /**

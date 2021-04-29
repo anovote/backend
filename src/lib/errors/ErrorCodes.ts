@@ -14,3 +14,5 @@ export type ErrorCode =
     | 'ELECTION_DUPLICATE'
     | 'ELECTION_ROOM_NOT_EXIST'
     | 'BALLOT_NOT_EXIST'
+    | 'ALREADY_VOTED_ON_BALLOT'
+    | 'BALLOT_ARCHIVED'

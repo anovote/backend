@@ -13,7 +13,7 @@ export interface IErrorResponseMessage {
  * @param data to send in event
  * @returns data object
  */
-export const EventMessage = (data: unknown) => {
+export const EventMessage = (data?: unknown) => {
     return {
         data
     }

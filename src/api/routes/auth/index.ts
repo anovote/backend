@@ -35,7 +35,7 @@ router.post('/login', async (request, response, next) => {
  */
 router.use(checkAuth).get('/authenticated', (_, response, next) => {
     try {
-        return response.status(StatusCodes.OK)
+        return response.json()
     } catch (error) {
         next(error)
     }

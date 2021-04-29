@@ -2,8 +2,10 @@ import { BallotVoteStats } from '@/lib/voting/BallotStats'
 import { OrganizerSocket, VoterSocket } from '@/lib/websocket/AnoSocket'
 import { EventHandlerAcknowledges } from '@/lib/websocket/EventHandler'
 import { EventErrorMessage, EventMessage } from '@/lib/websocket/EventResponse'
+import { Events } from '@/lib/websocket/events'
 import { database } from '@/loaders'
 import { logger } from '@/loaders/logger'
+import { BallotStatus } from '@/models/Ballot/BallotStatus'
 import { ElectionOrganizer } from '@/models/ElectionOrganizer/ElectionOrganizerEntity'
 import { BallotService } from '@/services/BallotService'
 import { ElectionService } from '@/services/ElectionService'
@@ -50,6 +52,12 @@ export const pushBallot: EventHandlerAcknowledges<{ ballotId: number; electionId
                 // Broadcast to all since this ballot has not been created before now
                 event.server.to(electionId.toString()).emit(Events.server.ballot.push, ballot)
             }
+
+            // Update ballot to in progress
+            ballot.status = BallotStatus.IN_PROGRESS
+            await ballotService.update(ballot.id, ballot)
+            // Return updated to organizer
+            event.acknowledgement(EventMessage({ ballot }))
         }
         event.acknowledgement(EventMessage({}))
     } catch (err) {

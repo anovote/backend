@@ -140,12 +140,7 @@ export class ElectionService extends BaseEntityService<Election> implements IHas
                 }
             })
 
-            if (election) {
-                if (election.openDate || election.closeDate) {
-                    // await this.checkElectionStatus(election)
-                }
-                return election
-            }
+            return election
         }
 
         return await this.manager.findOne(id)

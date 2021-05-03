@@ -1,4 +1,5 @@
 import { ElectionService } from '@/services/ElectionService'
+import chalk from 'chalk'
 import Cron from 'node-cron'
 import { Connection } from 'typeorm'
 import { logger } from './logger'
@@ -8,8 +9,6 @@ import { logger } from './logger'
  */
 const cronWorkerLoader = (database: Connection) => {
     Cron.schedule('* * * * *', async () => {
-        logger.info('🧹 | check date and status for elections')
-
         let cronUpdatedCount = 0
         const electionService = new ElectionService(database)
 
@@ -20,7 +19,10 @@ const cronWorkerLoader = (database: Connection) => {
         cronUpdatedCount += electionsClosed.affected!
 
         if (cronUpdatedCount > 0) {
-            logger.info(`--- updated status for ${cronUpdatedCount} elections`)
+            logger.info('🧹 | checked date and status for elections')
+            logger.info(`--- updated status for ${chalk.yellow(cronUpdatedCount)} elections`)
+            logger.info(`--- ${chalk.green(electionsStarted.affected)} elections were started`)
+            logger.info(`--- ${chalk.red(electionsClosed.affected)} elections were closed`)
         }
         cronUpdatedCount = 0
     })

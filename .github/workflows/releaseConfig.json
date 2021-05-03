@@ -1,0 +1,58 @@
+{
+    "categories": [
+        {
+            "title": "## 🚀 Features",
+            "labels": ["feature"]
+        },
+        {
+            "title": "## 🐛 Fixes",
+            "labels": ["fix", "bug", "bugfix"]
+        },
+        {
+            "title": "## 🏗 Refactor",
+            "labels": ["refactor"]
+        },
+        {
+            "title": "## 🛡 Security",
+            "labels": ["security"]
+        },
+        {
+            "title": "## 📝 Documentation",
+            "labels": ["documentation"]
+        },
+        {
+            "title": "## 🧪 Tests",
+            "labels": ["test"]
+        }
+    ],
+    "ignore_labels": ["ignore"],
+    "sort": "ASC",
+    "template": "${{CHANGELOG}}\n\n<details>\n<summary>Uncategorized</summary>\n\n${{UNCATEGORIZED}}\n</details>",
+    "pr_template": "- ${{TITLE}} published by: ${{AUTHOR}}\n   - PR: #${{NUMBER}}\n   - Reviewed by: ${{REVIEWERS}}",
+    "empty_template": "- no changes",
+    "label_extractor": [
+        {
+            "pattern": "(.) (.+)",
+            "target": "$1"
+        },
+        {
+            "pattern": "(.) (.+)",
+            "target": "$1",
+            "on_property": "title"
+        }
+    ],
+    "transformers": [
+        {
+            "pattern": "[\\-\\*] (\\[(...|TEST|CI|SKIP)\\])( )?(.+?)\n(.+?[\\-\\*] )(.+)",
+            "target": "- $4\n  - $6"
+        }
+    ],
+    "max_tags_to_fetch": 2000,
+    "max_pull_requests": 200,
+    "max_back_track_time_days": 365,
+    "exclude_merge_branches": ["Owner/qa"],
+    "tag_resolver": {
+        "method": "semver"
+    },
+    "base_branches": ["develop"]
+}

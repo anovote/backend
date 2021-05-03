@@ -119,9 +119,19 @@ export class SocketRoomService extends BaseEntityService<SocketRoomEntity> {
     createRoom(election: Election) {
         const room = this._electionRooms.get(election.id)
         if (!room) {
+            const ballotVoteInformation: BallotVoteInformation = new Map()
+            for (const ballot of election.ballots) {
+                ballotVoteInformation.set(ballot.id, {
+                    stats: new BallotVoteStats(ballot),
+                    voters: new Set()
+                })
+            }
             this._electionRooms.set(
                 election.id,
-                new ElectionRoom({ totalEligibleVoters: election.eligibleVoters ? election.eligibleVoters.length : 0 })
+                new ElectionRoom({
+                    totalEligibleVoters: election.eligibleVoters.length,
+                    ballotVoteInformation: ballotVoteInformation
+                })
             )
         }
     }

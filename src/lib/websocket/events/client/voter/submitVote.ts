@@ -35,10 +35,10 @@ export const submitVote: EventHandlerAcknowledges<IVote> = async (event) => {
     // Todo: assign points to RANKED votes according to order of candidates
     try {
         if (!submittedVote.ballot || !submittedVote.voter) {
-            let isMissing = ''
-            if (!submittedVote.ballot) isMissing = 'Ballot id'
-            else isMissing = 'voter'
-            throw new BadRequestError({ message: ServerErrorMessage.isMissing(isMissing) })
+            let typeMissing = ''
+            if (!submittedVote.ballot) typeMissing = 'Ballot id'
+            else typeMissing = 'voter'
+            throw new BadRequestError({ message: ServerErrorMessage.isMissing(typeMissing) })
         }
 
         const room = socketRoomService.getRoom(voterSocket.electionCode)

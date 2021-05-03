@@ -36,8 +36,11 @@ export const submitVote: EventHandlerAcknowledges<IVote> = async (event) => {
     try {
         if (!submittedVote.ballot || !submittedVote.voter) {
             let typeMissing = ''
-            if (!submittedVote.ballot) typeMissing = 'Ballot id'
-            else typeMissing = 'voter'
+            if (!submittedVote.ballot) {
+                typeMissing = 'Ballot id'
+            } else {
+                typeMissing = 'voter'
+            }
             throw new BadRequestError({ message: ServerErrorMessage.isMissing(typeMissing) })
         }
 

@@ -15,6 +15,8 @@ import { SocketRoomService } from '@/services/SocketRoomService'
 import { VoteService } from '@/services/VoteService'
 import { Events } from '@/lib/websocket/events'
 import { VoterSocket } from '@/lib/websocket/AnoSocket'
+import { Election } from '@/models/Election/ElectionEntity'
+import chalk from 'chalk'
 
 /**
  * Submits a vote with the given vote details
@@ -56,6 +58,7 @@ export const submitVote: EventHandlerAcknowledges<IVote> = async (event) => {
         const ballotId = submittedVote.ballot
 
         let ballot: Ballot | undefined
+        let election: Election | undefined
 
         // Create vote first so we know it at least inserts into the database
         await voteService.create(submittedVote)
@@ -78,14 +81,39 @@ export const submitVote: EventHandlerAcknowledges<IVote> = async (event) => {
             }
         }
 
+        const allBallotsVotedOn = room.haveAllBallotsBeenVotedOn()
+
+        if (allBallotsVotedOn) {
+            const electionService = new ElectionService(database)
+            if (ballot) {
+                const entity = await electionService.getElectionById(ballot.election.id)
+                if (entity) {
+                    // update election as finished, but not close election completely
+                    election = await electionService.markElectionClosed(entity, false)
+                }
+            }
+        }
+
+        // update with a new vote
         if (room.organizerSocketId) {
             const organizer = event.server.to(room.organizerSocketId)
+
             if (allVoted && ballot) organizer.emit(Events.server.ballot.update, { ballot })
+            if (allBallotsVotedOn) organizer.emit(Events.server.election.finish, { election })
+
             organizer.emit(Events.server.vote.newVote, room.getBallotStats(ballotId))
         }
 
         logger.info('A vote was submitted')
         event.acknowledgement(EventMessage())
+
+        if (allVoted && ballot) {
+            logger.info(`-> ${chalk.redBright(`ballot (${ballot.id})`)} : all votes submitted`)
+        }
+
+        if (allBallotsVotedOn && election) {
+            logger.info(`-> ${chalk.green(`election (${election.id})`)} : all ballots voted on`)
+        }
     } catch (err) {
         logger.error(err)
         // Only emit errors that is safe to emit

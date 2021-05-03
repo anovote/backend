@@ -1,3 +1,4 @@
+import { BallotArchivedError } from '@/lib/errors/BallotArchivedError'
 import { BaseError } from '@/lib/errors/BaseError'
 import { NotFoundError } from '@/lib/errors/http/NotFoundError'
 import { ServerErrorMessage } from '@/lib/errors/messages/ServerErrorMessages'
@@ -68,7 +69,7 @@ export const pushBallot: EventHandlerAcknowledges<{ ballotId: number; electionId
 
         // If the ballot is archived, we do not want to proceed and just
         // take an early exit
-        if (ballot.status === BallotStatus.IN_ARCHIVE) return
+        if (ballot.status === BallotStatus.IN_ARCHIVE) throw new BallotArchivedError()
 
         // Update ballot to in progress
         ballot.status = BallotStatus.IN_PROGRESS

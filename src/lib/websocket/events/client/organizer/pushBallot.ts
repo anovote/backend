@@ -53,18 +53,17 @@ export const pushBallot: EventHandlerAcknowledges<{ ballotId: number; electionId
         const room = socketRoomService.getRoom(roomId)
         const ballot = await ballotService.getById(ballotId)
 
-        if (!room || !ballot) {
-            if (!room) {
-                throw new NotFoundError({
-                    message: ServerErrorMessage.notFound('Election room'),
-                    code: 'ELECTION_ROOM_NOT_EXIST'
-                })
-            } else {
-                throw new NotFoundError({
-                    message: ServerErrorMessage.notFound('Ballot'),
-                    code: 'BALLOT_NOT_EXIST'
-                })
-            }
+        if (!room) {
+            throw new NotFoundError({
+                message: ServerErrorMessage.notFound('Election room'),
+                code: 'ELECTION_ROOM_NOT_EXIST'
+            })
+        }
+        if (!ballot) {
+            throw new NotFoundError({
+                message: ServerErrorMessage.notFound('Ballot'),
+                code: 'BALLOT_NOT_EXIST'
+            })
         }
 
         // If the ballot is archived, we do not want to proceed and just

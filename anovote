@@ -1,0 +1,60 @@
+#! /bin/bash
+
+#anovote cli
+
+composes=""
+typeArgError="Pass either dev or prod as first argument"
+
+docker()
+{
+    if [[ -z "$1" ]]; then
+        docker-compose $composes up
+    elif [[ "$1" == "--build" ]]; then 
+        docker-compose  $composes up --build
+    elif [[ "$1" == "--force" ]]; then 
+        docker-compose  $composes up --force-recreate
+    elif [[ "$1" == "-d" ]]; then 
+        docker-compose  $composes up -d
+    elif [[ "$1" == "--down" ]]; then 
+        docker-compose  $composes down -v --remove-orphans
+    elif [[ "$1" == "--down-soft" ]]; then 
+        docker-compose  $composes down
+    else 
+        echo "Argument is unknown: $1"
+        echo "Valid arguments are:"
+        echo "--build for building"
+        echo "--force to force recreation of containers"
+        echo "--down clear environment"
+        echo "--down-soft stop environment without cleaning"
+        echo "-d run detach"
+        exit 2
+    fi
+}
+
+
+if [[ -z "$1" ]]; then
+ echo "$typeArgError"
+ echo "- anovote prod"
+ echo "- anovote dev"
+ echo "- anovote test"
+else
+    if [[ "$1" == "prod" ]]; then
+        echo "====== PRODUCTION ======="
+        composes="-f ./docker-compose.yml -f ./docker-compose-prod.yml"
+        docker $2
+    elif [[ "$1" == "dev" ]]; then
+        echo "====== DEVELOPMENT ======="
+        echo "$compose"
+        composes="-f ./docker-compose.yml -f ./docker-compose-dev.yml"
+        docker $2
+    elif [[ "$1" == "test" ]]; then
+        echo "====== TEST ======="
+        echo "$compose"
+        yarn test:locally
+        
+    else
+        echo "$typeArgError"
+        exit 1
+    fi
+fi
+

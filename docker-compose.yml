@@ -1,0 +1,31 @@
+version: '3.9'
+services:
+    app:
+        container_name: 'anovote_backend'
+        image: anovote:backend
+        build: .
+        volumes:
+            - './logs:/app/logs'
+        networks:
+            - anovote_backend
+            - anovote_proxy
+        depends_on:
+            - 'db'
+        env_file:
+            - '.env'
+    db:
+        container_name: 'anovote_database'
+        image: postgres
+        volumes:
+            - anovote-data:/var/lib/postgresql
+        networks:
+            - anovote_backend
+        environment:
+            TZ: 'Europe/Oslo'
+        env_file:
+            - '.env'
+volumes:
+    anovote-data:
+networks:
+    anovote_backend:
+    anovote_proxy:

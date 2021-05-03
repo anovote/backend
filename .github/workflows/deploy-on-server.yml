@@ -2,7 +2,7 @@ name: Deploy on autodeploy
 
 on:
     push:
-        branches: [main]
+        branches: [main, bugfix/GHA-workflow]
 
 jobs:
     deploy:

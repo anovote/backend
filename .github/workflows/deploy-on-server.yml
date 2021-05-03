@@ -15,7 +15,7 @@ jobs:
                   host: ${{ secrets.SERVERIP }}
                   username: ${{ secrets.AUTODELPLOYUSERNAME }}
                   password: ${{ secrets.SERVERUSERPASSWORD }}
-                  script: cd ${{ secrets.AUTODEPLOYPROJECTPATH }}/backend && git checkout main && git pull && ./start-production -b
+                  script: cd ${{ secrets.AUTODEPLOYPROJECTPATH }}/backend && git pull && ./start-production -b
             # We do not use postman any more so next workflow might cause problems
             #  - name: Trigger next workflow
             #   # https://stevenmortimer.com/running-github-actions-sequentially/

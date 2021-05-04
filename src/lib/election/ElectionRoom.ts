@@ -107,7 +107,7 @@ export class ElectionRoom implements IElectionRoom {
             allVoted = ballotVoteInformation.voters.size === this._totalEligibleVoters
 
             if (allVoted) {
-                this.incrementBallotsVotedOn(ballotId)
+                this.addToFinishedBallots(ballotId)
             }
         }
         return allVoted
@@ -117,7 +117,7 @@ export class ElectionRoom implements IElectionRoom {
      * Increments the finished ballots count if it has not yet been added to the set
      * @param ballotId the ballot to add
      */
-    private incrementBallotsVotedOn(ballotId: number) {
+    private addToFinishedBallots(ballotId: number) {
         if (!this._finishedBallots.has(ballotId)) {
             this._finishedBallots.add(ballotId)
         }
@@ -128,13 +128,7 @@ export class ElectionRoom implements IElectionRoom {
      * @returns returns true if all ballots have been voted on
      */
     haveAllBallotsBeenVotedOn() {
-        let allBallotsVotedOn = false
-        const numberOfBallots = this._ballotVoteInformation.size
-
-        if (numberOfBallots === this._finishedBallots.size) {
-            allBallotsVotedOn = true
-        }
-        return allBallotsVotedOn
+        return this._ballotVoteInformation.size === this._finishedBallots.size
     }
 
     /**

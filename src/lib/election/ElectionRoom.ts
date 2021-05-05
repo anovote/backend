@@ -25,6 +25,8 @@ export class ElectionRoom implements IElectionRoom {
 
     private _totalEligibleVoters = 0
 
+    private _finishedBallots = new Set()
+
     private _connectedVoters = 0
 
     constructor({
@@ -96,15 +98,37 @@ export class ElectionRoom implements IElectionRoom {
      *  Returns true if all eligible voters for the given ballot id has
      * voted on the ballot
      * @param ballotId the ballot id to check for
-     * @returns returns true of all eligible voters have voter
+     * @returns returns true if all eligible voters have voted
      */
     haveAllVotedOnBallot(ballotId: number) {
         let allVoted = false
         const ballotVoteInformation = this.getBallotVoteInformation(ballotId)
         if (ballotVoteInformation) {
             allVoted = ballotVoteInformation.voters.size === this._totalEligibleVoters
+
+            if (allVoted) {
+                this.addToFinishedBallots(ballotId)
+            }
         }
         return allVoted
+    }
+
+    /**
+     * Increments the finished ballots count if it has not yet been added to the set
+     * @param ballotId the ballot to add
+     */
+    private addToFinishedBallots(ballotId: number) {
+        if (!this._finishedBallots.has(ballotId)) {
+            this._finishedBallots.add(ballotId)
+        }
+    }
+
+    /**
+     * Returns the true if all ballots have been voted on.
+     * @returns returns true if all ballots have been voted on
+     */
+    haveAllBallotsBeenVotedOn() {
+        return this._ballotVoteInformation.size === this._finishedBallots.size
     }
 
     /**

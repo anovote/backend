@@ -1,3 +1,4 @@
+import { Ballot } from '@/models/Ballot/BallotEntity'
 import { Election } from '@/models/Election/ElectionEntity'
 import { ElectionStatus } from '@/models/Election/ElectionStatus'
 import { ElectionOrganizer } from '@/models/ElectionOrganizer/ElectionOrganizerEntity'
@@ -72,6 +73,8 @@ it('should set the socket room status to closed when room is issued close', asyn
     election.isAutomatic = true
     election.isLocked = false
     election.id = -1
+    election.ballots = []
+    election.eligibleVoters = []
 
     const socketRoom = repo.create()
     socketRoom.id = -1

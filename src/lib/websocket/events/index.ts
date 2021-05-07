@@ -61,6 +61,7 @@ export const Events = {
         election: {
             push: 'push_election',
             close: 'close_election',
+            finish: 'finish_election',
             voterConnected: 'voter_connected',
             voterDisconnected: 'voter_disconnected'
         },

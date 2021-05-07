@@ -153,6 +153,138 @@ it('should return true if all voters have voted on ballot', () => {
     expect(electionRoom.haveAllVotedOnBallot(ballot.id)).toBe(true)
 })
 
+it('should return true if all ballots have been voted on', () => {
+    const total = 2
+    const ballotVoteInformation: BallotVoteInformation = new Map()
+    const electionRoom = new ElectionRoom({ totalEligibleVoters: total, ballotVoteInformation })
+
+    ballotVoteInformation.set(ballot.id, {
+        stats: new BallotVoteStats(ballot),
+        voters: new Set()
+    })
+
+    electionRoom.addVote({
+        ballotId: ballot.id,
+        voterId: 1,
+        votes: [{ ballot: 3, candidate: 1, submitted: new Date(), voter: 1 }]
+    })
+    electionRoom.addVote({
+        ballotId: ballot.id,
+        voterId: 2,
+        votes: [{ ballot: 3, candidate: 1, submitted: new Date(), voter: 1 }]
+    })
+
+    expect(electionRoom.haveAllVotedOnBallot(ballot.id)).toBeTruthy()
+
+    expect(electionRoom.haveAllBallotsBeenVotedOn()).toBeTruthy()
+})
+
+it('should return true if all ballots have been voted on even when checked twice', () => {
+    const secondBallot = new Ballot()
+    secondBallot.id = 2
+    secondBallot.candidates = [{ ballot: secondBallot, candidate: 'test', id: 1 }]
+    secondBallot.createdAt = new Date()
+    secondBallot.updatedAt = new Date()
+    secondBallot.title = 'Some title'
+    secondBallot.description = 'Some description'
+    secondBallot.displayResultCount = true
+    secondBallot.type = BallotType.SINGLE
+    secondBallot.resultDisplayType = BallotResultDisplay.ALL
+
+    const total = 2
+    const ballotVoteInformation: BallotVoteInformation = new Map()
+    const electionRoom = new ElectionRoom({ totalEligibleVoters: total, ballotVoteInformation })
+
+    ballotVoteInformation.set(ballot.id, {
+        stats: new BallotVoteStats(ballot),
+        voters: new Set()
+    })
+
+    electionRoom.addVote({
+        ballotId: ballot.id,
+        voterId: 1,
+        votes: [{ ballot: 1, candidate: 1, submitted: new Date(), voter: 1 }]
+    })
+    electionRoom.addVote({
+        ballotId: ballot.id,
+        voterId: 2,
+        votes: [{ ballot: 1, candidate: 1, submitted: new Date(), voter: 1 }]
+    })
+
+    ballotVoteInformation.set(secondBallot.id, {
+        stats: new BallotVoteStats(secondBallot),
+        voters: new Set()
+    })
+
+    electionRoom.addVote({
+        ballotId: secondBallot.id,
+        voterId: 1,
+        votes: [{ ballot: 2, candidate: 1, submitted: new Date(), voter: 1 }]
+    })
+    electionRoom.addVote({
+        ballotId: secondBallot.id,
+        voterId: 2,
+        votes: [{ ballot: 2, candidate: 1, submitted: new Date(), voter: 1 }]
+    })
+
+    electionRoom.haveAllVotedOnBallot(ballot.id)
+    electionRoom.haveAllVotedOnBallot(secondBallot.id)
+    electionRoom.haveAllVotedOnBallot(secondBallot.id)
+
+    expect(electionRoom.haveAllBallotsBeenVotedOn()).toBeTruthy()
+})
+
+it('should return false if less ballots have been voted on', () => {
+    const secondBallot = new Ballot()
+    secondBallot.id = 2
+    secondBallot.candidates = [{ ballot: secondBallot, candidate: 'test', id: 1 }]
+    secondBallot.createdAt = new Date()
+    secondBallot.updatedAt = new Date()
+    secondBallot.title = 'Some title'
+    secondBallot.description = 'Some description'
+    secondBallot.displayResultCount = true
+    secondBallot.type = BallotType.SINGLE
+    secondBallot.resultDisplayType = BallotResultDisplay.ALL
+
+    const total = 2
+    const ballotVoteInformation: BallotVoteInformation = new Map()
+    const electionRoom = new ElectionRoom({ totalEligibleVoters: total, ballotVoteInformation })
+
+    ballotVoteInformation.set(ballot.id, {
+        stats: new BallotVoteStats(ballot),
+        voters: new Set()
+    })
+
+    electionRoom.addVote({
+        ballotId: ballot.id,
+        voterId: 1,
+        votes: [{ ballot: 1, candidate: 1, submitted: new Date(), voter: 1 }]
+    })
+    electionRoom.addVote({
+        ballotId: ballot.id,
+        voterId: 2,
+        votes: [{ ballot: 1, candidate: 1, submitted: new Date(), voter: 1 }]
+    })
+
+    ballotVoteInformation.set(secondBallot.id, {
+        stats: new BallotVoteStats(secondBallot),
+        voters: new Set()
+    })
+
+    electionRoom.addVote({
+        ballotId: secondBallot.id,
+        voterId: 1,
+        votes: [{ ballot: 2, candidate: 1, submitted: new Date(), voter: 1 }]
+    })
+
+    // missing one vote for secondBallot
+
+    electionRoom.haveAllVotedOnBallot(ballot.id)
+    electionRoom.haveAllVotedOnBallot(secondBallot.id)
+
+    expect(electionRoom.haveAllBallotsBeenVotedOn()).toBeFalsy()
+})
+
 it('should set connected voters to provided amount', () => {
     const electionRoom = new ElectionRoom({ totalEligibleVoters: 1 })
     electionRoom.connectedVoters = 3

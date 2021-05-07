@@ -1,4 +1,4 @@
-import { checkAuth } from '@/api/middleware/authentication'
+import { hasValidTokenAndExists } from '@/api/middleware/authentication'
 import { BadRequestError } from '@/lib/errors/http/BadRequestError'
 import { database } from '@/loaders'
 import { AuthenticationService } from '@/services/AuthenticationService'
@@ -13,7 +13,7 @@ router.post('/register', async (request, response, next) => {
     const electionOrganizerService = new ElectionOrganizerService(database)
     try {
         const organizer = await electionOrganizerService.createAndSaveElectionOrganizer(request.body)
-        const token = await authService.generateTokenFromId(organizer.id)
+        const token = authService.generateTokenFromId(organizer.id)
         response.status(StatusCodes.CREATED).json({ token })
     } catch (error) {
         next(error)
@@ -33,7 +33,7 @@ router.post('/login', async (request, response, next) => {
 /**
  * Returns OK/200 if the checkAuth succeed
  */
-router.use(checkAuth).get('/authenticated', (_, response, next) => {
+router.use(hasValidTokenAndExists).get('/authenticated', (_, response, next) => {
     try {
         return response.json()
     } catch (error) {

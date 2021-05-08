@@ -62,8 +62,8 @@ export class ElectionOrganizerService extends BaseEntityService<ElectionOrganize
 
         const organizer = this.createElectionOrganizer(electionOrganizer)
 
-        await validateEntity(organizer)
         this.checkPlaintextPasswordPattern(electionOrganizer.password)
+        await validateEntity(organizer)
         organizer.password = await encryptionService.hash(organizer.password)
 
         return await this.save(organizer)
@@ -97,8 +97,8 @@ export class ElectionOrganizerService extends BaseEntityService<ElectionOrganize
         const updatedOrganizer = this.repository.create(strippedOrganizer!)
 
         updatedOrganizer.id = id
-        await validateEntity(updatedOrganizer, { strictGroups: true })
         this.checkPlaintextPasswordPattern(updatedOrganizer.password)
+        await validateEntity(updatedOrganizer, { strictGroups: true })
 
         return await this.repository.save(updatedOrganizer)
     }

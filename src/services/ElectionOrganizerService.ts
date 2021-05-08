@@ -1,16 +1,17 @@
 import { isEmailValid } from '@/helpers/email'
+import { RegularExpressionLibrary } from '@/helpers/regExpressionLibrary'
 import { strip } from '@/helpers/sanitize'
 import { validateEntity } from '@/helpers/validateEntity'
 import { BadRequestError } from '@/lib/errors/http/BadRequestError'
 import { NotFoundError } from '@/lib/errors/http/NotFoundError'
 import { ServerErrorMessage } from '@/lib/errors/messages/ServerErrorMessages'
+import { PasswordValidationError } from '@/lib/errors/validation/PasswordValidationError'
 import { ElectionOrganizer } from '@/models/ElectionOrganizer/ElectionOrganizerEntity'
 import { ElectionOrganizerRepository } from '@/models/ElectionOrganizer/ElectionOrganizerRepository'
 import { IElectionOrganizer } from '@/models/ElectionOrganizer/IElectionOrganizer'
 import { classToClass } from 'class-transformer'
 import { Connection, getCustomRepository } from 'typeorm'
 import BaseEntityService from './BaseEntityService'
-import { EncryptionService } from './EncryptionService'
 import { HashService } from './HashService'
 
 export class ElectionOrganizerService extends BaseEntityService<ElectionOrganizer> {
@@ -62,9 +63,16 @@ export class ElectionOrganizerService extends BaseEntityService<ElectionOrganize
         const organizer = this.createElectionOrganizer(electionOrganizer)
 
         await validateEntity(organizer)
+        this.checkPlaintextPasswordPattern(electionOrganizer.password)
         organizer.password = await encryptionService.hash(organizer.password)
 
         return await this.save(organizer)
+    }
+
+    checkPlaintextPasswordPattern(plaintextPassword: string) {
+        const passwordRegExp = RegularExpressionLibrary.passwordRegExp
+        if (!passwordRegExp.test(plaintextPassword))
+            throw new PasswordValidationError('Password does not match criteria')
     }
 
     /**
@@ -90,6 +98,7 @@ export class ElectionOrganizerService extends BaseEntityService<ElectionOrganize
 
         updatedOrganizer.id = id
         await validateEntity(updatedOrganizer, { strictGroups: true })
+        this.checkPlaintextPasswordPattern(updatedOrganizer.password)
 
         return await this.repository.save(updatedOrganizer)
     }

@@ -1,10 +1,20 @@
 version: '3.9'
 services:
+    testapp:
+        container_name: 'test_backend'
+        image: anovote:backend_test
+        build: .
+        volumes:
+            - './testlogs:/app/logs'
+        depends_on:
+            - 'testdb'
+        ports:
+            - '${HTTP_PORT}:${HTTP_PORT}'
+        env_file:
+            - '.env.test'
     testdb:
         container_name: 'test_database'
         image: postgres
-        networks:
-            - anovote_backend
         environment:
             TZ: 'Europe/Oslo'
         env_file:

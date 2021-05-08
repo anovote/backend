@@ -16,3 +16,4 @@ export type ErrorCode =
     | 'BALLOT_NOT_EXIST'
     | 'ALREADY_VOTED_ON_BALLOT'
     | 'BALLOT_ARCHIVED'
+    | 'PASSWORD_CRITERIA'

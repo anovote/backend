@@ -1,6 +1,8 @@
 # ANOVOTE BACKEND
 
-## Anovote cli
+## Table of contents
+
+<!-- ## Anovote cli
 
 The anovote CLI can be used to start or clean the development/production docker environment.
 
@@ -111,4 +113,4 @@ It is located in root directory, and may require execution access run > ```chmod
 2. run ```./anovote prod --build```
    1. If images is already built and no files have changed, run ```./anovote prod```
    2. Might require execution permission > chmod +x ./anovote
-
+ -->

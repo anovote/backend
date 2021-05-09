@@ -184,12 +184,7 @@ export class ElectionService extends BaseEntityService<Election> implements IHas
         const election = this.manager.create(electionDTO)
 
         // the mapping from json to election does not transform the date string into date type. Have to do it manually
-        if (election.closeDate) {
-            election.closeDate = new Date(election.closeDate!)
-        }
-        if (election.openDate) {
-            election.openDate = new Date(election.openDate!)
-        }
+        this.serializeDates(election)
 
         if (!election.socketRoom) {
             election.socketRoom = new SocketRoomEntity()
@@ -214,7 +209,7 @@ export class ElectionService extends BaseEntityService<Election> implements IHas
         const updatedElection = this.manager.create(strippedElection!)
         updatedElection.id = existingElection.id
 
-        this.checkAndSetOpenDate(existingElection, updatedElection)
+        this.serializeDates(updatedElection)
         this.checkAndSetCloseDate(existingElection, updatedElection)
 
         await validateEntity(updatedElection, { strictGroups: true })
@@ -223,7 +218,20 @@ export class ElectionService extends BaseEntityService<Election> implements IHas
     }
 
     /**
-     * Checks if the election is changing state from NotStarted to Started and sets the openDate to now if not already set
+     * Serializes the dates, i.e. prepares it for insertion to the database
+     * Since class-validator only compares dates when the both dates are a date object, the
+     * dates need to be serialized beforehand.
+     * @param election the election to serialize dates for
+     */
+    private serializeDates(election: Election) {
+        if (election.openDate) {
+            election.openDate = new Date(election.openDate)
+        }
+
+        if (election.closeDate) {
+            election.closeDate = new Date(election.closeDate)
+        }
+    }
      * @param existingElection The election already persisted in the database
      * @param updatedElection The election with data to be updated
      */

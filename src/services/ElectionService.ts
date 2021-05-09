@@ -210,6 +210,8 @@ export class ElectionService extends BaseEntityService<Election> implements IHas
         updatedElection.id = existingElection.id
 
         this.serializeDates(updatedElection)
+
+        this.electionIsChangingToStarted(existingElection, updatedElection)
         this.checkAndSetCloseDate(existingElection, updatedElection)
 
         await validateEntity(updatedElection, { strictGroups: true })
@@ -232,14 +234,16 @@ export class ElectionService extends BaseEntityService<Election> implements IHas
             election.closeDate = new Date(election.closeDate)
         }
     }
+
+    /**
+     * If election changing state from NotStarted to Started and sets the openDate to now
      * @param existingElection The election already persisted in the database
      * @param updatedElection The election with data to be updated
      */
-    private checkAndSetOpenDate(existingElection: Election, updatedElection: Election) {
+    private electionIsChangingToStarted(existingElection: Election, updatedElection: Election) {
         if (
             existingElection.status === ElectionStatus.NotStarted &&
-            updatedElection.status === ElectionStatus.Started &&
-            !updatedElection.openDate
+            updatedElection.status === ElectionStatus.Started
         ) {
             updatedElection.openDate = new Date()
         }
@@ -345,7 +349,7 @@ export class ElectionService extends BaseEntityService<Election> implements IHas
                 isLocked: false,
                 status: ElectionStatus.Started
             })
-            .where('NOW() < openDate')
+            .where('NOW() > openDate')
             .andWhere('status = :status', { status: ElectionStatus.NotStarted })
             .execute()
     }

@@ -1,6 +1,6 @@
 import { Candidate } from '@/models/Candidate/CandidateEntity'
 import { Election } from '@/models/Election/ElectionEntity'
-import { IsInt, IsNotEmptyObject, IsString, Min, ValidateNested } from 'class-validator'
+import { IsEnum, IsInt, IsNotEmptyObject, IsString, Min, ValidateNested } from 'class-validator'
 import {
     Column,
     CreateDateColumn,
@@ -42,6 +42,7 @@ export class Ballot implements IBallot {
     @Column({ type: 'varchar', nullable: true })
     image!: string
 
+    @IsEnum(BallotType)
     @Column({ type: 'enum', enum: BallotType, default: BallotType.SINGLE })
     type!: BallotType
 
@@ -65,6 +66,7 @@ export class Ballot implements IBallot {
     @Min(0)
     order!: number
 
+    @IsEnum(BallotStatus)
     @Column({ type: 'enum', enum: BallotStatus, default: BallotStatus.IN_QUEUE })
     status!: BallotStatus
 

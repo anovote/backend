@@ -60,6 +60,8 @@ export class AuthenticationService {
      * @return token, the token for the logged in user
      */
     async login(payload: LoginPayload): Promise<string | undefined> {
+        if (!payload || !payload.email || !payload.password) return
+
         const electionOrg = await getRepository(ElectionOrganizer).findOne({
             email: payload.email.toLowerCase()
         })

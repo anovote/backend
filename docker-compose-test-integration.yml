@@ -1,0 +1,19 @@
+version: '3.9'
+services:
+    testapp:
+        container_name: 'test_backend'
+        build: .
+        depends_on:
+            - 'testdb'
+        ports:
+            - '${HTTP_PORT}:${HTTP_PORT}'
+        env_file:
+            - '.env.test'
+        networks:
+            - anovote_backend_test
+    testrunner:
+        volumes:
+            - './integration-tests:/app/integration-tests'
+        depends_on:
+            - 'testapp'
+        command: 'yarn test:api'

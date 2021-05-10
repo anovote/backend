@@ -1,11 +1,17 @@
 # ANOVOTE BACKEND
 
-[![CI](https://github.com/anovote/backend/workflows/CI/badge.svg)](https://github.com/anovote/backend/actions)[![Spellchecker](https://github.com/anovote/backend/workflows/Spellchecker/badge.svg)](https://github.com/anovote/backend/actions)
+<p align="center">
+    <img src="https://img.shields.io/github/workflow/status/anovote/backend/CI">
+    <img src="https://img.shields.io/github/issues/anovote/backend">
+    <img src="https://img.shields.io/github/issues-pr/anovote/backend">
+</P>
 
 ## Table of contents
 
 -   [General info](#general-info)
 -   [Technologies](#technologies)
+    -   [Backend Technologies](#backend-technologies)
+    -   [Test Technologies](#test-technologies)
 -   [Start development](#start-development)
     -   [Anovote CLI](#anovote-cli)
     -   [Local development](#local-development)
@@ -17,6 +23,8 @@
 This is the backend repository for anovote, a digital anonymous voting system.
 
 ## Technologies
+
+### Backend Technologies
 
 -   [TypeScript](https://www.typescriptlang.org/)
 -   [Node](https://nodejs.org/en/)
@@ -30,6 +38,10 @@ This is the backend repository for anovote, a digital anonymous voting system.
 -   [Docker/Docker compose](https://www.docker.com/)
 -   [Nginx](https://www.nginx.com/)
 -   [Certbot](https://certbot.eff.org/)
+
+### Test Technologies
+
+-   [Jest](https://jestjs.io/)
 
 ## Start development
 

@@ -2,7 +2,6 @@
 
 [![CI](https://github.com/anovote/backend/workflows/CI/badge.svg)](https://github.com/anovote/backend/actions)
 [![Spellchecker](https://github.com/anovote/backend/workflows/Spellchecker/badge.svg)](https://github.com/anovote/backend/actions)
-[![Issues](https://github.com/anovote/backend/issues/badge.svg)](https./github.com/anovote/backend/issues)
 
 ## Table of contents
 

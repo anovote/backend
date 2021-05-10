@@ -37,7 +37,8 @@ export default {
         dropSchema: environment === environments.test ? true : false
     },
     http: {
-        port: process.env.HTTP_PORT
+        port: process.env.HTTP_PORT,
+        host: process.env.HTTP_HOST
     },
     mail: {
         service: process.env.MAIL_SERVICE,

@@ -1,5 +1,7 @@
 # ANOVOTE BACKEND
 
+[![Tests Status](https://github.com/anovote/backend/workflows/CI/badge.svg)](https://github.com/anovote/backend/actions)
+
 ## Table of contents
 
 ---
@@ -8,6 +10,7 @@
 -   [Technologies](#technologies)
 -   [Prerequisites](#prerequisites)
 -   [Start development](#start-development)
+    -   [Anovote CLI](#anovote-cli)
     -   [Locally](#locally)
     -   [Docker](#docker)
 
@@ -21,6 +24,7 @@ This is the backend repository for anovote, a digital anonymous voting system.
 
 ---
 
+-   [TypeScript](https://www.typescriptlang.org/)
 -   [Node](https://nodejs.org/en/)
 -   [Yarn](https://yarnpkg.com/)
 -   [Express](https://expressjs.com/)
@@ -37,6 +41,8 @@ This is the backend repository for anovote, a digital anonymous voting system.
 ## Start development
 
 ---
+
+### Anovote CLI
 
 ### Locally
 

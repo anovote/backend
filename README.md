@@ -1,16 +1,15 @@
 # ANOVOTE BACKEND
 
-[![Tests Status](https://github.com/anovote/backend/workflows/CI/badge.svg)](https://github.com/anovote/backend/actions)[![Spellchecker](https://github.com/anovote/backend/workflows/Spellchecker/badge.svg)](https://github.com/anovote/backend/actions)[![Release](https://github.com/anovote/backend/buildrelease/badge.svg)](https://github.com/anovote/backend/actions)
+[![Tests Status](https://github.com/anovote/backend/workflows/CI/badge.svg)](https://github.com/anovote/backend/actions)[![Spellchecker](https://github.com/anovote/backend/workflows/Spellchecker/badge.svg)](https://github.com/anovote/backend/actions)
 
 ## Table of contents
 
 -   [General info](#general-info)
 -   [Technologies](#technologies)
--   [Prerequisites](#prerequisites)
 -   [Start development](#start-development)
     -   [Anovote CLI](#anovote-cli)
-    -   [Locally](#locally)
-    -   [Docker](#docker)
+    -   [Local development](#local-development)
+    -   [Docker development](#docker-development)
 
 ## General info
 
@@ -23,20 +22,52 @@ This is the backend repository for anovote, a digital anonymous voting system.
 -   [Yarn](https://yarnpkg.com/)
 -   [Express](https://expressjs.com/)
 -   [TypeORM](https://typeorm.io/#/)
+-   [PostgreSQL](https://www.postgresql.org/)
 -   [Socket.io](https://socket.io/)
 -   [Nodemailer](https://nodemailer.com/about/)
 -   [Node cron](https://www.npmjs.com/package/node-cron)
 -   [Docker/Docker compose](https://www.docker.com/)
-
-## Prerequisites
+-   [Nginx](https://www.nginx.com/)
+-   [Certbot](https://certbot.eff.org/)
 
 ## Start development
 
 ### Anovote CLI
 
-### Locally
+The anovote backend comes with an Anovote CLI, which can be used to start or clean the development environment. \
+Since the anovote CLI is located in the root folder, you may have to run `chmod +x ./anovote` for execution access. \
+It is therefore recommended to run the Anovote CLI on a linux based system.
 
-### Docker
+To be able to use the Anovote CLI, Docker and Docker compose needs to be installed on the device.
+
+The Anovote CLI comes with the following commands:
+
+-   `anovote dev`, which starts the development environment (database and server).
+-   `anovote dev --build`, which builds server images and starts containers.
+-   `anovote dev --down`, which stops the development containers, removes all volumes and clear all orphan child containers.
+-   `anovote dev --force`, which re-creates the containers and starts the development environment.
+
+### Local development
+
+#### Requirements
+
+-   Node
+-   Yarn
+-   Docker
+-   Docker compose
+
+#### Start
+
+1. Create an `.env` file in the root of the project based on the existing `.env-example`
+    1. `DB_HOST` must be "localhost" OR "127.0.0.1".
+    2. `DB_PORT` must be "5432"
+2. Run `yarn install`
+3. Run `docker-compose -f ./docker-compose.yml -f ./docker-compose-dev.yml up db`
+4. Run `yarn dev`
+5. Let the code fly!
+    1. Hot reloading is enabled, so the server restarts on code change in the `src` directory.
+
+### Docker development
 
 <!-- ## Anovote cli
 

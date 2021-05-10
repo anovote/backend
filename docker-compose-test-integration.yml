@@ -2,7 +2,12 @@ version: '3.9'
 services:
     testapp:
         container_name: 'test_backend'
-        build: .
+        build:
+            context: .
+            dockerfile: Dockerfile
+            target: source
+        volumes:
+            - './src:/app/src'
         depends_on:
             - 'testdb'
         ports:
@@ -11,9 +16,16 @@ services:
             - '.env.test'
         networks:
             - anovote_backend_test
+        # command: >
+        healthcheck:
+            test: ['CMD', 'node', '/app/healthcheck.js']
+            interval: 10s
+            timeout: 10s
+            retries: 5
     testrunner:
         volumes:
             - './integration-tests:/app/integration-tests'
         depends_on:
-            - 'testapp'
+            testapp:
+                condition: service_healthy
         command: 'yarn test:api'

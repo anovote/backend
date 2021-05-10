@@ -66,6 +66,7 @@ export class AuthenticationService {
 
         if (!electionOrg) return
         const passwordMatches = await this.hashService.compareAgainstHash(payload.password, electionOrg.password)
+
         if (!passwordMatches) return
         return this.generateTokenFromId(electionOrg.id)
     }

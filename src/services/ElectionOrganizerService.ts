@@ -78,8 +78,11 @@ export class ElectionOrganizerService extends BaseEntityService<ElectionOrganize
 
         const strippedOrganizer = strip(organizerDTO, ['id', 'createdAt', 'updatedAt'])
         if (strippedOrganizer?.password) {
-            const hashedPassword = await encryptionService.hash(organizerDTO.password)
-            strippedOrganizer.password = hashedPassword
+            const storedPassword = (await this.getElectionOrganizerById(id)).password
+            if (storedPassword !== strippedOrganizer.password) {
+                const hashedPassword = await encryptionService.hash(organizerDTO.password)
+                strippedOrganizer.password = hashedPassword
+            }
         }
 
         if (!isEmailValid(strippedOrganizer!.email)) {

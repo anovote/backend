@@ -69,6 +69,26 @@ The Anovote CLI comes with the following commands:
 
 ### Docker development
 
+#### Requirements
+
+-   Docker
+-   Docker compose
+-   Node (Optional)
+-   Yarn (Optional)
+
+#### Start
+
+1. Create an `.env` file in the root of the project based on the existing `.env-example`
+    1. `DB_HOST` must be "anovote_database"
+    2. `DB_PORT` must be "5432"
+2. (Optional) Run `yarn install`
+    1. This is only required for getting the types in your editor, but is not required for running as the container has its own node_modules folder.
+3. Run `./anovote dev --build`
+    1. If the images are already built, run `./anovote dev`
+    2. As described in the [Anovote CLI](#anovote-cli) section, this might require execution permission.
+4. Let the code fly!
+    1. Hot reloading is enabled, so the server restarts on code change in the `src` directory.
+
 <!-- ## Anovote cli
 
 The anovote CLI can be used to start or clean the development/production docker environment.

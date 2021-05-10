@@ -211,7 +211,7 @@ export class ElectionService extends BaseEntityService<Election> implements IHas
 
         this.serializeDates(updatedElection)
 
-        this.electionIsChangingToStarted(existingElection, updatedElection)
+        this.setOpenDateOnUpdateToStarted(existingElection, updatedElection)
         this.checkAndSetCloseDate(existingElection, updatedElection)
 
         await validateEntity(updatedElection, { strictGroups: true })
@@ -240,7 +240,7 @@ export class ElectionService extends BaseEntityService<Election> implements IHas
      * @param existingElection The election already persisted in the database
      * @param updatedElection The election with data to be updated
      */
-    private electionIsChangingToStarted(existingElection: Election, updatedElection: Election) {
+    private setOpenDateOnUpdateToStarted(existingElection: Election, updatedElection: Election) {
         if (
             existingElection.status === ElectionStatus.NotStarted &&
             updatedElection.status === ElectionStatus.Started

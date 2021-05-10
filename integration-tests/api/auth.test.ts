@@ -66,9 +66,21 @@ it('should return 201 and token with valid data on register', async () => {
  * LOGIN
  */
 const LOGIN_PATH = PATH('login')
-it('should return 400 with no data', async () => {
-    const response = await request.post('/api/public/auth/register')
+it('should return 400 with no data on login', async () => {
+    const response = await request.post(PATH('login'))
     expect(response.statusCode).toBe(StatusCodes.BAD_REQUEST)
+})
+
+it('should return 400 with invalid credentials on login', async () => {
+    const response = await request.post(PATH('login')).send({ password: '...', email: 'email' })
+    expect(response.statusCode).toBe(StatusCodes.BAD_REQUEST)
+})
+
+it('should return token on valid credentials on login', async () => {
+    const correctUser = USER()
+    const responseRegister = await request.post(REGISTER_PATH).send(correctUser)
+    const responseLogin = await request.post(LOGIN_PATH).send({ ...correctUser })
+    expect(responseLogin.statusCode).toBe(StatusCodes.OK)
 })
 
 /**

@@ -1,10 +1,8 @@
 # ANOVOTE BACKEND
 
-<p align="center">
-    <img src="https://img.shields.io/github/workflow/status/anovote/backend/CI">
-    <img src="https://img.shields.io/github/issues/anovote/backend">
-    <img src="https://img.shields.io/github/issues-pr/anovote/backend">
-</P>
+![CI](https://img.shields.io/github/workflow/status/anovote/backend/CI)
+![issues](https://img.shields.io/github/issues/anovote/backend)
+![pull-requests](https://img.shields.io/github/issues-pr/anovote/backend)
 
 ## Table of contents
 

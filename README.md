@@ -1,8 +1,8 @@
 # ANOVOTE BACKEND
 
-![CI](https://img.shields.io/github/workflow/status/anovote/backend/CI)
-![issues](https://img.shields.io/github/issues/anovote/backend)
-![pull-requests](https://img.shields.io/github/issues-pr/anovote/backend)
+[![CI](https://github.com/anovote/backend/workflows/CI/badge.svg)](https://github.com/anovote/backend/actions)
+[![Spellchecker](https://github.com/anovote/backend/workflows/Spellchecker/badge.svg)](https://github.com/anovote/backend/actions)
+[![Issues](https://github.com/anovote/backend/issues/badge.svg)](https./github.com/anovote/backend/issues)
 
 ## Table of contents
 

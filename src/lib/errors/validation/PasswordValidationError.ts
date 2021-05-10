@@ -1,8 +1,8 @@
-import { StatusCodes } from 'http-status-codes'
-import { BaseError } from '../BaseError'
+import { BadRequestError } from '../http/BadRequestError'
+import { ServerErrorMessage } from '../messages/ServerErrorMessages'
 
-export class PasswordValidationError extends BaseError {
-    constructor(message: string) {
-        super({ message, httpStatus: StatusCodes.BAD_REQUEST, code: 'PASSWORD_CRITERIA' })
+export class PasswordValidationError extends BadRequestError {
+    constructor() {
+        super({ message: ServerErrorMessage.weakPassword(), code: 'PASSWORD_CRITERIA' })
     }
 }

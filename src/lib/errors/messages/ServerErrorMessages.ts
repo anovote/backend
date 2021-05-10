@@ -14,5 +14,6 @@ export const ServerErrorMessage = {
     alreadyVerified: () => 'You are already verified on another device',
     electionFinished: () => 'Election is finished, and closed.',
     alreadyVotedOnBallot: () => 'You have already voted on this ballot',
-    ballotArchived: () => 'The ballot is archived'
+    ballotArchived: () => 'The ballot is archived',
+    weakPassword: () => 'Password does not match criteria'
 }

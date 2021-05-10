@@ -71,8 +71,7 @@ export class ElectionOrganizerService extends BaseEntityService<ElectionOrganize
 
     checkPlaintextPasswordPattern(plaintextPassword: string) {
         const passwordRegExp = RegularExpressionLibrary.passwordRegExp
-        if (!passwordRegExp.test(plaintextPassword))
-            throw new PasswordValidationError('Password does not match criteria')
+        if (!passwordRegExp.test(plaintextPassword)) throw new PasswordValidationError()
     }
 
     /**

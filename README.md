@@ -1,7 +1,7 @@
 # ANOVOTE BACKEND
 
-[![CI](https://github.com/anovote/backend/workflows/CI/badge.svg)](https://github.com/anovote/backend/actions/ci.yml)
-[![Spellchecker](https://github.com/anovote/backend/workflows/Spellchecker/badge.svg)](https://github.com/anovote/backend/actions/spellchecker.yml)
+[![CI](https://github.com/anovote/backend/workflows/CI/badge.svg)](https://github.com/anovote/backend/actions/workflows/ci.yml)
+[![Spellchecker](https://github.com/anovote/backend/workflows/Spellchecker/badge.svg)](https://github.com/anovote/backend/actions/workflows/spellchecker.yml)
 
 ## Table of contents
 

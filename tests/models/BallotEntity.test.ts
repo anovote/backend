@@ -3,6 +3,7 @@ import { validateEntity } from '@/helpers/validateEntity'
 import { ValidationError } from '@/lib/errors/validation/ValidationError'
 import { Ballot } from '@/models/Ballot/BallotEntity'
 import { BallotResultDisplay } from '@/models/Ballot/BallotResultDisplay'
+import { BallotStatus } from '@/models/Ballot/BallotStatus'
 import { Election } from '@/models/Election/ElectionEntity'
 import { Connection, Repository } from 'typeorm'
 import { getTestDatabase } from '../helpers/database'
@@ -83,4 +84,13 @@ it('should not validate if election is missing id', async () => {
     ballot.election = election
 
     await expect(validateEntity(ballot)).rejects.toThrowError(ValidationError)
+})
+
+it('should be initialized with default status to "IN_QUEUE"', async () => {
+    const ballot = repo.create()
+    ballot.title = 'Default status'
+    ballot.description = 'Ballot should be in queue by default'
+    ballot.order = 1
+    const savedBallot = await repo.save(ballot)
+    expect(savedBallot.status).toBe(BallotStatus.IN_QUEUE)
 })

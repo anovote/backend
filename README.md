@@ -1,6 +1,6 @@
 # ANOVOTE BACKEND
 
-[![Tests Status](https://github.com/anovote/backend/workflows/CI/badge.svg)](https://github.com/anovote/backend/actions)[![Spellchecker](https://github.com/anovote/backend/workflows/Spellchecker/badge.svg)](https://github.com/anovote/backend/actions)
+[![Tests Status](https://github.com/anovote/backend/workflows/CI/badge.svg)](https://github.com/anovote/backend/actions)[![Spellchecker](https://github.com/anovote/backend/workflows/Spellchecker/badge.svg)](https://github.com/anovote/backend/actions)[![Release](https://github.com/anovote/backend/buildrelease/badge.svg)](https://github.com/anovote/backend/actions)
 
 ## Table of contents
 

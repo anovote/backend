@@ -74,8 +74,7 @@ if [[ "$build" = true || ! -d "./frontend" ]]; then
         cd frontend
     fi
 
-    # should be main.
-    git checkout develop
+    git checkout main
 
     taskDone
 

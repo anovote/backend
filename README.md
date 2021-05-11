@@ -1,6 +1,6 @@
 # ANOVOTE BACKEND
 
-<img src="anolog.jpg">
+<img src="anovote-logo.jpg">
 
 [![CI](https://github.com/anovote/backend/workflows/CI/badge.svg)](https://github.com/anovote/backend/actions/workflows/ci.yml)
 [![Spellchecker](https://github.com/anovote/backend/workflows/Spellchecker/badge.svg)](https://github.com/anovote/backend/actions/workflows/spellchecker.yml)

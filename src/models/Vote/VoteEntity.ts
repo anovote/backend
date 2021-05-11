@@ -25,6 +25,6 @@ export class Vote implements IVote {
     @MaxLength(10)
     voter!: number
 
-    @ManyToOne(() => Ballot, (ballot) => ballot.id)
+    @ManyToOne(() => Ballot, (ballot) => ballot.id, { onDelete: 'CASCADE' })
     ballot!: number
 }

@@ -48,10 +48,7 @@ export class Election implements IElection {
 
     @IsEarlierThan('closeDate', { message: 'Opening date must be before closing date', always: true })
     @IsOptional({ always: true })
-    @MinDate(new Date(), {
-        groups: ['creation'],
-        always: false
-    })
+    @MinDate(new Date(), { always: true })
     @Column({ type: Date, nullable: true })
     openDate?: Date
 

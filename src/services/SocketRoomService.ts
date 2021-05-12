@@ -19,10 +19,10 @@ import BaseEntityService, { CrudOptions } from './BaseEntityService'
 import { ElectionService } from './ElectionService'
 
 /**
- * This is singleton
+ * Handles all election rooms that is initialized and open on the server.
+ * Since it being a singleton, there exists only one service in the application.
  */
 export class SocketRoomService extends BaseEntityService<SocketRoomEntity> {
-    // electionId: number
     private static instance: SocketRoomService
 
     /**
@@ -33,7 +33,6 @@ export class SocketRoomService extends BaseEntityService<SocketRoomEntity> {
 
     private constructor(databaseConnection: Connection) {
         super(databaseConnection, SocketRoomEntity)
-        // this.electionId = electionId
     }
 
     /**

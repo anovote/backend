@@ -21,6 +21,8 @@ import { ElectionService } from './ElectionService'
 /**
  * Handles all election rooms that is initialized and open on the server.
  * Since it being a singleton, there exists only one service in the application.
+ * The election id the socket room is connected to, is stored as a key-value pair
+ * If something happens with the server, this service will load all not started and started elections on restart
  */
 export class SocketRoomService extends BaseEntityService<SocketRoomEntity> {
     private static instance: SocketRoomService

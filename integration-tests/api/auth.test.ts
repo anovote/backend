@@ -78,7 +78,7 @@ it('should return 400 with invalid credentials on login', async () => {
 
 it('should return token on valid credentials on login', async () => {
     const correctOrganizer = createElectionOrganizer()
-    const responseRegister = await request.post(REGISTER_PATH).send(correctOrganizer)
+    await request.post(REGISTER_PATH).send(correctOrganizer)
     const responseLogin = await request.post(LOGIN_PATH).send({ ...correctOrganizer })
     expect(responseLogin.statusCode).toBe(StatusCodes.OK)
     expect(responseLogin.body).toContainKey('token')
@@ -87,3 +87,24 @@ it('should return token on valid credentials on login', async () => {
 /**
  * IS AUTHENTICATED
  */
+const AUTHENTICATED_PATH = PATH('authenticated')
+const RANDOM_TOKEN =
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJvcmdhbml6ZXIiOmZhbHNlLCJpZCI6Mn0.Pk3s5v-OBY1a-rWgHk9IKTtkgdZq7-SDJ0QY3dKiXiw'
+it('should return 200 with valid bearer token', async () => {
+    const correctOrganizer = createElectionOrganizer()
+    await request.post(REGISTER_PATH).send(correctOrganizer)
+    const responseLogin = await request.post(LOGIN_PATH).send({ ...correctOrganizer })
+    const responseAuthenticated = await request
+        .get(AUTHENTICATED_PATH)
+        .auth(responseLogin.body.token, { type: 'bearer' })
+    expect(responseAuthenticated.statusCode).toBe(200)
+})
+
+it('should return unauthorized with invalid bearer token', async () => {
+    const responseAuthenticated = request.get(AUTHENTICATED_PATH).auth('RandomStringHere', { type: 'bearer' })
+    const responseAuthenticated2 = request.get(AUTHENTICATED_PATH).auth(RANDOM_TOKEN, { type: 'bearer' })
+    const results = await Promise.all([responseAuthenticated, responseAuthenticated2])
+    for (const result of results) {
+        expect(result.statusCode).toBe(StatusCodes.UNAUTHORIZED)
+    }
+})

@@ -21,8 +21,6 @@ services:
             TZ: 'Europe/Oslo'
         env_file:
             - '.env.test'
-        ports:
-            - '${DB_PORT}:5432'
         networks:
             - anovote_backend_test
 networks:

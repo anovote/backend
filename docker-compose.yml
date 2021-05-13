@@ -11,6 +11,8 @@ services:
             - anovote_proxy
         depends_on:
             - 'db'
+        environment:
+            - TZ=Europe/Oslo
         env_file:
             - '.env'
     db:

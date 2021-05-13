@@ -16,7 +16,8 @@ export class VoterVerificationService {
     private _encryptionService: EncryptionService
     private _mailer: MailService
     private _eligibleVoterService: EligibleVoterService
-    private _codeDelimiter = '_'
+    // Should be safe to use delimiter, as this can not occur in an email address
+    private _codeDelimiter = '<@>'
     constructor(
         mailService: MailService,
         encryptionService: EncryptionService,
@@ -86,6 +87,7 @@ export class VoterVerificationService {
         try {
             if (decryptedCode) {
                 const codeParts = decryptedCode.split(this._codeDelimiter)
+                if (codeParts.length !== 4) return
                 return {
                     voterId: Number.parseInt(codeParts[1]),
                     electionCode: Number.parseInt(codeParts[2]),

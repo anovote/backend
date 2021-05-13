@@ -11,8 +11,6 @@ services:
             - anovote_proxy
         depends_on:
             - 'db'
-        environment:
-            - TZ=Europe/Oslo
         env_file:
             - '.env'
     db:
@@ -22,8 +20,6 @@ services:
             - anovote-data:/var/lib/postgresql
         networks:
             - anovote_backend
-        environment:
-            TZ: 'Europe/Oslo'
         env_file:
             - '.env'
 volumes:

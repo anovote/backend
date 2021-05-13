@@ -1,6 +1,8 @@
+import config from '@/config'
 import 'reflect-metadata'
 import { ConnectionOptions, createConnection } from 'typeorm'
-import config from '@/config'
+import { WinstonAdaptor } from 'typeorm-logger-adaptor/logger/winston'
+import { logger } from './logger'
 
 /**
  * Responsible for initializing TypeORM
@@ -15,7 +17,8 @@ export default async () => {
         database: config.database.db,
         dropSchema: config.database.dropSchema,
         synchronize: true,
-        logging: false,
+        logging: ['error'],
+        logger: new WinstonAdaptor(logger, ['error']),
         entities: [`${config.src}/models/**/*.{ts,js}`],
         migrations: [`${config.src}/models/migration/**/*.{ts,js}`],
         subscribers: [`${config.src}/models/subscriber/**/*.{ts,js}`],

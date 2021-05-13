@@ -8,7 +8,7 @@ import { IElection } from '@/models/Election/IElection'
 import { ElectionOrganizer } from '@/models/ElectionOrganizer/ElectionOrganizerEntity'
 import { SocketRoomEntity, SocketRoomState } from '@/models/SocketRoom/SocketRoomEntity'
 import { ElectionService } from '@/services/ElectionService'
-import { isSameHour } from 'date-fns'
+import { isBefore, isSameHour } from 'date-fns'
 import { Connection } from 'typeorm'
 import { getTestDatabase } from '../helpers/database'
 import { createDummyOrganizer, deleteDummyOrganizer } from '../helpers/seed/organizer'
@@ -251,7 +251,7 @@ it('should pass if opening date is same as today on create', async () => {
     await expect(electionService.create(election)).resolves.toBeDefined()
 })
 
-it('should pass if opening date is earlier than today on entity update', async () => {
+it('should fail if opening date is earlier than today on entity update', async () => {
     const repo = db.getRepository(Election)
     const election = repo.create()
     election.title = 'My open date is not to be updated'
@@ -268,10 +268,8 @@ it('should pass if opening date is earlier than today on entity update', async (
     newElection.closeDate = undefined
     newElection.socketRoom = new SocketRoomEntity()
 
-    expect(newElection !== oldElection)
-    expect(newElection.openDate !== oldElection!.openDate)
-    expect(newElection.openDate < new Date())
-    await expect(electionService.update(newElection.id, newElection)).resolves.toBeDefined()
+    expect(isBefore(newElection.openDate, new Date())).toBeTruthy()
+    await expect(electionService.update(newElection.id, newElection)).rejects.toThrowError()
 })
 
 it('should initialize a default socket room on creation', async () => {

@@ -1,16 +1,17 @@
 import { isEmailValid } from '@/helpers/email'
+import { RegularExpressionLibrary } from '@/helpers/regExpressionLibrary'
 import { strip } from '@/helpers/sanitize'
 import { validateEntity } from '@/helpers/validateEntity'
 import { BadRequestError } from '@/lib/errors/http/BadRequestError'
 import { NotFoundError } from '@/lib/errors/http/NotFoundError'
 import { ServerErrorMessage } from '@/lib/errors/messages/ServerErrorMessages'
+import { PasswordValidationError } from '@/lib/errors/validation/PasswordValidationError'
 import { ElectionOrganizer } from '@/models/ElectionOrganizer/ElectionOrganizerEntity'
 import { ElectionOrganizerRepository } from '@/models/ElectionOrganizer/ElectionOrganizerRepository'
 import { IElectionOrganizer } from '@/models/ElectionOrganizer/IElectionOrganizer'
 import { classToClass } from 'class-transformer'
 import { Connection, getCustomRepository } from 'typeorm'
 import BaseEntityService from './BaseEntityService'
-import { EncryptionService } from './EncryptionService'
 import { HashService } from './HashService'
 
 export class ElectionOrganizerService extends BaseEntityService<ElectionOrganizer> {
@@ -61,10 +62,16 @@ export class ElectionOrganizerService extends BaseEntityService<ElectionOrganize
 
         const organizer = this.createElectionOrganizer(electionOrganizer)
 
+        this.checkPlaintextPasswordPattern(electionOrganizer.password)
         await validateEntity(organizer)
         organizer.password = await encryptionService.hash(organizer.password)
 
         return await this.save(organizer)
+    }
+
+    checkPlaintextPasswordPattern(plaintextPassword: string) {
+        const passwordRegExp = RegularExpressionLibrary.passwordRegExp
+        if (!passwordRegExp.test(plaintextPassword)) throw new PasswordValidationError()
     }
 
     /**
@@ -89,6 +96,7 @@ export class ElectionOrganizerService extends BaseEntityService<ElectionOrganize
         const updatedOrganizer = this.repository.create(strippedOrganizer!)
 
         updatedOrganizer.id = id
+        this.checkPlaintextPasswordPattern(updatedOrganizer.password)
         await validateEntity(updatedOrganizer, { strictGroups: true })
 
         return await this.repository.save(updatedOrganizer)

@@ -17,7 +17,7 @@ services:
         container_name: 'anovote_database'
         image: postgres
         volumes:
-            - anovote-data:/var/lib/postgresql
+            - anovote-data:/var/lib/postgresql/data
         networks:
             - anovote_backend
         env_file:

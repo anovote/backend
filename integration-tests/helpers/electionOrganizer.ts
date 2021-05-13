@@ -24,6 +24,15 @@ export async function getRegisteredOrganizer(token: string) {
 }
 
 /**
+ * Return the organizer with the given token
+ * @param token token of an organizer
+ * @returns return the organizer for the given token
+ */
+export async function loginOrganizer({ email, password }: { email: string; password: string }) {
+    return await request.post(PATHS.PUBLIC.LOGIN).send({ email, password })
+}
+
+/**
  * Creates and returns an election organizer object with a random email
  * @returns return an election organizer with random email
  */
@@ -31,5 +40,5 @@ export const createElectionOrganizer = (): IElectionOrganizer => ({
     email: createEmail(),
     firstName: 'first name',
     lastName: 'last name',
-    password: 'Abc!1234567890'
+    password: `${(Math.random() * 10000).toFixed()}Abc!${(Math.random() * 10000).toFixed()}`
 })

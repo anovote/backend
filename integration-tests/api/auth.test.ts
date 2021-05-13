@@ -10,7 +10,7 @@ const PATH = (extra: string | number) => `/api/public/auth/${extra}`
  * REGISTER
  */
 const REGISTER_PATH = PATH('register')
-const USER = (): IElectionOrganizer => ({
+const createElectionOrganizer = (): IElectionOrganizer => ({
     email: createEmail(),
     firstName: 'name',
     lastName: 'no name',
@@ -22,8 +22,8 @@ it('should return 400 with no data on register', async () => {
 })
 
 it('should return 400 with invalid email on register', async () => {
-    const undefinedEmailUser = { ...USER(), email: undefined }
-    const invalidEmailUser = { ...USER(), email: 'invalidEmail' }
+    const undefinedEmailUser = { ...createElectionOrganizer(), email: undefined }
+    const invalidEmailUser = { ...createElectionOrganizer(), email: 'invalidEmail' }
 
     const undefinedEmailResponse = await request.post(REGISTER_PATH).send(undefinedEmailUser)
     const invalidEmailResponse = await request.post(REGISTER_PATH).send(invalidEmailUser)
@@ -33,8 +33,8 @@ it('should return 400 with invalid email on register', async () => {
 })
 
 it('should return 400 with no first name on register', async () => {
-    const undefinedFirstNameUser = { ...USER(), firstName: undefined }
-    const emptyStringFirstNameUser = { ...USER(), firstName: '' }
+    const undefinedFirstNameUser = { ...createElectionOrganizer(), firstName: undefined }
+    const emptyStringFirstNameUser = { ...createElectionOrganizer(), firstName: '' }
 
     const responseWithUndefinedFirstName = await request.post(REGISTER_PATH).send(undefinedFirstNameUser)
     const responseWithEmptyFirstName = await request.post(REGISTER_PATH).send(emptyStringFirstNameUser)
@@ -44,8 +44,8 @@ it('should return 400 with no first name on register', async () => {
 })
 
 it('should return 400 with no last name on register', async () => {
-    const undefinedLastNameUser = { ...USER(), lastName: undefined }
-    const emptyStringLastNameUser = { ...USER(), lastName: '' }
+    const undefinedLastNameUser = { ...createElectionOrganizer(), lastName: undefined }
+    const emptyStringLastNameUser = { ...createElectionOrganizer(), lastName: '' }
 
     const responseWithUndefinedLastName = await request.post(REGISTER_PATH).send(undefinedLastNameUser)
     const responseWithEmptyLastName = await request.post(REGISTER_PATH).send(emptyStringLastNameUser)
@@ -55,7 +55,7 @@ it('should return 400 with no last name on register', async () => {
 })
 
 it('should return 201 and token with valid data on register', async () => {
-    const validUser = { ...USER() }
+    const validUser = { ...createElectionOrganizer() }
     const response = await request.post(REGISTER_PATH).send(validUser)
 
     expect(response.statusCode).toBe(StatusCodes.CREATED)
@@ -77,9 +77,9 @@ it('should return 400 with invalid credentials on login', async () => {
 })
 
 it('should return token on valid credentials on login', async () => {
-    const correctUser = USER()
-    const responseRegister = await request.post(REGISTER_PATH).send(correctUser)
-    const responseLogin = await request.post(LOGIN_PATH).send({ ...correctUser })
+    const correctOrganizer = createElectionOrganizer()
+    const responseRegister = await request.post(REGISTER_PATH).send(correctOrganizer)
+    const responseLogin = await request.post(LOGIN_PATH).send({ ...correctOrganizer })
     expect(responseLogin.statusCode).toBe(StatusCodes.OK)
     expect(responseLogin.body).toContainKey('token')
 })

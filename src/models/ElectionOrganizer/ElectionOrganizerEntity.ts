@@ -1,6 +1,6 @@
 import { Election } from '@/models/Election/ElectionEntity'
 import { Exclude } from 'class-transformer'
-import { IsEmail, IsString, MaxLength, MinLength } from 'class-validator'
+import { IsEmail, IsNotEmpty, IsString, MaxLength, MinLength } from 'class-validator'
 import {
     BeforeInsert,
     BeforeUpdate,
@@ -30,10 +30,12 @@ export class ElectionOrganizer {
 
     @Column({ type: 'varchar' })
     @IsString()
+    @IsNotEmpty()
     firstName!: string
 
     @Column({ type: 'varchar' })
     @IsString()
+    @IsNotEmpty()
     lastName!: string
 
     @Column({ type: 'varchar', length: 255 })

@@ -40,7 +40,7 @@ it('should return 400 with no first name on register', async () => {
     const responseWithEmptyFirstName = await request.post(REGISTER_PATH).send(emptyStringFirstNameUser)
 
     expect(responseWithUndefinedFirstName.statusCode).toBe(StatusCodes.BAD_REQUEST)
-    // expect(responseWithEmptyFirstName.statusCode).toBe(StatusCodes.BAD_REQUEST)
+    expect(responseWithEmptyFirstName.statusCode).toBe(StatusCodes.BAD_REQUEST)
 })
 
 it('should return 400 with no last name on register', async () => {
@@ -51,7 +51,7 @@ it('should return 400 with no last name on register', async () => {
     const responseWithEmptyLastName = await request.post(REGISTER_PATH).send(emptyStringLastNameUser)
 
     expect(responseWithUndefinedLastName.statusCode).toBe(StatusCodes.BAD_REQUEST)
-    // expect(responseWithEmptyLastName.statusCode).toBe(StatusCodes.BAD_REQUEST)
+    expect(responseWithEmptyLastName.statusCode).toBe(StatusCodes.BAD_REQUEST)
 })
 
 it('should return 201 and token with valid data on register', async () => {

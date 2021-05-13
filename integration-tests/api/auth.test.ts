@@ -90,7 +90,8 @@ it('should return token on valid credentials on login', async () => {
 const AUTHENTICATED_PATH = PATH('authenticated')
 const RANDOM_TOKEN =
     'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJvcmdhbml6ZXIiOmZhbHNlLCJpZCI6Mn0.Pk3s5v-OBY1a-rWgHk9IKTtkgdZq7-SDJ0QY3dKiXiw'
-it('should return 200 with valid bearer token', async () => {
+
+it('should return 200 with valid organizer bearer token', async () => {
     const correctOrganizer = createElectionOrganizer()
     await request.post(REGISTER_PATH).send(correctOrganizer)
     const responseLogin = await request.post(LOGIN_PATH).send({ ...correctOrganizer })

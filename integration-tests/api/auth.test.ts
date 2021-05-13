@@ -81,6 +81,7 @@ it('should return token on valid credentials on login', async () => {
     const responseRegister = await request.post(REGISTER_PATH).send(correctUser)
     const responseLogin = await request.post(LOGIN_PATH).send({ ...correctUser })
     expect(responseLogin.statusCode).toBe(StatusCodes.OK)
+    expect(responseLogin.body).toContainKey('token')
 })
 
 /**

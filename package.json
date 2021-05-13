@@ -18,7 +18,8 @@
         "test:api": "jest --roots=integration-tests --runInBand --watchAll",
         "check-types": "tsc",
         "lint": "eslint . --ext .ts --fix",
-        "prettier-format": "prettier --config .prettierrc 'src/**/*.ts' --write"
+        "prettier-format": "prettier --config .prettierrc 'src/**/*.ts' --write",
+        "spellCheck": "cspell --config ./.vscode/cspell.json --relative -u '/**/*.{tsx,jsx,ts,json,md}'"
     },
     "devDependencies": {
         "@types/bcrypt": "^3.0.0",

@@ -1,21 +1,14 @@
-import { request } from './API'
 import { StatusCodes } from 'http-status-codes'
-import { IElectionOrganizer } from '@/models/ElectionOrganizer/IElectionOrganizer'
+import { createElectionOrganizer } from '../helpers/electionOrganizer'
+import { PATHS } from '../helpers/paths'
+import { request } from './API'
 
-const createEmail = () =>
-    `email${(Date.now() + Math.random() * 10000).toFixed()}@mail${(Math.random() * 10000).toFixed()}.com`
-const PATH = (extra: string | number) => `/api/public/auth/${extra}`
+const PUBLIC_PATH = PATHS.PUBLIC
 
 /**
  * REGISTER
  */
-const REGISTER_PATH = PATH('register')
-const createElectionOrganizer = (): IElectionOrganizer => ({
-    email: createEmail(),
-    firstName: 'name',
-    lastName: 'no name',
-    password: 'Abc!1234567890'
-})
+const REGISTER_PATH = PUBLIC_PATH.REGISTER
 it('should return 400 with no data on register', async () => {
     const response = await request.post(REGISTER_PATH)
     expect(response.statusCode).toBe(StatusCodes.BAD_REQUEST)
@@ -65,14 +58,14 @@ it('should return 201 and token with valid data on register', async () => {
 /**
  * LOGIN
  */
-const LOGIN_PATH = PATH('login')
+const LOGIN_PATH = PUBLIC_PATH.LOGIN
 it('should return 400 with no data on login', async () => {
-    const response = await request.post(PATH('login'))
+    const response = await request.post(LOGIN_PATH)
     expect(response.statusCode).toBe(StatusCodes.BAD_REQUEST)
 })
 
 it('should return 400 with invalid credentials on login', async () => {
-    const response = await request.post(PATH('login')).send({ password: '...', email: 'email' })
+    const response = await request.post(LOGIN_PATH).send({ password: '...', email: 'email' })
     expect(response.statusCode).toBe(StatusCodes.BAD_REQUEST)
 })
 
@@ -87,7 +80,7 @@ it('should return token on valid credentials on login', async () => {
 /**
  * IS AUTHENTICATED
  */
-const AUTHENTICATED_PATH = PATH('authenticated')
+const AUTHENTICATED_PATH = PUBLIC_PATH.AUTHENTICATED
 const RANDOM_TOKEN =
     'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJvcmdhbml6ZXIiOmZhbHNlLCJpZCI6Mn0.Pk3s5v-OBY1a-rWgHk9IKTtkgdZq7-SDJ0QY3dKiXiw'
 

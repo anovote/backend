@@ -10,7 +10,7 @@ docker()
     if [[ -z "$1" ]]; then
         docker-compose $composes up
     elif [[ "$1" == "--build" ]]; then 
-        docker-compose  $composes up --build
+        docker-compose  $composes build
     elif [[ "$1" == "--force" ]]; then 
         docker-compose  $composes up --force-recreate
     elif [[ "$1" == "-d" ]]; then 

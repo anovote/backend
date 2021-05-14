@@ -17,12 +17,14 @@ let mailMock: jest.Mocked<Mail>
 let encryptionServiceMock: jest.Mocked<EncryptionService>
 let eligibleVoterServiceMock: jest.Mocked<EligibleVoterService>
 
-const identifier = 'voter'
-const voterId = 100
-const electionId = 200
-const socketId = 'socketid'
-const delimiter = '_'
-const decodedCode = `${identifier}${delimiter}${voterId}${delimiter}${electionId}${delimiter}${socketId}`
+const code = {
+    voterId: 100,
+    electionCode: 200,
+    joinSocketId: 'socketId'
+}
+const delimiter = '<@>'
+const decodedCode = (identifier: string) =>
+    `${identifier}${delimiter}${code.voterId}${delimiter}${code.electionCode}${delimiter}${code.joinSocketId}`
 
 beforeAll(async () => {
     mailMock = (await mailTransporter()) as jest.Mocked<Mail>
@@ -33,10 +35,32 @@ beforeAll(async () => {
 })
 
 it('should decode verification code into object with each key', () => {
-    encryptionServiceMock.decrypt.mockImplementationOnce(() => decodedCode)
-    // Random string is passed here as the decrypted code is provided by encryption service decrypt
-    const decoded = verificationService.decodeVerificationCode('')
-    expect(decoded?.voterId).toBe(voterId)
-    expect(decoded?.electionCode).toBe(electionId)
-    expect(decoded?.joinSocketId).toBe(socketId)
+    const decoded = []
+    encryptionServiceMock.decrypt.mockImplementationOnce(() => decodedCode('some_randomStringHere'))
+    decoded.push(verificationService.decodeVerificationCode(''))
+
+    encryptionServiceMock.decrypt.mockImplementationOnce(() => decodedCode('hackedOrWhat-!2##54$%$%^!\\|/*`~`""{}]['))
+    decoded.push(verificationService.decodeVerificationCode(''))
+
+    encryptionServiceMock.decrypt.mockImplementationOnce(() =>
+        decodedCode('@#$^&*(*&^%!@#!@$RDFvvDeReeRWQ{PDFmTRk23UIO^*^7567$%^$%^*&()*(_$%!{}"|}{<>./')
+    )
+    decoded.push(verificationService.decodeVerificationCode(''))
+
+    for (const decode of decoded) {
+        expect(decode).toContainAllEntries(Object.entries(code))
+    }
+})
+
+it('should return undefined if unable to decode the code', () => {
+    const decoded = []
+    encryptionServiceMock.decrypt.mockImplementationOnce(() => 'randomString')
+    decoded.push(verificationService.decodeVerificationCode(''))
+
+    encryptionServiceMock.decrypt.mockImplementationOnce(() => '123_#$BVN_VBN_S+_+D)F _)&^_* +O<%R&E^}MRA"#$|')
+    decoded.push(verificationService.decodeVerificationCode(''))
+
+    for (const decode of decoded) {
+        expect(decode).toBeUndefined()
+    }
 })

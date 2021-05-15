@@ -1,25 +1,24 @@
+import { ElectionOrganizerUpdateDTO, IElectionOrganizerUpdateDTO } from '@/dto/ElectionOrganizerUpdateDTO'
+import { jsonToObject } from '@/helpers/sanitize'
 import { database } from '@/loaders'
 import { logger } from '@/loaders/logger'
+import { ElectionOrganizer } from '@/models/ElectionOrganizer/ElectionOrganizerEntity'
 import { AuthenticationService } from '@/services/AuthenticationService'
 import { ElectionOrganizerService } from '@/services/ElectionOrganizerService'
 import { Router } from 'express'
-import { StatusCodes } from 'http-status-codes'
 
 const router = Router()
 const authenticationService = new AuthenticationService()
 
-router.get('/', async (request, response) => {
+router.get('/', async (request, response, next) => {
     const electionOrganizerService = new ElectionOrganizerService(database)
     try {
         const token = request.headers.authorization
         const id = authenticationService.verifyToken(token).id
         const organizer = await electionOrganizerService.getById(id)
-
-        response.status(StatusCodes.OK)
-        response.send(organizer)
+        response.json(organizer)
     } catch (error) {
-        response.status(StatusCodes.BAD_REQUEST)
-        response.send()
+        next(error)
     }
 })
 

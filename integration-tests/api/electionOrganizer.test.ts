@@ -45,16 +45,28 @@ it('should return the logged in election organizer on get', async () => {
  * @param organizer the update organizer
  * @returns return the response
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 async function sendOrganizerPutRequest(organizer: ElectionOrganizer | any) {
     return await request.put(ORGANIZER_PATH(organizer.id)).auth(token, { type: 'bearer' }).send(organizer)
 }
 
-it('should update the election organizers email on update', async () => {
+it('should update the election organizers email', async () => {
     const newEmail = createEmail()
     const response = await sendOrganizerPutRequest({ ...createdOrganizer, email: newEmail })
     expect(response.statusCode).toBe(StatusCodes.OK)
     expect(response.body.email).toBe(newEmail)
     expect(response.body.id).toBe(createdOrganizer.id)
+})
+
+it.only('should update the election organizers email and be able to login', async () => {
+    const newEmail = createEmail()
+    const updateResponse = await sendOrganizerPutRequest({ ...createdOrganizer, email: newEmail })
+    expect(updateResponse.statusCode).toBe(StatusCodes.OK)
+    expect(updateResponse.body.email).toBe(newEmail)
+
+    const loginResponse = await loginOrganizer({ email: newEmail, password: organizerData.password })
+    expect(loginResponse.statusCode).toBe(StatusCodes.OK)
+    expect(loginResponse.body).toContainKey('token')
 })
 
 it('should update the organizers password and be able to login with new password', async () => {
@@ -73,7 +85,6 @@ it('should update the organizers password and be able to login with new password
 
     const newPassword2 = 'AnotherPasswordHere1234!'
     const updateResponse2 = await sendOrganizerPutRequest({
-        ...createdOrganizer,
         // Set a random organizer id, as it should not effect the update
         id: createdOrganizer.id + 100,
         password: newPassword2
@@ -89,7 +100,7 @@ it('should update the organizers password and be able to login with new password
 
 it('should not update name or last name', async () => {
     const response = await sendOrganizerPutRequest({
-        ...createdOrganizer,
+        id: createdOrganizer.id,
         firstName: 'new first name',
         lastName: 'new last name'
     })

@@ -1,6 +1,6 @@
+import { ElectionOrganizerUpdateDTO } from '@/dto/ElectionOrganizerUpdateDTO'
 import { isEmailValid } from '@/helpers/email'
 import { RegularExpressionLibrary } from '@/helpers/regExpressionLibrary'
-import { strip } from '@/helpers/sanitize'
 import { validateEntity } from '@/helpers/validateEntity'
 import { BadRequestError } from '@/lib/errors/http/BadRequestError'
 import { NotFoundError } from '@/lib/errors/http/NotFoundError'
@@ -36,7 +36,7 @@ export class ElectionOrganizerService extends BaseEntityService<ElectionOrganize
         return classToClass(await this.createAndSaveElectionOrganizer(dto))
     }
 
-    async update(id: number, dto: ElectionOrganizer): Promise<ElectionOrganizer | undefined> {
+    async update(id: number, dto: ElectionOrganizerUpdateDTO): Promise<ElectionOrganizer | undefined> {
         return classToClass(await this.updateById(dto, id))
     }
 
@@ -80,25 +80,22 @@ export class ElectionOrganizerService extends BaseEntityService<ElectionOrganize
      * @param id the id of the organizer
      * @returns The updated election organizer
      */
-    async updateById(organizerDTO: IElectionOrganizer, id: number): Promise<ElectionOrganizer> {
-        const encryptionService = new HashService()
-
-        const strippedOrganizer = strip(organizerDTO, ['id', 'createdAt', 'updatedAt'])
-        if (strippedOrganizer?.password) {
-            const hashedPassword = await encryptionService.hash(organizerDTO.password)
-            strippedOrganizer.password = hashedPassword
+    async updateById(organizerDTO: ElectionOrganizerUpdateDTO, id: number): Promise<ElectionOrganizer> {
+        if (organizerDTO?.password) {
+            this.checkPlaintextPasswordPattern(organizerDTO.password)
+            const encryptionService = new HashService()
+            organizerDTO.password = await encryptionService.hash(organizerDTO.password)
         }
 
-        if (!isEmailValid(strippedOrganizer!.email)) {
+        if (organizerDTO?.email && !isEmailValid(organizerDTO.email)) {
             throw new BadRequestError({ message: ServerErrorMessage.invalidData() })
         }
 
-        const updatedOrganizer = this.repository.create(strippedOrganizer!)
+        const organizer = await this.repository.findOne(id)
+        if (!organizer) throw new NotFoundError({ message: ServerErrorMessage.notFound('Organizer') })
 
-        updatedOrganizer.id = id
-        this.checkPlaintextPasswordPattern(updatedOrganizer.password)
+        const updatedOrganizer = this.repository.create({ ...organizer, ...organizerDTO }!)
         await validateEntity(updatedOrganizer, { strictGroups: true })
-
         return await this.repository.save(updatedOrganizer)
     }
 

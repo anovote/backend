@@ -23,26 +23,20 @@ router.get('/', async (request, response) => {
     }
 })
 
-router.put('/:id', async (request, response) => {
-    const electionOrganizerService = new ElectionOrganizerService(database)
-    try {
-        const organizerDTO = request.body
-
-        let password
-        if (!organizerDTO.password) {
-            password = (await electionOrganizerService.getElectionOrganizerById(organizerDTO.id)).password
+router.put<{ id: string }, ElectionOrganizer | undefined, IElectionOrganizerUpdateDTO>(
+    '/:id',
+    async (request, response, next) => {
+        const electionOrganizerService = new ElectionOrganizerService(database)
+        try {
+            const organizerID = request.electionOrganizer.id
+            const organizerDTO = jsonToObject(ElectionOrganizerUpdateDTO, request.body)
+            const updatedOrganizer = await electionOrganizerService.update(organizerID, organizerDTO)
+            logger.info(`Election organizer ${organizerID} updated successfully`)
+            return response.json(updatedOrganizer)
+        } catch (error) {
+            next(error)
         }
-
-        const dto = password ? { ...organizerDTO, password } : organizerDTO
-
-        const updatedOrganizer = await electionOrganizerService.update(request.electionOrganizer.id, dto)
-
-        response.status(StatusCodes.OK).json(updatedOrganizer)
-        logger.info('Organizer updated')
-    } catch (e) {
-        response.sendStatus(StatusCodes.BAD_REQUEST)
-        logger.error('Bad request for updating organizer ' + e)
     }
-})
+)
 
 export default router

@@ -1,27 +1,29 @@
-import { ElectionOrganizerUpdateDTO, IElectionOrganizerUpdateDTO } from '@/dto/ElectionOrganizerUpdateDTO'
-import { jsonToObject } from '@/helpers/sanitize'
+import { IElectionOrganizerUpdateDTO } from '@/dto/ElectionOrganizerUpdateDTO'
 import { database } from '@/loaders'
 import { logger } from '@/loaders/logger'
 import { ElectionOrganizer } from '@/models/ElectionOrganizer/ElectionOrganizerEntity'
-import { AuthenticationService } from '@/services/AuthenticationService'
 import { ElectionOrganizerService } from '@/services/ElectionOrganizerService'
 import { Router } from 'express'
 
 const router = Router()
-const authenticationService = new AuthenticationService()
-
+/**
+ * Returns only the authenticated organizer.
+ */
 router.get('/', async (request, response, next) => {
     const electionOrganizerService = new ElectionOrganizerService(database)
     try {
-        const token = request.headers.authorization
-        const id = authenticationService.verifyToken(token).id
-        const organizer = await electionOrganizerService.getById(id)
+        const organizerID = request.electionOrganizer.id
+        const organizer = await electionOrganizerService.getById(organizerID)
         response.json(organizer)
     } catch (error) {
         next(error)
     }
 })
 
+/**
+ * Updates the authenticated organizer
+ * TODO: Fix id parameter - has no effect #211
+ */
 router.put<{ id: string }, ElectionOrganizer | undefined, IElectionOrganizerUpdateDTO>(
     '/:id',
     async (request, response, next) => {

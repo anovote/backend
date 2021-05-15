@@ -40,27 +40,25 @@ it('should return the logged in election organizer on get', async () => {
 
 /**
  * Sends a PUT request to the organizer PUT endpoint for the organizer
- * registered in beforeAll.
-
  * @param organizer the update organizer
  * @returns return the response
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-async function sendOrganizerPutRequest(organizer: ElectionOrganizer | any) {
-    return await request.put(ORGANIZER_PATH(organizer.id)).auth(token, { type: 'bearer' }).send(organizer)
+async function sendOrganizerPutRequest(organizer: ElectionOrganizer | any, id: number) {
+    return await request.put(ORGANIZER_PATH(id)).auth(token, { type: 'bearer' }).send(organizer)
 }
 
 it('should update the election organizers email', async () => {
     const newEmail = createEmail()
-    const response = await sendOrganizerPutRequest({ ...createdOrganizer, email: newEmail })
+    const response = await sendOrganizerPutRequest({ email: newEmail }, createdOrganizer.id)
     expect(response.statusCode).toBe(StatusCodes.OK)
     expect(response.body.email).toBe(newEmail)
     expect(response.body.id).toBe(createdOrganizer.id)
 })
 
-it.only('should update the election organizers email and be able to login', async () => {
+it('should update the election organizers email and be able to login', async () => {
     const newEmail = createEmail()
-    const updateResponse = await sendOrganizerPutRequest({ ...createdOrganizer, email: newEmail })
+    const updateResponse = await sendOrganizerPutRequest({ ...createdOrganizer, email: newEmail }, createdOrganizer.id)
     expect(updateResponse.statusCode).toBe(StatusCodes.OK)
     expect(updateResponse.body.email).toBe(newEmail)
 
@@ -71,10 +69,13 @@ it.only('should update the election organizers email and be able to login', asyn
 
 it('should update the organizers password and be able to login with new password', async () => {
     const newPassword = 'AnovoteTest!123'
-    const updateResponse = await sendOrganizerPutRequest({
-        ...createdOrganizer,
-        password: newPassword
-    })
+    const updateResponse = await sendOrganizerPutRequest(
+        {
+            ...createdOrganizer,
+            password: newPassword
+        },
+        createdOrganizer.id
+    )
     expect(updateResponse.statusCode).toBe(StatusCodes.OK)
     expect(updateResponse.body.id).toBe(createdOrganizer.id)
     expect(updateResponse.body.password).toBeUndefined()
@@ -84,11 +85,13 @@ it('should update the organizers password and be able to login with new password
     expect(loginResponse.body).toContainKey('token')
 
     const newPassword2 = 'AnotherPasswordHere1234!'
-    const updateResponse2 = await sendOrganizerPutRequest({
+    const updateResponse2 = await sendOrganizerPutRequest(
+        {
+            password: newPassword2
+        },
         // Set a random organizer id, as it should not effect the update
-        id: createdOrganizer.id + 100,
-        password: newPassword2
-    })
+        createdOrganizer.id + 100
+    )
     expect(updateResponse2.statusCode).toBe(StatusCodes.OK)
     expect(updateResponse2.body.id).toBe(createdOrganizer.id)
     expect(updateResponse2.body.password).toBeUndefined()
@@ -99,11 +102,13 @@ it('should update the organizers password and be able to login with new password
 })
 
 it('should not update name or last name', async () => {
-    const response = await sendOrganizerPutRequest({
-        id: createdOrganizer.id,
-        firstName: 'new first name',
-        lastName: 'new last name'
-    })
+    const response = await sendOrganizerPutRequest(
+        {
+            firstName: 'new first name',
+            lastName: 'new last name'
+        },
+        createdOrganizer.id
+    )
     expect(response.statusCode).toBe(StatusCodes.OK)
     expect(response.body.firstName).toBe(createdOrganizer.firstName)
     expect(response.body.lastName).toBe(createdOrganizer.lastName)

@@ -28,8 +28,8 @@ router.put<{ id: string }, ElectionOrganizer | undefined, IElectionOrganizerUpda
         const electionOrganizerService = new ElectionOrganizerService(database)
         try {
             const organizerID = request.electionOrganizer.id
-            const organizerDTO = jsonToObject(ElectionOrganizerUpdateDTO, request.body)
-            const updatedOrganizer = await electionOrganizerService.update(organizerID, organizerDTO)
+            const organizerUpdate = jsonToObject(ElectionOrganizerUpdateDTO, request.body)
+            const updatedOrganizer = await electionOrganizerService.update(organizerID, organizerUpdate)
             logger.info(`Election organizer ${organizerID} updated successfully`)
             return response.json(updatedOrganizer)
         } catch (error) {

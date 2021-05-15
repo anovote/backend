@@ -80,22 +80,23 @@ export class ElectionOrganizerService extends BaseEntityService<ElectionOrganize
      * @param id the id of the organizer
      * @returns The updated election organizer
      */
-    async updateById(organizerDTO: ElectionOrganizerUpdateDTO, id: number): Promise<ElectionOrganizer> {
-        if (organizerDTO?.password) {
-            this.checkPlaintextPasswordPattern(organizerDTO.password)
+    async updateById(organizerUpdate: ElectionOrganizerUpdateDTO, id: number): Promise<ElectionOrganizer> {
+        if (organizerUpdate?.password) {
+            this.checkPlaintextPasswordPattern(organizerUpdate.password)
             const encryptionService = new HashService()
-            organizerDTO.password = await encryptionService.hash(organizerDTO.password)
+            organizerUpdate.password = await encryptionService.hash(organizerUpdate.password)
         }
 
-        if (organizerDTO?.email && !isEmailValid(organizerDTO.email)) {
+        if (organizerUpdate?.email && !isEmailValid(organizerUpdate.email)) {
             throw new BadRequestError({ message: ServerErrorMessage.invalidData() })
         }
 
         const organizer = await this.repository.findOne(id)
         if (!organizer) throw new NotFoundError({ message: ServerErrorMessage.notFound('Organizer') })
 
-        const updatedOrganizer = this.repository.create({ ...organizer, ...organizerDTO }!)
+        const updatedOrganizer = this.repository.create({ ...organizer, ...organizerUpdate }!)
         await validateEntity(updatedOrganizer, { strictGroups: true })
+
         return await this.repository.save(updatedOrganizer)
     }
 

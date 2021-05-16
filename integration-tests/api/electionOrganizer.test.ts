@@ -56,6 +56,14 @@ it('should update the election organizers email', async () => {
     expect(response.body.id).toBe(createdOrganizer.id)
 })
 
+it('should not return any additional fields on update', async () => {
+    const newEmail = createEmail()
+    const response = await sendOrganizerPutRequest({ email: newEmail }, createdOrganizer.id)
+    expect(response.statusCode).toBe(StatusCodes.OK)
+    expect(response.body.email).toBe(newEmail)
+    expect(createdOrganizer).toContainAllKeys(Object.keys(response.body))
+})
+
 it('should update the election organizers email and be able to login', async () => {
     const newEmail = createEmail()
     const updateResponse = await sendOrganizerPutRequest({ ...createdOrganizer, email: newEmail }, createdOrganizer.id)

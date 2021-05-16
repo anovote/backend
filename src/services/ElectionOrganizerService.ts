@@ -1,4 +1,4 @@
-import { ElectionOrganizerUpdateDTO, IElectionOrganizerUpdateDTO } from '@/dto/ElectionOrganizerUpdateDTO'
+import { ElectionOrganizerBaseDTO, ElectionOrganizerUpdateDTO } from '@/dto/ElectionOrganizerDTO'
 import { isEmailValid } from '@/helpers/email'
 import { RegularExpressionLibrary } from '@/helpers/regExpressionLibrary'
 import { jsonToObject } from '@/helpers/sanitize'
@@ -28,15 +28,15 @@ export class ElectionOrganizerService extends BaseEntityService<ElectionOrganize
     }
 
     async getById(id: number): Promise<ElectionOrganizer | undefined> {
-        return classToClass(await this.getElectionOrganizerById(id))
+        return await this.getElectionOrganizerById(id)
     }
 
-    async create(dto: ElectionOrganizer): Promise<ElectionOrganizer | undefined> {
-        return classToClass(await this.createAndSaveElectionOrganizer(dto))
+    async create(dto: ElectionOrganizerBaseDTO): Promise<ElectionOrganizer | undefined> {
+        return await this.createAndSaveElectionOrganizer(dto)
     }
 
     async update(id: number, dto: ElectionOrganizerUpdateDTO): Promise<ElectionOrganizer | undefined> {
-        return classToClass(await this.updateById(dto, id))
+        return await this.updateById(dto, id)
     }
 
     /**
@@ -79,7 +79,8 @@ export class ElectionOrganizerService extends BaseEntityService<ElectionOrganize
      * @param id the id of the organizer
      * @returns The updated election organizer
      */
-    async updateById(organizerUpdateDTO: IElectionOrganizerUpdateDTO, id: number): Promise<ElectionOrganizer> {
+    async updateById(organizerUpdateDTO: ElectionOrganizerUpdateDTO, id: number): Promise<ElectionOrganizer> {
+        // Strips the DTO from fields that should not be there
         const organizerUpdate = jsonToObject(ElectionOrganizerUpdateDTO, organizerUpdateDTO)
 
         if (organizerUpdate?.password) {

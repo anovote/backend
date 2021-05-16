@@ -1,7 +1,7 @@
-import { IElectionOrganizerUpdateDTO } from '@/dto/ElectionOrganizerUpdateDTO'
+import { ElectionOrganizerEntityDTO, ElectionOrganizerUpdateDTO } from '@/dto/ElectionOrganizerDTO'
+import { objectToObject } from '@/helpers/sanitize'
 import { database } from '@/loaders'
 import { logger } from '@/loaders/logger'
-import { ElectionOrganizer } from '@/models/ElectionOrganizer/ElectionOrganizerEntity'
 import { ElectionOrganizerService } from '@/services/ElectionOrganizerService'
 import { Router } from 'express'
 
@@ -14,7 +14,7 @@ router.get('/', async (request, response, next) => {
     try {
         const organizerID = request.electionOrganizer.id
         const organizer = await electionOrganizerService.getById(organizerID)
-        response.json(organizer)
+        response.json(objectToObject(new ElectionOrganizerEntityDTO(), organizer))
     } catch (error) {
         next(error)
     }
@@ -24,7 +24,7 @@ router.get('/', async (request, response, next) => {
  * Updates the authenticated organizer
  * TODO: Fix id parameter - has no effect #211
  */
-router.put<{ id: string }, ElectionOrganizer | undefined, IElectionOrganizerUpdateDTO>(
+router.put<{ id: string }, ElectionOrganizerEntityDTO | undefined, ElectionOrganizerUpdateDTO>(
     '/:id',
     async (request, response, next) => {
         const electionOrganizerService = new ElectionOrganizerService(database)
@@ -32,7 +32,7 @@ router.put<{ id: string }, ElectionOrganizer | undefined, IElectionOrganizerUpda
             const organizerID = request.electionOrganizer.id
             const updatedOrganizer = await electionOrganizerService.update(organizerID, request.body)
             logger.info(`Election organizer ${organizerID} updated successfully`)
-            return response.json(updatedOrganizer)
+            return response.json(objectToObject(new ElectionOrganizerEntityDTO(), updatedOrganizer))
         } catch (error) {
             next(error)
         }

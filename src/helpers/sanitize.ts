@@ -1,5 +1,5 @@
 import { deepCopy } from '@/helpers/object'
-import { plainToClass } from 'class-transformer'
+import { classToClass, plainToClass } from 'class-transformer'
 
 // Type to be able to pass Class types as arguments
 type ClassConstructor<T> = {
@@ -45,6 +45,28 @@ export function jsonToObject<T>(
     options: { keepEmpty?: boolean } = { keepEmpty: false }
 ) {
     return plainToClass(instance, data, {
+        excludeExtraneousValues: true,
+        exposeUnsetFields: options.keepEmpty
+    })
+}
+
+/**
+ * Copies fields from source object to a instance object provided.
+ *
+ * It will exclude all extra fields that are not part of the instance object type (requires that the instance
+ * object is annotated with classTransform @expose on all fields that is to be visible).
+ *
+ * An option can be set to allow undefined/null values to be copied, this defaults to false> e.g.
+ * undefined and null values wil no be available on the instance object as default.
+ *
+ * It uses classToClass from classTransforms to perform the copying.
+ * @param instance the instance type to create
+ * @param source the source object to be copied over to instance
+ * @param options options for copy
+ * @returns returns an instance of the provided instance type
+ */
+export function objectToObject<T>(target: T, source: unknown, options: { keepEmpty?: boolean } = { keepEmpty: false }) {
+    return classToClass(Object.assign(target, source), {
         excludeExtraneousValues: true,
         exposeUnsetFields: options.keepEmpty
     })

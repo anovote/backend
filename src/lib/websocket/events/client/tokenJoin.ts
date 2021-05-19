@@ -1,6 +1,7 @@
 import { BaseError } from '@/lib/errors/BaseError'
 import { EventHandlerAcknowledges } from '@/lib/websocket/EventHandler'
 import { EventErrorMessage, EventMessage } from '@/lib/websocket/EventResponse'
+import { logger } from '@/loaders/logger'
 import { AuthenticationService } from '@/services/AuthenticationService'
 import { VoterSocket } from '../../AnoSocket'
 import { organizerJoin } from './organizer/organizerJoin'
@@ -36,5 +37,7 @@ export const tokenJoin: EventHandlerAcknowledges<ITokenJoinPayload> = (event) =>
         if (error instanceof BaseError) {
             event.acknowledgement(EventErrorMessage(error))
         }
+
+        logger.error(error)
     }
 }

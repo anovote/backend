@@ -11,6 +11,11 @@ import { errorHandler } from './middleware/errorHandler'
 import { rateLimits } from './middleware/rateLimits'
 import voterElectionRoutes from './routes/voter/election'
 import electionStatsRouter from './routes/elections/ElectionStatsRoute'
+const status = Router()
+
+status.get('/', (request, response, next) => {
+    return response.json()
+})
 
 const publicRoutes = Router()
 publicRoutes.use('/auth/login', rateLimits.loginLimiter)
@@ -32,6 +37,7 @@ organizerRoutes.use('/elections/:electionId/stats', electionStatsRouter)
 
 const routes = Router()
     .use(morgan('dev'))
+    .use('/status', status)
     .use('/public', publicRoutes)
     .use('/voter', voterRoutes)
     .use('/admin', organizerRoutes)

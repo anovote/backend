@@ -1,6 +1,7 @@
 version: '3.9'
 services:
     app:
+        image: anovote:backend_source
         build:
             context: .
             dockerfile: Dockerfile

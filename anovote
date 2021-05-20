@@ -37,6 +37,8 @@ if [[ -z "$1" ]]; then
  echo "- anovote prod"
  echo "- anovote dev"
  echo "- anovote test"
+ echo "- anovote api-test"
+
 else
     if [[ "$1" == "prod" ]]; then
         echo "====== PRODUCTION ======="
@@ -49,9 +51,14 @@ else
         docker $2
     elif [[ "$1" == "test" ]]; then
         echo "====== TEST ======="
-        echo "$compose"
-        yarn test:locally
-        
+        composes="--env-file .env.test -f docker-compose-test.yml -f docker-compose-test-unit.yml"
+        docker "--down"
+        docker $2
+    elif [[ "$1" == "api-test" ]]; then
+        echo "====== INTEGRATION TEST ======="
+        composes="--env-file .env.test -f docker-compose-test.yml -f docker-compose-test-integration.yml"
+        docker "--down"
+        docker $2
     else
         echo "$typeArgError"
         exit 1

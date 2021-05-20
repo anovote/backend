@@ -1,48 +1,42 @@
+import { ElectionOrganizerEntityDTO, ElectionOrganizerUpdateDTO } from '@/dto/ElectionOrganizerDTO'
+import { objectToObject } from '@/helpers/sanitize'
 import { database } from '@/loaders'
 import { logger } from '@/loaders/logger'
-import { AuthenticationService } from '@/services/AuthenticationService'
 import { ElectionOrganizerService } from '@/services/ElectionOrganizerService'
 import { Router } from 'express'
-import { StatusCodes } from 'http-status-codes'
 
 const router = Router()
-const authenticationService = new AuthenticationService()
-
-router.get('/', async (request, response) => {
+/**
+ * Returns only the authenticated organizer.
+ */
+router.get('/', async (request, response, next) => {
     const electionOrganizerService = new ElectionOrganizerService(database)
     try {
-        const token = request.headers.authorization
-        const id = authenticationService.verifyToken(token).id
-        const organizer = await electionOrganizerService.getById(id)
-
-        response.status(StatusCodes.OK)
-        response.send(organizer)
+        const organizerID = request.electionOrganizer.id
+        const organizer = await electionOrganizerService.getById(organizerID)
+        response.json(objectToObject(new ElectionOrganizerEntityDTO(), organizer))
     } catch (error) {
-        response.status(StatusCodes.BAD_REQUEST)
-        response.send()
+        next(error)
     }
 })
 
-router.put('/:id', async (request, response) => {
-    const electionOrganizerService = new ElectionOrganizerService(database)
-    try {
-        const organizerDTO = request.body
-
-        let password
-        if (!organizerDTO.password) {
-            password = (await electionOrganizerService.getElectionOrganizerById(organizerDTO.id)).password
+/**
+ * Updates the authenticated organizer
+ * TODO: Fix id parameter - has no effect #211
+ */
+router.put<{ id: string }, ElectionOrganizerEntityDTO | undefined, ElectionOrganizerUpdateDTO>(
+    '/:id',
+    async (request, response, next) => {
+        const electionOrganizerService = new ElectionOrganizerService(database)
+        try {
+            const organizerID = request.electionOrganizer.id
+            const updatedOrganizer = await electionOrganizerService.update(organizerID, request.body)
+            logger.info(`Election organizer ${organizerID} updated successfully`)
+            return response.json(objectToObject(new ElectionOrganizerEntityDTO(), updatedOrganizer))
+        } catch (error) {
+            next(error)
         }
-
-        const dto = password ? { ...organizerDTO, password } : organizerDTO
-
-        const updatedOrganizer = await electionOrganizerService.update(request.electionOrganizer.id, dto)
-
-        response.status(StatusCodes.OK).json(updatedOrganizer)
-        logger.info('Organizer updated')
-    } catch (e) {
-        response.sendStatus(StatusCodes.BAD_REQUEST)
-        logger.error('Bad request for updating organizer ' + e)
     }
-})
+)
 
 export default router

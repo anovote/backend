@@ -1,13 +1,27 @@
 version: '3.9'
 services:
+    testrunner:
+        container_name: 'test_runner'
+        image: anovote:backend_source
+        build:
+            context: .
+            dockerfile: Dockerfile
+            target: source
+        volumes:
+            - './src:/app/src'
+            - './testlogs:/app/logs'
+        env_file:
+            - '.env.test'
+        networks:
+            - anovote_backend_test
     testdb:
         container_name: 'test_database'
         image: postgres
-        networks:
-            - anovote_backend
         environment:
             TZ: 'Europe/Oslo'
         env_file:
             - '.env.test'
-        ports:
-            - '${DB_PORT}:5432'
+        networks:
+            - anovote_backend_test
+networks:
+    anovote_backend_test:

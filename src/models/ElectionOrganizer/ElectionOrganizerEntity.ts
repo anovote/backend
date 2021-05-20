@@ -1,6 +1,8 @@
+import { IEntity } from '@/interfaces/IEntity'
+import { IHasName } from '@/interfaces/IHasName'
+import { IUpdatable } from '@/interfaces/IUpdatable'
 import { Election } from '@/models/Election/ElectionEntity'
-import { Exclude } from 'class-transformer'
-import { IsEmail, IsString, MaxLength, MinLength } from 'class-validator'
+import { IsEmail, IsNotEmpty, IsString, MaxLength, MinLength } from 'class-validator'
 import {
     BeforeInsert,
     BeforeUpdate,
@@ -18,7 +20,7 @@ import { IsElectionOrganizerUnique } from './constraints/IsElectionOrganizerUniq
  * An election organizer has a name, email and password.
  */
 @Entity()
-export class ElectionOrganizer {
+export class ElectionOrganizer implements IEntity, IHasName, IUpdatable {
     @BeforeInsert()
     @BeforeUpdate()
     emailToLowercase() {
@@ -30,10 +32,12 @@ export class ElectionOrganizer {
 
     @Column({ type: 'varchar' })
     @IsString()
+    @IsNotEmpty()
     firstName!: string
 
     @Column({ type: 'varchar' })
     @IsString()
+    @IsNotEmpty()
     lastName!: string
 
     @Column({ type: 'varchar', length: 255 })
@@ -42,17 +46,14 @@ export class ElectionOrganizer {
     email!: string
 
     @Column({ type: 'varchar', length: 255 })
-    @Exclude()
     @IsString()
     @MinLength(6)
     @MaxLength(225)
     password!: string
 
-    @Exclude()
     @CreateDateColumn()
     createdAt!: Date
 
-    @Exclude()
     @UpdateDateColumn()
     updatedAt!: Date
 
